@@ -1,0 +1,46 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: #000;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.presentation {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  background: #000;
+  line-height: 0;
+}
+
+.page {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  vertical-align: top;
+}
+
+.js .page {
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+
+.js .page.is-visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .page {
+    opacity: 1;
+    transition: none;
+  }
+}
