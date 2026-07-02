@@ -28,19 +28,3 @@ body {
   max-width: none;
   vertical-align: top;
 }
-
-.js .page {
-  opacity: 0;
-  transition: opacity 500ms ease;
-}
-
-.js .page.is-visible {
-  opacity: 1;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .js .page {
-    opacity: 1;
-    transition: none;
-  }
-}
