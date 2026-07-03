@@ -283,7 +283,7 @@ h3 {
 
 .approach-copy h2 {
   max-width: min(78vw, 1180px);
-  margin-bottom: clamp(28px, 4vw, 64px);
+  margin-bottom: clamp(54px, 6vw, 96px);
   color: var(--blue);
   font-size: clamp(1.9rem, 2.4vw, 2.75rem);
   font-weight: 500;
@@ -344,7 +344,7 @@ h3 {
 .approach-caption {
   position: absolute;
   left: clamp(18px, 4vw, 70px);
-  bottom: clamp(42px, 7.4vw, 118px);
+  bottom: clamp(18px, 4.3vw, 70px);
   width: min(42vw, 660px);
   color: var(--blue);
   font-family: var(--body-font);
