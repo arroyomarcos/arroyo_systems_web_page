@@ -313,8 +313,8 @@ h3 {
 .approach-figure {
   position: absolute;
   right: clamp(18px, 3.5vw, 62px);
-  top: clamp(124px, 15.2vw, 218px);
-  width: min(47vw, 730px);
+  top: clamp(108px, 14vw, 198px);
+  width: min(44vw, 690px);
   margin: 0;
 }
 
@@ -335,21 +335,11 @@ h3 {
   align-self: end;
 }
 
-.accessibility-views__front {
-  order: 4;
-}
-
-.accessibility-views__side {
-  order: 2;
-}
-
 .accessibility-views__top {
-  order: 3;
   transform: translateX(-3%);
 }
 
 .accessibility-views__iso {
-  order: 1;
   transform: translateY(2%);
 }
 
