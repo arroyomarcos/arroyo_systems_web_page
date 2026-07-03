@@ -276,26 +276,27 @@ h3 {
   top: clamp(54px, 8.2vw, 130px);
   left: clamp(46px, 10vw, 165px);
   z-index: 2;
-  width: min(54vw, 900px);
+  width: min(53vw, 880px);
   max-width: none;
   padding: 0;
 }
 
 .approach-copy h2 {
-  max-width: 900px;
+  max-width: 880px;
   margin-bottom: clamp(24px, 3.1vw, 50px);
   color: var(--blue);
-  font-size: clamp(1.9rem, 2.42vw, 2.72rem);
+  font-size: clamp(1.85rem, 2.28vw, 2.58rem);
   font-weight: 500;
   line-height: 1.18;
 }
 
 .approach-copy h2 span {
   display: block;
+  white-space: nowrap;
 }
 
 .approach-copy p {
-  width: min(34vw, 520px);
+  width: min(31vw, 500px);
   max-width: none;
   margin-bottom: clamp(18px, 2vw, 30px);
   color: var(--muted);
@@ -304,14 +305,14 @@ h3 {
   font-weight: 400;
   line-height: 1.28;
   overflow-wrap: normal;
-  text-wrap: balance;
+  text-align: justify;
 }
 
 .approach-figure {
   position: absolute;
-  right: clamp(58px, 8.2vw, 138px);
-  bottom: clamp(36px, 5.6vw, 88px);
-  width: min(40vw, 600px);
+  right: clamp(42px, 6.3vw, 112px);
+  bottom: clamp(66px, 7.5vw, 124px);
+  width: min(38vw, 570px);
   margin: 0;
 }
 
@@ -342,15 +343,17 @@ h3 {
 
 .approach-figure figcaption {
   position: absolute;
-  right: 50%;
-  bottom: -2.35vw;
-  width: min(27vw, 380px);
+  right: 34%;
+  bottom: -4.35vw;
+  width: max-content;
+  max-width: none;
   color: var(--blue);
   font-family: var(--body-font);
   font-size: clamp(0.95rem, 1.05vw, 1.16rem);
   font-weight: 400;
   line-height: 1.22;
   text-align: right;
+  white-space: nowrap;
 }
 
 .impact {
@@ -664,6 +667,11 @@ h3 {
 
   .approach-copy p {
     width: 100%;
+    text-align: left;
+  }
+
+  .approach-copy h2 span {
+    white-space: normal;
   }
 
   .approach-figure {
@@ -673,8 +681,10 @@ h3 {
   .approach-figure figcaption {
     position: static;
     width: 100%;
+    max-width: 100%;
     margin-top: 18px;
     text-align: left;
+    white-space: normal;
   }
 
   .problem-copy {
