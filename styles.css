@@ -288,7 +288,7 @@ h3 {
 
 .approach-copy h2 {
   max-width: min(78vw, 1180px);
-  margin-bottom: clamp(54px, 6vw, 96px);
+  margin-bottom: clamp(72px, 7.8vw, 128px);
   color: var(--blue);
 }
 
@@ -346,7 +346,7 @@ h3 {
 .approach-caption {
   position: absolute;
   left: clamp(18px, 4vw, 70px);
-  bottom: clamp(4px, 2vw, 34px);
+  bottom: clamp(-18px, 0.3vw, 6px);
   width: min(42vw, 660px);
   color: var(--blue);
   font-family: var(--body-font);
@@ -370,7 +370,7 @@ h3 {
 
 .problem-caption {
   position: absolute;
-  top: clamp(34px, 4.8vw, 66px);
+  top: clamp(58px, 6.2vw, 96px);
   left: clamp(18px, 4vw, 70px);
   width: min(42vw, 660px);
   margin: 0;
