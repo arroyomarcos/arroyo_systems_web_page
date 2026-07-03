@@ -125,7 +125,7 @@ a {
 
 .hero__copy {
   position: absolute;
-  top: clamp(78px, 12.5vw, 176px);
+  top: clamp(46px, 8.8vw, 126px);
   right: clamp(66px, 8vw, 138px);
   z-index: 2;
   width: min(48vw, 760px);
