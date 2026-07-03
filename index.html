@@ -16,111 +16,163 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <main>
-      <section class="slide hero" id="top" aria-labelledby="hero-title">
-        <img class="hero__logo" src="assets/brand/logo-arroyo-systems.png" alt="Arroyo Systems">
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Arroyo Systems home">
+        <img src="assets/brand/logo-arroyo-systems.png" alt="Arroyo Systems">
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="#approach">Approach</a>
+        <a href="#decisions">Decisions</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <a class="nav-cta" href="mailto:contact@arroyo-systems.com">Contact Us</a>
+    </header>
+
+    <main id="top">
+      <section class="hero section">
         <div class="hero__copy">
-          <h1 id="hero-title">Designed to Manufacture<br>Validated to Perform</h1>
-          <p>Engineering for Machined Components</p>
-          <a href="mailto:contact@arroyo-systems.com">Contact Us</a>
+          <p class="eyebrow">Engineering for Machined Components</p>
+          <h1>Designed to Manufacture. Validated to Perform.</h1>
+          <p class="lead">
+            Arroyo Systems helps develop mechanical components under load with less
+            technical uncertainty before manufacturing.
+          </p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="mailto:contact@arroyo-systems.com">Contact Us</a>
+            <a class="button button--ghost" href="#approach">Explore Approach</a>
+          </div>
         </div>
-        <img class="hero__image" src="assets/engineering/machined-component-hero.png" alt="Machined component render">
+        <div class="hero__visual" aria-hidden="true">
+          <img src="assets/engineering/machined-component-hero.png" alt="">
+        </div>
       </section>
 
-      <section class="slide slide--approach" id="approach" aria-labelledby="approach-title">
-        <div class="approach__copy">
-          <h2 id="approach-title">We do not design parts.</h2>
-          <h3>We decide which part makes sense to manufacture.</h3>
+      <section class="section split" id="approach">
+        <div class="section__text">
+          <p class="eyebrow">Manufacturing-Led Engineering</p>
+          <h2>We do not design parts. We decide which part makes sense to manufacture.</h2>
           <p>
-            The same function can be achieved through machining, sheet metal, welded
-            assemblies or different material selections.
+            The same function can be achieved through machining, sheet metal,
+            welded assemblies or different material selections.
           </p>
           <p>
-            The challenge is not creating geometry. It is choosing the right solution
-            before manufacturing.
+            The challenge is not creating geometry. It is choosing the right
+            solution before manufacturing.
           </p>
         </div>
-        <figure class="approach__figure">
-          <img src="assets/engineering/machining-accessibility.png" alt="Machining accessibility analysis">
+        <figure class="figure-card">
+          <img src="assets/engineering/machining-accessibility.png" alt="Machining accessibility analysis based on single fixturing setup.">
           <figcaption>Fig. 1 - Machining accessibility analysis based on single fixturing setup</figcaption>
         </figure>
       </section>
 
-      <section class="slide slide--problem" aria-labelledby="problem-title">
-        <figure class="problem__figure">
-          <img src="assets/engineering/von-mises-validation.png" alt="Early structural validation of a load-critical component">
-          <figcaption>Fig. 2 - Early structural validation of a load-critical component</figcaption>
-        </figure>
-        <div class="problem__copy">
-          <h2 id="problem-title">Cost overruns. Redesigns.<br>Delays. Unnecessarily complex manufacturing.</h2>
-          <p>Most problems appear once the design is already finished.</p>
-          <p>We aim to solve them earlier.</p>
-          <h3>Poor engineering decisions are expensive.</h3>
+      <section class="section impact">
+        <div class="impact__statement">
+          <p class="eyebrow">Earlier Decisions</p>
+          <h2>Cost overruns. Redesigns. Delays. Unnecessarily complex manufacturing.</h2>
         </div>
+        <div class="impact__grid">
+          <article>
+            <span>01</span>
+            <h3>Cost overruns</h3>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Redesigns</h3>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Delays</h3>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>Unnecessarily complex manufacturing</h3>
+          </article>
+        </div>
+        <p class="impact__note">
+          Most problems appear once the design is already finished. We aim to
+          solve them earlier. Poor engineering decisions are expensive.
+        </p>
       </section>
 
-      <section class="slide slide--tradeoffs" id="decisions" aria-labelledby="tradeoffs-title">
-        <div class="tradeoffs__copy">
-          <h2 id="tradeoffs-title">Every decision is a trade-off.</h2>
-          <p>Optimizing one variable often makes the others worse.</p>
-        </div>
-        <div class="tradeoffs__list" aria-label="Engineering trade-off variables">
-          <span>Mechanical Performance</span>
-          <span>Manufacturing Costs</span>
-          <span>Manufacturability</span>
-          <span>Weight</span>
-          <span>Technical Risk</span>
-        </div>
-        <figure class="tradeoffs__figure">
-          <img src="assets/engineering/safety-factor-validation.png" alt="Safety factor assessment for engineering trade-off decisions">
-          <figcaption>Fig. 3 - Safety factor assessment for engineering trade-off decisions</figcaption>
-        </figure>
-      </section>
-
-      <section class="slide slide--capabilities" id="capabilities" aria-labelledby="capabilities-title">
-        <div class="capabilities__copy">
-          <h2 id="capabilities-title">We do not sell engineering hours.</h2>
-          <ul>
-            <li>Material selection.</li>
-            <li>Design development.</li>
-            <li>Geometry optimization.</li>
-            <li>Structural validation.</li>
-            <li>Manufacturing documentation.</li>
-          </ul>
-          <h3>We reduce uncertainty before manufacturing.</h3>
-        </div>
-        <figure class="capabilities__figure">
-          <img src="assets/engineering/concept-development.png" alt="Concept development supported by engineering analysis">
-          <figcaption>Fig. 4 - Concept development supported by engineering analysis</figcaption>
-        </figure>
-      </section>
-
-      <section class="slide slide--outcome" aria-labelledby="outcome-title">
-        <div class="outcome__copy">
-          <h2 id="outcome-title">It is not about doing more engineering.</h2>
-          <h3>It is about making better decisions.</h3>
+      <section class="section decision-system" id="decisions">
+        <div class="section__text">
+          <p class="eyebrow">Engineering Trade-Offs</p>
+          <h2>Every decision is a trade-off.</h2>
           <p>
-            Arroyo Systems helps develop mechanical components under load with less
-            technical uncertainty before manufacturing.
+            Optimizing one variable often makes the others worse. We balance the
+            technical and manufacturing consequences before committing to a path.
           </p>
         </div>
-        <figure class="outcome__figure">
-          <img src="assets/engineering/manufacturing-study.png" alt="Design evolution driven by engineering analysis">
-          <figcaption>Fig. 5 - Design evolution driven by engineering analysis</figcaption>
+        <figure class="decision-figure">
+          <img src="assets/engineering/safety-factor-validation.png" alt="Safety factor assessment for engineering trade-off decisions.">
+          <figcaption>Fig. 3 - Safety factor assessment for engineering trade-off decisions</figcaption>
+        </figure>
+        <div class="tradeoff-map" aria-label="Engineering decision variables">
+          <div>Mechanical Performance</div>
+          <div>Manufacturing Costs</div>
+          <div>Manufacturability</div>
+          <div>Weight</div>
+          <div>Technical Risk</div>
+        </div>
+      </section>
+
+      <section class="section capabilities" id="capabilities">
+        <div class="capabilities__intro">
+          <p class="eyebrow">Capabilities</p>
+          <h2>We do not sell engineering hours.</h2>
+          <p>We reduce uncertainty before manufacturing.</p>
+        </div>
+        <div class="capability-list">
+          <article>
+            <h3>Material selection</h3>
+            <p>Compare practical material paths against performance, cost and manufacturing constraints.</p>
+          </article>
+          <article>
+            <h3>Design development</h3>
+            <p>Develop mechanical concepts around the manufacturing process from the beginning.</p>
+          </article>
+          <article>
+            <h3>Geometry optimization</h3>
+            <p>Refine geometry to improve function while reducing avoidable manufacturing complexity.</p>
+          </article>
+          <article>
+            <h3>Structural validation</h3>
+            <p>Validate components under load before manufacturing decisions become expensive to reverse.</p>
+          </article>
+          <article>
+            <h3>Manufacturing documentation</h3>
+            <p>Translate engineering decisions into clear documentation for production and suppliers.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section closing">
+        <div>
+          <p class="eyebrow">Outcome</p>
+          <h2>It is not about doing more engineering. It is about making better decisions.</h2>
+        </div>
+        <figure class="wide-figure">
+          <img src="assets/engineering/manufacturing-study.png" alt="Design evolution driven by engineering analysis.">
         </figure>
       </section>
 
-      <section class="slide contact" id="contact" aria-labelledby="contact-title">
-        <img class="contact__logo" src="assets/brand/logo-arroyo-systems.png" alt="Arroyo Systems">
-        <div class="contact__copy">
-          <h2 id="contact-title">Designed to Manufacture<br>Validated to Perform</h2>
-          <p>Engineering for Machined Components</p>
-          <a href="mailto:contact@arroyo-systems.com">Contact Us</a>
-        </div>
-        <div class="contact__details">
-          <a href="mailto:contact@arroyo-systems.com">contact@arroyo-systems.com</a>
-          <a href="https://www.linkedin.com/company/arroyo-systems-eng/" target="_blank" rel="noreferrer">LinkedIn</a>
-          <span>Madrid, Spain</span>
+      <section class="contact section" id="contact">
+        <div class="contact__panel">
+          <p class="eyebrow">Contact</p>
+          <h2>Engineering for machined components.</h2>
+          <p>
+            Designed to Manufacture. Validated to Perform.
+          </p>
+          <div class="contact__actions">
+            <a class="button button--primary" href="mailto:contact@arroyo-systems.com">Contact Us</a>
+            <a class="button button--ghost" href="https://www.linkedin.com/company/arroyo-systems-eng/" target="_blank" rel="noreferrer">LinkedIn</a>
+          </div>
+          <ul class="contact__details">
+            <li><a href="mailto:contact@arroyo-systems.com">contact@arroyo-systems.com</a></li>
+            <li>Madrid, Spain</li>
+          </ul>
         </div>
       </section>
     </main>
