@@ -109,12 +109,11 @@ a {
 }
 
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 0.94fr) minmax(320px, 1.06fr);
-  gap: clamp(36px, 6vw, 96px);
+  position: relative;
+  display: block;
   min-height: calc(100svh - 74px);
-  align-items: center;
   overflow: hidden;
+  background: #ffffff;
 }
 
 .hero__copy,
@@ -122,6 +121,15 @@ a {
 .capabilities__intro,
 .contact__panel {
   max-width: 760px;
+}
+
+.hero__copy {
+  position: absolute;
+  top: clamp(82px, 14vw, 190px);
+  right: clamp(42px, 7vw, 110px);
+  z-index: 2;
+  width: min(40vw, 620px);
+  text-align: right;
 }
 
 .eyebrow {
@@ -148,6 +156,12 @@ h1 {
   font-weight: 500;
 }
 
+.hero h1 {
+  margin-bottom: clamp(18px, 2.4vw, 34px);
+  font-size: clamp(2.2rem, 3.9vw, 4.7rem);
+  line-height: 1.06;
+}
+
 h2 {
   margin-bottom: 22px;
   font-size: clamp(2.15rem, 4.6vw, 5rem);
@@ -172,6 +186,20 @@ h3 {
   font-weight: 400;
 }
 
+.hero .lead {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 470px);
+  margin-bottom: 22px;
+  border: 1px solid var(--muted);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.84);
+  font-size: clamp(1.04rem, 1.3vw, 1.48rem);
+}
+
 .hero__actions,
 .contact__actions {
   display: flex;
@@ -180,21 +208,20 @@ h3 {
   margin-top: 32px;
 }
 
-.hero__visual {
-  position: relative;
-  align-self: stretch;
-  min-height: 520px;
+.hero__actions {
+  justify-content: flex-end;
 }
 
-.hero__visual img {
+.hero__watermark {
   position: absolute;
-  inset: 0 auto 0 0;
-  width: min(980px, 72vw);
-  height: 100%;
+  left: clamp(20px, 6vw, 90px);
+  right: auto;
+  bottom: clamp(-220px, -10vw, -90px);
+  width: min(80vw, 1320px);
+  max-width: none;
+  opacity: 0.28;
   object-fit: contain;
-  object-position: center;
-  border-radius: 0;
-  box-shadow: none;
+  pointer-events: none;
 }
 
 .split {
@@ -233,7 +260,7 @@ h3 {
 
 .figure-card figcaption {
   margin-top: 14px;
-  color: var(--muted);
+  color: var(--blue);
   font-size: 0.92rem;
   font-family: var(--body-font);
   font-weight: 400;
@@ -276,6 +303,8 @@ h3 {
   font-size: clamp(1.18rem, 1.45vw, 1.58rem);
   font-weight: 400;
   line-height: 1.28;
+  overflow-wrap: normal;
+  text-wrap: balance;
 }
 
 .approach-figure {
@@ -348,7 +377,7 @@ h3 {
 
 .problem-figure figcaption {
   margin-top: 12px;
-  color: var(--muted);
+  color: var(--blue);
   font-size: 0.92rem;
   font-family: var(--body-font);
   font-weight: 400;
@@ -362,14 +391,15 @@ h3 {
 
 .problem-copy h2 {
   margin-bottom: clamp(26px, 3vw, 44px);
+  max-width: 690px;
 }
 
 .problem-copy p {
   max-width: 520px;
   margin-bottom: 10px;
-  color: #050505;
   font-family: var(--body-font);
   font-weight: 400;
+  color: var(--muted);
 }
 
 .problem-copy h3 {
@@ -399,7 +429,7 @@ h3 {
 
 .tradeoffs-copy p {
   max-width: 430px;
-  color: #050505;
+  color: var(--muted);
   font-family: var(--body-font);
   font-weight: 400;
 }
@@ -415,7 +445,7 @@ h3 {
 .decision-figure figcaption,
 .wide-figure figcaption {
   margin-top: 12px;
-  color: var(--muted);
+  color: var(--blue);
   font-size: 0.92rem;
   font-family: var(--body-font);
   font-weight: 400;
@@ -496,7 +526,7 @@ h3 {
 
 .capabilities-figure figcaption {
   margin-top: 12px;
-  color: var(--muted);
+  color: var(--blue);
   font-size: 0.92rem;
   font-family: var(--body-font);
   font-weight: 400;
@@ -524,7 +554,7 @@ h3 {
 
 .outcome-copy p {
   max-width: 650px;
-  color: #050505;
+  color: var(--muted);
   font-family: var(--body-font);
   font-weight: 400;
 }
@@ -575,16 +605,27 @@ h3 {
   }
 
   .hero {
-    min-height: auto;
+    min-height: 720px;
+    padding: 70px 22px;
   }
 
-  .hero__visual {
-    min-height: 420px;
-  }
-
-  .hero__visual img {
+  .hero__copy {
+    position: relative;
+    top: auto;
+    right: auto;
     width: 100%;
-    border-radius: 22px;
+    text-align: left;
+  }
+
+  .hero__actions {
+    justify-content: flex-start;
+  }
+
+  .hero__watermark {
+    left: 0;
+    bottom: -80px;
+    width: 150vw;
+    opacity: 0.2;
   }
 
   .slide-like {
@@ -663,10 +704,6 @@ h3 {
 
   .section {
     padding: 56px 18px;
-  }
-
-  .hero__visual {
-    min-height: 300px;
   }
 
   .tradeoff-map {
