@@ -403,6 +403,7 @@ h3 {
 .problem-figure__legend {
   justify-self: start;
   max-width: min(13vw, 190px);
+  transform: translateY(8%);
 }
 
 .problem-figure__component {
@@ -434,7 +435,7 @@ h3 {
 .problem-statement {
   position: absolute;
   left: clamp(28px, 4.9vw, 76px);
-  bottom: clamp(28px, 4.8vw, 72px);
+  bottom: clamp(8px, 2vw, 32px);
   margin: 0;
   color: var(--blue);
 }
