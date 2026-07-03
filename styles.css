@@ -435,7 +435,7 @@ h3 {
 .problem-statement {
   position: absolute;
   left: clamp(28px, 4.9vw, 76px);
-  bottom: clamp(8px, 2vw, 32px);
+  bottom: clamp(2px, 1vw, 16px);
   margin: 0;
   color: var(--blue);
 }
