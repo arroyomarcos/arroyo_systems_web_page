@@ -128,7 +128,7 @@ a {
   top: clamp(78px, 12.5vw, 176px);
   right: clamp(66px, 8vw, 138px);
   z-index: 2;
-  width: min(35vw, 540px);
+  width: min(48vw, 760px);
   text-align: right;
 }
 
@@ -160,6 +160,11 @@ h1 {
   margin-bottom: clamp(18px, 2.4vw, 34px);
   font-size: clamp(2.1rem, 3.35vw, 4rem);
   line-height: 1.06;
+}
+
+.hero h1 span {
+  display: block;
+  white-space: nowrap;
 }
 
 h2 {
@@ -366,23 +371,26 @@ h3 {
 .problem-caption {
   position: absolute;
   top: clamp(34px, 4.8vw, 66px);
-  left: clamp(28px, 4.9vw, 76px);
+  left: clamp(18px, 4vw, 70px);
+  width: min(42vw, 660px);
   margin: 0;
   color: var(--blue);
   font-family: var(--body-font);
-  font-size: clamp(0.92rem, 1.03vw, 1.12rem);
+  font-size: clamp(0.96rem, 1.04vw, 1.13rem);
   font-weight: 400;
-  line-height: 1.2;
+  line-height: 1.22;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .problem-figure {
   position: absolute;
   top: clamp(86px, 9.2vw, 140px);
   left: clamp(28px, 4.1vw, 66px);
-  width: min(54vw, 860px);
+  width: min(56vw, 900px);
   margin: 0;
   display: grid;
-  grid-template-columns: minmax(72px, 0.18fr) 1fr;
+  grid-template-columns: minmax(92px, 0.22fr) 1fr;
   align-items: center;
   column-gap: clamp(18px, 2.2vw, 36px);
 }
@@ -394,7 +402,7 @@ h3 {
 
 .problem-figure__legend {
   justify-self: start;
-  max-width: min(10.8vw, 155px);
+  max-width: min(13vw, 190px);
 }
 
 .problem-figure__component {
