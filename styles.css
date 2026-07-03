@@ -125,10 +125,10 @@ a {
 
 .hero__copy {
   position: absolute;
-  top: clamp(82px, 14vw, 190px);
-  right: clamp(42px, 7vw, 110px);
+  top: clamp(76px, 12vw, 168px);
+  right: clamp(58px, 7.8vw, 128px);
   z-index: 2;
-  width: min(40vw, 620px);
+  width: min(37vw, 575px);
   text-align: right;
 }
 
@@ -158,7 +158,7 @@ h1 {
 
 .hero h1 {
   margin-bottom: clamp(18px, 2.4vw, 34px);
-  font-size: clamp(2.2rem, 3.9vw, 4.7rem);
+  font-size: clamp(2.15rem, 3.65vw, 4.35rem);
   line-height: 1.06;
 }
 
@@ -214,12 +214,12 @@ h3 {
 
 .hero__watermark {
   position: absolute;
-  left: clamp(20px, 6vw, 90px);
+  left: clamp(-28px, 2vw, 48px);
   right: auto;
-  bottom: clamp(-220px, -10vw, -90px);
-  width: min(80vw, 1320px);
+  bottom: clamp(-175px, -8vw, -74px);
+  width: min(72vw, 1160px);
   max-width: none;
-  opacity: 0.28;
+  opacity: 0.22;
   object-fit: contain;
   pointer-events: none;
 }
@@ -276,16 +276,16 @@ h3 {
   top: clamp(54px, 8.2vw, 130px);
   left: clamp(46px, 10vw, 165px);
   z-index: 2;
-  width: min(71vw, 1040px);
+  width: min(58vw, 980px);
   max-width: none;
   padding: 0;
 }
 
 .approach-copy h2 {
-  max-width: none;
+  max-width: 980px;
   margin-bottom: clamp(24px, 3.1vw, 50px);
   color: var(--blue);
-  font-size: clamp(2rem, 2.75vw, 3.08rem);
+  font-size: clamp(1.95rem, 2.55vw, 2.9rem);
   font-weight: 500;
   line-height: 1.18;
 }
@@ -309,9 +309,9 @@ h3 {
 
 .approach-figure {
   position: absolute;
-  right: clamp(40px, 8.4vw, 138px);
-  bottom: clamp(44px, 8.8vw, 140px);
-  width: min(46vw, 690px);
+  right: clamp(52px, 8vw, 130px);
+  bottom: clamp(32px, 6.4vw, 96px);
+  width: min(42vw, 640px);
   margin: 0;
 }
 
@@ -342,9 +342,9 @@ h3 {
 
 .approach-figure figcaption {
   position: absolute;
-  right: 54%;
-  bottom: -3.2vw;
-  width: min(28vw, 390px);
+  right: 50%;
+  bottom: -2.35vw;
+  width: min(27vw, 380px);
   color: var(--blue);
   font-family: var(--body-font);
   font-size: clamp(0.95rem, 1.05vw, 1.16rem);
@@ -359,20 +359,27 @@ h3 {
 
 .slide-like--problem {
   display: grid;
-  grid-template-columns: minmax(420px, 1.03fr) minmax(360px, 0.97fr);
-  gap: clamp(38px, 6vw, 90px);
-  align-items: center;
-  padding: clamp(58px, 6vw, 96px) clamp(52px, 6vw, 96px);
+  grid-template-columns: minmax(420px, 1fr) minmax(430px, 0.9fr);
+  gap: clamp(44px, 7vw, 112px);
+  align-items: start;
+  padding: clamp(58px, 5.8vw, 90px) clamp(52px, 6vw, 96px);
 }
 
 .problem-figure {
   align-self: start;
   margin: 0;
-  padding-top: 1vw;
+  padding-top: 0;
 }
 
-.problem-figure img {
-  width: min(100%, 900px);
+.problem-figure__crop {
+  width: min(100%, 800px);
+  overflow: hidden;
+}
+
+.problem-figure__crop img {
+  width: 118%;
+  max-width: none;
+  transform: translateX(-2%);
 }
 
 .problem-figure figcaption {
@@ -384,14 +391,16 @@ h3 {
 }
 
 .problem-copy {
-  max-width: 670px;
+  max-width: 650px;
   justify-self: end;
-  padding-top: 5vw;
+  padding-top: 0.8vw;
 }
 
 .problem-copy h2 {
-  margin-bottom: clamp(26px, 3vw, 44px);
-  max-width: 690px;
+  max-width: 640px;
+  margin-bottom: clamp(26px, 3vw, 42px);
+  font-size: clamp(2.15rem, 3.65vw, 4rem);
+  line-height: 1.1;
 }
 
 .problem-copy p {
@@ -403,9 +412,9 @@ h3 {
 }
 
 .problem-copy h3 {
-  margin-top: clamp(38px, 4vw, 60px);
+  margin-top: clamp(48px, 5vw, 74px);
   color: var(--blue);
-  font-size: clamp(1.8rem, 2.8vw, 3.25rem);
+  font-size: clamp(1.85rem, 2.7vw, 3.15rem);
   font-weight: 500;
 }
 
@@ -413,7 +422,7 @@ h3 {
   position: relative;
   display: block;
   min-height: calc(100svh - 74px);
-  padding: clamp(60px, 6vw, 96px) clamp(52px, 6.4vw, 104px);
+  padding: clamp(78px, 7vw, 120px) clamp(52px, 6.4vw, 104px);
 }
 
 .decision-system .eyebrow,
@@ -424,7 +433,13 @@ h3 {
 .tradeoffs-copy {
   position: relative;
   z-index: 2;
-  max-width: 560px;
+  max-width: 610px;
+}
+
+.tradeoffs-copy h2 {
+  max-width: 520px;
+  font-size: clamp(2.7rem, 4.9vw, 6.2rem);
+  line-height: 1.03;
 }
 
 .tradeoffs-copy p {
@@ -437,8 +452,8 @@ h3 {
 .decision-figure {
   position: absolute;
   right: 4.6vw;
-  bottom: 5.5vw;
-  width: min(58vw, 920px);
+  bottom: 4.6vw;
+  width: min(55vw, 890px);
   margin: 0;
 }
 
@@ -453,8 +468,8 @@ h3 {
 
 .tradeoff-map {
   position: absolute;
-  top: 31%;
-  left: 43%;
+  top: 25%;
+  left: 43.5%;
   z-index: 3;
   display: grid;
   gap: 12px;
@@ -545,11 +560,14 @@ h3 {
 }
 
 .outcome-copy {
-  max-width: 720px;
+  max-width: 690px;
 }
 
 .outcome-copy h2 {
-  margin-bottom: clamp(28px, 3vw, 42px);
+  max-width: 680px;
+  margin-bottom: clamp(34px, 3.6vw, 54px);
+  font-size: clamp(2.4rem, 4.35vw, 5.5rem);
+  line-height: 1.08;
 }
 
 .outcome-copy p {
