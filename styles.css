@@ -455,7 +455,7 @@ h3 {
 .tradeoffs-copy {
   position: absolute;
   top: clamp(74px, 10vw, 128px);
-  left: clamp(34px, 6.2vw, 92px);
+  left: clamp(68px, 10vw, 150px);
   z-index: 2;
   max-width: min(38vw, 520px);
 }
@@ -479,10 +479,28 @@ h3 {
 
 .decision-figure {
   position: absolute;
-  right: clamp(44px, 7.2vw, 116px);
+  right: clamp(40px, 6.3vw, 104px);
   top: clamp(116px, 15vw, 190px);
-  width: min(54vw, 820px);
+  width: min(54vw, 840px);
   margin: 0;
+}
+
+.decision-visual {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(92px, 0.24fr);
+  align-items: center;
+  column-gap: clamp(14px, 1.7vw, 28px);
+}
+
+.decision-visual__component,
+.decision-visual__legend {
+  width: 100%;
+  max-width: none;
+}
+
+.decision-visual__legend {
+  justify-self: end;
+  max-width: min(12vw, 168px);
 }
 
 .decision-figure figcaption,
