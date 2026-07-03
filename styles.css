@@ -335,11 +335,21 @@ h3 {
   align-self: end;
 }
 
+.accessibility-views__front {
+  order: 4;
+}
+
+.accessibility-views__side {
+  order: 2;
+}
+
 .accessibility-views__top {
+  order: 3;
   transform: translateX(-3%);
 }
 
 .accessibility-views__iso {
+  order: 1;
   transform: translateY(2%);
 }
 
