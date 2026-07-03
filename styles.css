@@ -195,12 +195,25 @@ h3 {
   background: var(--panel);
 }
 
+.slide-like {
+  min-height: calc(100svh - 74px);
+  overflow: hidden;
+}
+
+.slide-like h2 {
+  font-size: clamp(2rem, 4vw, 4.35rem);
+  font-weight: 500;
+  line-height: 1.04;
+}
+
 .figure-card {
   margin: 0;
 }
 
 .figure-card img,
+.problem-figure img,
 .decision-figure img,
+.capabilities-figure img,
 .wide-figure img {
   width: 100%;
   border: 0;
@@ -213,50 +226,92 @@ h3 {
   font-size: 0.92rem;
 }
 
+.slide-like--approach {
+  grid-template-columns: minmax(360px, 0.92fr) minmax(420px, 1.08fr);
+  padding: clamp(70px, 6.8vw, 110px) clamp(54px, 7vw, 112px) clamp(52px, 5.4vw, 86px);
+}
+
+.approach-copy {
+  align-self: start;
+  padding-top: 1.6vw;
+}
+
+.approach-copy h2 {
+  max-width: 780px;
+  margin-bottom: clamp(34px, 4vw, 58px);
+}
+
+.approach-copy p {
+  max-width: 590px;
+  margin-bottom: 20px;
+  color: #050505;
+}
+
+.approach-figure {
+  align-self: end;
+}
+
+.approach-figure img {
+  width: min(100%, 760px);
+  margin-left: auto;
+}
+
 .impact {
   background: var(--panel);
 }
 
-.impact__statement {
-  max-width: 820px;
-}
-
-.impact__grid {
+.slide-like--problem {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  margin-top: clamp(32px, 5vw, 70px);
-  background: var(--line);
-  border: 1px solid var(--line);
+  grid-template-columns: minmax(420px, 1.03fr) minmax(360px, 0.97fr);
+  gap: clamp(38px, 6vw, 90px);
+  align-items: center;
+  padding: clamp(58px, 6vw, 96px) clamp(52px, 6vw, 96px);
 }
 
-.impact__grid article {
-  min-height: 220px;
-  padding: clamp(22px, 3vw, 36px);
-  background: #ffffff;
+.problem-figure {
+  align-self: start;
+  margin: 0;
+  padding-top: 1vw;
 }
 
-.impact__grid span {
-  display: block;
-  margin-bottom: 60px;
+.problem-figure img {
+  width: min(100%, 900px);
+}
+
+.problem-figure figcaption {
+  margin-top: 12px;
   color: var(--muted);
-  font-weight: 800;
+  font-size: 0.92rem;
 }
 
-.impact__note {
-  max-width: 760px;
-  margin: 30px 0 0 auto;
-  color: var(--muted);
-  font-size: clamp(1.1rem, 2vw, 1.7rem);
+.problem-copy {
+  max-width: 670px;
+  justify-self: end;
+  padding-top: 5vw;
+}
+
+.problem-copy h2 {
+  margin-bottom: clamp(26px, 3vw, 44px);
+}
+
+.problem-copy p {
+  max-width: 520px;
+  margin-bottom: 10px;
+  color: #050505;
+}
+
+.problem-copy h3 {
+  margin-top: clamp(38px, 4vw, 60px);
+  color: var(--blue);
+  font-size: clamp(1.8rem, 2.8vw, 3.25rem);
+  font-weight: 500;
 }
 
 .decision-system {
-  display: grid;
-  grid-template-columns: minmax(0, 0.72fr) minmax(280px, 0.92fr) minmax(280px, 0.76fr);
-  gap: clamp(36px, 6vw, 90px);
-  align-items: center;
-  background: #ffffff;
-  color: var(--blue);
+  position: relative;
+  display: block;
+  min-height: calc(100svh - 74px);
+  padding: clamp(60px, 6vw, 96px) clamp(52px, 6.4vw, 104px);
 }
 
 .decision-system .eyebrow,
@@ -264,7 +319,22 @@ h3 {
   color: var(--muted);
 }
 
+.tradeoffs-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 560px;
+}
+
+.tradeoffs-copy p {
+  max-width: 430px;
+  color: #050505;
+}
+
 .decision-figure {
+  position: absolute;
+  right: 4.6vw;
+  bottom: 5.5vw;
+  width: min(58vw, 920px);
   margin: 0;
 }
 
@@ -276,49 +346,79 @@ h3 {
 }
 
 .tradeoff-map {
+  position: absolute;
+  top: 31%;
+  left: 43%;
+  z-index: 3;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .tradeoff-map div {
-  display: flex;
-  min-height: 132px;
-  align-items: end;
-  padding: 22px;
-  border: 1px solid var(--line);
-  background: #ffffff;
+  display: block;
+  min-height: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--blue);
-  font-size: clamp(1.1rem, 2vw, 1.55rem);
+  font-size: clamp(1.1rem, 1.6vw, 1.9rem);
   font-weight: 500;
 }
 
 .tradeoff-map div:first-child {
-  grid-column: 1 / -1;
+  grid-column: auto;
 }
 
 .capabilities {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.78fr) minmax(420px, 1.22fr);
+  gap: clamp(38px, 5vw, 84px);
+  align-items: center;
+  padding: clamp(64px, 6.5vw, 104px) clamp(52px, 6vw, 96px);
   background: var(--panel);
 }
 
+.capabilities-copy {
+  max-width: 680px;
+}
+
+.capabilities-copy h2 {
+  margin-bottom: clamp(28px, 4vw, 56px);
+}
+
 .capability-list {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(190px, 1fr));
-  gap: 1px;
-  margin-top: clamp(36px, 5vw, 74px);
-  background: var(--line);
-  border: 1px solid var(--line);
-  overflow-x: auto;
+  display: block;
+  padding: 0;
+  margin: 0 0 clamp(34px, 4vw, 58px);
+  list-style: none;
 }
 
-.capability-list article {
-  min-height: 300px;
-  padding: clamp(22px, 3vw, 34px);
-  background: #ffffff;
+.capability-list li {
+  margin-bottom: 10px;
+  color: var(--blue);
+  font-size: clamp(1.5rem, 2.35vw, 2.72rem);
+  font-weight: 500;
 }
 
-.capability-list p {
-  color: var(--ink-soft);
+.capabilities-copy p {
+  max-width: 620px;
+  color: var(--muted);
+  font-size: clamp(1.6rem, 2.45vw, 2.9rem);
+  line-height: 1.12;
+}
+
+.capabilities-figure {
+  margin: 0;
+}
+
+.capabilities-figure img {
+  width: 100%;
+}
+
+.capabilities-figure figcaption {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.92rem;
 }
 
 .closing {
@@ -326,6 +426,24 @@ h3 {
   grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
   gap: clamp(36px, 6vw, 90px);
   align-items: center;
+}
+
+.slide-like--outcome {
+  grid-template-columns: minmax(360px, 0.9fr) minmax(420px, 1.1fr);
+  padding: clamp(70px, 7vw, 112px) clamp(52px, 7vw, 112px);
+}
+
+.outcome-copy {
+  max-width: 720px;
+}
+
+.outcome-copy h2 {
+  margin-bottom: clamp(28px, 3vw, 42px);
+}
+
+.outcome-copy p {
+  max-width: 650px;
+  color: #050505;
 }
 
 .wide-figure {
@@ -368,6 +486,7 @@ h3 {
   .hero,
   .split,
   .decision-system,
+  .capabilities,
   .closing {
     grid-template-columns: 1fr;
   }
@@ -385,8 +504,32 @@ h3 {
     border-radius: 22px;
   }
 
-  .impact__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .slide-like {
+    min-height: auto;
+  }
+
+  .slide-like--approach,
+  .slide-like--problem,
+  .slide-like--capabilities,
+  .slide-like--outcome {
+    padding: 70px 22px;
+  }
+
+  .problem-copy {
+    justify-self: start;
+    padding-top: 0;
+  }
+
+  .decision-system {
+    display: grid;
+    gap: 32px;
+    padding: 70px 22px;
+  }
+
+  .decision-figure,
+  .tradeoff-map {
+    position: static;
+    width: 100%;
   }
 }
 
@@ -418,16 +561,7 @@ h3 {
     min-height: 300px;
   }
 
-  .impact__grid,
   .tradeoff-map {
     grid-template-columns: 1fr;
-  }
-
-  .impact__grid article {
-    min-height: 170px;
-  }
-
-  .impact__grid span {
-    margin-bottom: 34px;
   }
 }
