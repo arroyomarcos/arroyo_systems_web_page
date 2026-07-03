@@ -403,7 +403,7 @@ h3 {
 .problem-figure__legend {
   justify-self: start;
   max-width: min(13vw, 190px);
-  transform: translateY(8%);
+  transform: translateY(-6%);
 }
 
 .problem-figure__component {
@@ -413,7 +413,7 @@ h3 {
 
 .problem-copy {
   position: absolute;
-  top: clamp(118px, 13.1vw, 202px);
+  top: clamp(86px, 10.8vw, 166px);
   right: clamp(36px, 7.9vw, 132px);
   width: min(30vw, 430px);
   text-align: center;
@@ -435,7 +435,7 @@ h3 {
 .problem-statement {
   position: absolute;
   left: clamp(28px, 4.9vw, 76px);
-  bottom: clamp(-10px, 0.2vw, 4px);
+  bottom: clamp(-28px, -1vw, -10px);
   margin: 0;
   color: var(--blue);
 }
