@@ -688,7 +688,7 @@ h3 {
 
 .wide-figure {
   position: absolute;
-  top: clamp(54px, 7.4vw, 96px);
+  top: clamp(22px, 4.4vw, 62px);
   right: clamp(72px, 9vw, 138px);
   display: grid;
   gap: clamp(0px, 0.3vw, 6px);
