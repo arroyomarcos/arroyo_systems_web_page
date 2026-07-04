@@ -739,12 +739,13 @@ h3 {
 }
 
 .product-lines__intro h2 {
-  width: min(58vw, 800px);
+  width: min(70vw, 980px);
   margin: 0;
   color: var(--blue);
   font-size: clamp(1.95rem, 2.55vw, 3rem);
   font-weight: 400;
   line-height: 1.12;
+  white-space: nowrap;
 }
 
 .product-lines__intro p:not(.eyebrow) {
@@ -762,7 +763,7 @@ h3 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(26px, 3.4vw, 56px);
-  margin-top: clamp(46px, 6vw, 86px);
+  margin-top: clamp(54px, 7vw, 104px);
 }
 
 .product-line {
@@ -1018,6 +1019,10 @@ h3 {
   .product-lines__intro p:not(.eyebrow) {
     width: 100%;
     max-width: 100%;
+  }
+
+  .product-lines__intro h2 {
+    white-space: normal;
   }
 
   .product-lines__grid {
