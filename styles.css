@@ -702,7 +702,8 @@ h3 {
 
 .wide-figure__white {
   justify-self: center;
-  width: 84%;
+  width: 72%;
+  margin-top: clamp(-20px, -1.8vw, -8px);
   opacity: 0.56;
 }
 
