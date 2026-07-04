@@ -110,6 +110,10 @@ a {
   padding: clamp(64px, 9vw, 128px) clamp(20px, 5vw, 84px);
 }
 
+#products {
+  scroll-margin-top: clamp(8px, 1.2vw, 22px);
+}
+
 .hero {
   position: relative;
   display: block;
