@@ -700,9 +700,9 @@ h3 {
   width: 100%;
 }
 
-.wide-figure__white {
+.wide-figure .wide-figure__white {
   justify-self: center;
-  width: 72%;
+  width: 58%;
   margin-top: clamp(-20px, -1.8vw, -8px);
   opacity: 0.56;
 }
