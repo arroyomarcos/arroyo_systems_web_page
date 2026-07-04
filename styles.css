@@ -385,14 +385,14 @@ h3 {
 
 .problem-figure {
   position: absolute;
-  top: clamp(126px, 13.4vw, 204px);
+  top: clamp(92px, 10.4vw, 158px);
   left: clamp(28px, 4.1vw, 66px);
   width: min(50vw, 800px);
   margin: 0;
   display: grid;
   grid-template-columns: minmax(92px, 0.22fr) 1fr;
   align-items: center;
-  column-gap: clamp(34px, 4vw, 68px);
+  column-gap: clamp(18px, 2.2vw, 36px);
 }
 
 .problem-figure img {
