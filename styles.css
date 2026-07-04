@@ -516,7 +516,7 @@ h3 {
   line-height: 1.2;
 }
 
-.decision-caption {
+.decision-system .decision-caption {
   position: absolute;
   left: clamp(18px, 4vw, 70px);
   bottom: clamp(-24px, 0.5vw, 8px);
