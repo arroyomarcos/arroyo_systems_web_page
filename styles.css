@@ -688,20 +688,21 @@ h3 {
 
 .wide-figure {
   position: absolute;
-  top: clamp(78px, 9.6vw, 126px);
+  top: clamp(54px, 7.4vw, 96px);
   right: clamp(72px, 9vw, 138px);
   display: grid;
-  gap: clamp(4px, 0.8vw, 14px);
+  gap: clamp(0px, 0.3vw, 6px);
   width: min(35vw, 520px);
   margin: 0;
 }
 
-.wide-figure__study,
-.wide-figure__white {
+.wide-figure__study {
   width: 100%;
 }
 
 .wide-figure__white {
+  justify-self: center;
+  width: 84%;
   opacity: 0.56;
 }
 
