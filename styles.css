@@ -559,47 +559,68 @@ h3 {
 }
 
 .capabilities {
-  display: grid;
-  grid-template-columns: minmax(360px, 0.84fr) minmax(420px, 1.16fr);
-  gap: clamp(44px, 5.5vw, 92px);
-  align-items: center;
-  padding: clamp(74px, 7vw, 114px) clamp(52px, 6.4vw, 104px);
+  position: relative;
+  display: block;
+  min-height: calc(100svh - 74px);
+  padding: 0;
   background: var(--panel);
 }
 
 .capabilities-copy {
-  max-width: 680px;
+  max-width: none;
 }
 
 .capabilities-copy h2 {
-  margin-bottom: clamp(28px, 4vw, 56px);
+  position: absolute;
+  top: clamp(62px, 8.6vw, 110px);
+  left: clamp(34px, 6.2vw, 92px);
+  width: min(54vw, 780px);
+  margin: 0;
+  font-size: clamp(1.7rem, 2.1vw, 2.35rem);
+  line-height: 1.14;
+  white-space: nowrap;
 }
 
 .capability-list {
+  position: absolute;
+  top: clamp(205px, 23vw, 300px);
+  right: clamp(92px, 12vw, 188px);
   display: block;
+  width: min(28vw, 360px);
   padding: 0;
-  margin: 0 0 clamp(34px, 4vw, 58px);
+  margin: 0;
   list-style: none;
+  text-align: center;
 }
 
 .capability-list li {
-  margin-bottom: 10px;
-  color: var(--blue);
-  font-size: clamp(1.55rem, 2.2vw, 2.55rem);
-  font-family: "Bricolage Grotesque", Arial, Helvetica, sans-serif;
-  font-weight: 500;
+  margin-bottom: clamp(3px, 0.5vw, 7px);
+  color: var(--muted);
+  font-family: var(--body-font);
+  font-size: clamp(1rem, 1.28vw, 1.36rem);
+  font-weight: 400;
+  line-height: 1.16;
 }
 
 .capabilities-copy p {
-  max-width: 620px;
-  color: var(--muted);
-  font-size: clamp(1.45rem, 2.15vw, 2.55rem);
-  font-family: var(--body-font);
-  font-weight: 400;
-  line-height: 1.12;
+  position: absolute;
+  left: clamp(34px, 6.2vw, 92px);
+  bottom: clamp(48px, 7.2vw, 104px);
+  max-width: min(68vw, 900px);
+  margin: 0;
+  color: var(--blue);
+  font-family: "Bricolage Grotesque", Arial, Helvetica, sans-serif;
+  font-size: clamp(1.7rem, 2.1vw, 2.35rem);
+  font-weight: 500;
+  line-height: 1.14;
+  white-space: nowrap;
 }
 
 .capabilities-figure {
+  position: absolute;
+  top: clamp(132px, 17vw, 210px);
+  left: clamp(34px, 6.2vw, 92px);
+  width: min(46vw, 720px);
   margin: 0;
 }
 
@@ -607,12 +628,18 @@ h3 {
   width: 100%;
 }
 
-.capabilities-figure figcaption {
-  margin-top: 12px;
+.capabilities-caption {
+  position: absolute;
+  top: clamp(335px, 36vw, 450px);
+  right: clamp(92px, 12vw, 188px);
+  width: min(28vw, 360px);
+  margin: 0;
   color: var(--blue);
-  font-size: 0.92rem;
   font-family: var(--body-font);
+  font-size: clamp(0.96rem, 1.04vw, 1.13rem);
   font-weight: 400;
+  line-height: 1.22;
+  text-align: center;
 }
 
 .closing {
@@ -793,6 +820,32 @@ h3 {
     position: static;
     width: 100%;
     max-width: 100%;
+  }
+
+  .capabilities {
+    display: grid;
+    gap: 32px;
+    padding: 70px 22px;
+  }
+
+  .capabilities-copy h2,
+  .capability-list,
+  .capabilities-copy p,
+  .capabilities-figure,
+  .capabilities-caption {
+    position: static;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .capabilities-copy h2,
+  .capabilities-copy p {
+    white-space: normal;
+  }
+
+  .capability-list,
+  .capabilities-caption {
+    text-align: left;
   }
 }
 
