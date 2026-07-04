@@ -11,6 +11,7 @@
   --cyan: #7edcf1;
   --shadow: 0 18px 60px rgba(23, 39, 95, 0.08);
   --body-font: Aileron, Arial, Helvetica, sans-serif;
+  --header-offset: clamp(92px, 7vw, 132px);
 }
 
 * {
@@ -19,6 +20,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: var(--header-offset);
 }
 
 body {
@@ -106,6 +108,14 @@ a {
 
 .section {
   padding: clamp(64px, 9vw, 128px) clamp(20px, 5vw, 84px);
+}
+
+#approach,
+#decisions,
+#capabilities,
+#products,
+#contact {
+  scroll-margin-top: var(--header-offset);
 }
 
 .hero {
