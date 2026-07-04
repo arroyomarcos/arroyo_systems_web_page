@@ -392,7 +392,7 @@ h3 {
   display: grid;
   grid-template-columns: minmax(92px, 0.22fr) 1fr;
   align-items: center;
-  column-gap: clamp(18px, 2.2vw, 36px);
+  column-gap: clamp(34px, 4vw, 68px);
 }
 
 .problem-figure img {
