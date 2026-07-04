@@ -722,6 +722,85 @@ h3 {
   white-space: nowrap;
 }
 
+.product-lines {
+  position: relative;
+  display: block;
+  min-height: calc(100svh - 74px);
+  padding: clamp(58px, 7vw, 98px) clamp(46px, 6.4vw, 104px);
+  background: #ffffff;
+}
+
+.product-lines__intro {
+  max-width: min(64vw, 880px);
+}
+
+.product-lines__intro .eyebrow {
+  margin-bottom: clamp(18px, 2vw, 28px);
+}
+
+.product-lines__intro h2 {
+  width: min(58vw, 800px);
+  margin: 0;
+  color: var(--blue);
+  font-size: clamp(1.95rem, 2.55vw, 3rem);
+  font-weight: 400;
+  line-height: 1.12;
+}
+
+.product-lines__intro p:not(.eyebrow) {
+  width: min(40vw, 540px);
+  margin: clamp(22px, 2.8vw, 38px) 0 0;
+  color: var(--muted);
+  font-family: var(--body-font);
+  font-size: clamp(1rem, 1.2vw, 1.28rem);
+  font-weight: 400;
+  line-height: 1.25;
+  text-align: justify;
+}
+
+.product-lines__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(26px, 3.4vw, 56px);
+  margin-top: clamp(46px, 6vw, 86px);
+}
+
+.product-line {
+  border-top: 1px solid rgba(19, 34, 91, 0.28);
+  padding-top: clamp(18px, 2vw, 26px);
+}
+
+.product-line h3 {
+  min-height: 2.3em;
+  margin: 0;
+  color: var(--blue);
+  font-size: clamp(1.22rem, 1.55vw, 1.78rem);
+  font-weight: 400;
+  line-height: 1.16;
+}
+
+.product-line p {
+  min-height: 4.7em;
+  margin: clamp(16px, 1.8vw, 24px) 0 0;
+  color: var(--muted);
+  font-family: var(--body-font);
+  font-size: clamp(0.95rem, 1.08vw, 1.16rem);
+  font-weight: 400;
+  line-height: 1.26;
+}
+
+.product-line ul {
+  display: grid;
+  gap: clamp(8px, 1vw, 13px);
+  padding: 0;
+  margin: clamp(22px, 2.5vw, 34px) 0 0;
+  color: var(--blue);
+  font-size: clamp(1.05rem, 1.25vw, 1.35rem);
+  font-weight: 400;
+  line-height: 1.2;
+  list-style: none;
+}
+
 .contact {
   background: #ffffff;
 }
@@ -804,7 +883,8 @@ h3 {
   .slide-like--approach,
   .slide-like--problem,
   .slide-like--capabilities,
-  .slide-like--outcome {
+  .slide-like--outcome,
+  .slide-like--products {
     padding: 70px 22px;
   }
 
@@ -927,6 +1007,28 @@ h3 {
 
   .outcome-copy h2 span {
     white-space: normal;
+  }
+
+  .product-lines {
+    min-height: auto;
+  }
+
+  .product-lines__intro,
+  .product-lines__intro h2,
+  .product-lines__intro p:not(.eyebrow) {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .product-lines__grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin-top: 42px;
+  }
+
+  .product-line h3,
+  .product-line p {
+    min-height: 0;
   }
 
   .contact__panel h2 span {
