@@ -518,15 +518,16 @@ h3 {
 
 .decision-caption {
   position: absolute;
-  left: clamp(48px, 6.4vw, 92px);
-  bottom: clamp(26px, 5.6vw, 82px);
-  width: min(48vw, 720px);
+  left: clamp(18px, 4vw, 70px);
+  bottom: clamp(-24px, 0.5vw, 8px);
+  width: min(42vw, 660px);
   margin: 0;
-  color: #17275f;
+  color: var(--blue);
   font-family: var(--body-font);
   font-size: clamp(0.96rem, 1.04vw, 1.13rem);
   font-weight: 400;
   line-height: 1.22;
+  text-align: center;
   white-space: nowrap;
 }
 
