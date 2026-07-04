@@ -585,7 +585,8 @@ h3 {
   position: absolute;
   top: clamp(205px, 23vw, 300px);
   right: clamp(92px, 12vw, 188px);
-  display: block;
+  display: grid;
+  gap: clamp(6px, 0.7vw, 11px);
   width: min(28vw, 360px);
   padding: 0;
   margin: 0;
@@ -594,12 +595,12 @@ h3 {
 }
 
 .capability-list li {
-  margin-bottom: clamp(3px, 0.5vw, 7px);
+  margin-bottom: 0;
   color: var(--muted);
   font-family: var(--body-font);
-  font-size: clamp(1rem, 1.28vw, 1.36rem);
+  font-size: clamp(1rem, 1.32vw, 1.42rem);
   font-weight: 400;
-  line-height: 1.16;
+  line-height: 1.22;
 }
 
 .capabilities-copy p {
@@ -630,7 +631,7 @@ h3 {
 
 .capabilities-caption {
   position: absolute;
-  top: clamp(370px, 39vw, 500px);
+  top: clamp(405px, 43vw, 548px);
   right: clamp(42px, 8vw, 126px);
   width: min(42vw, 620px);
   margin: 0;
