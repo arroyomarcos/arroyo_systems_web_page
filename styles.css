@@ -385,7 +385,7 @@ h3 {
 
 .problem-figure {
   position: absolute;
-  top: clamp(86px, 9.2vw, 140px);
+  top: clamp(118px, 12.4vw, 188px);
   left: clamp(28px, 4.1vw, 66px);
   width: min(45vw, 720px);
   margin: 0;
@@ -420,7 +420,7 @@ h3 {
 }
 
 .problem-copy p {
-  margin: 0 0 clamp(46px, 6vw, 94px);
+  margin: 0 0 clamp(30px, 4.2vw, 64px);
   font-family: var(--body-font);
   font-size: clamp(1.02rem, 1.38vw, 1.55rem);
   font-weight: 400;
