@@ -519,7 +519,7 @@ h3 {
 .decision-system .decision-caption {
   position: absolute;
   left: clamp(18px, 4vw, 70px);
-  bottom: clamp(-24px, 0.5vw, 8px);
+  bottom: clamp(-52px, -1.8vw, -24px);
   width: min(42vw, 660px);
   margin: 0;
   color: var(--blue);
@@ -630,9 +630,9 @@ h3 {
 
 .capabilities-caption {
   position: absolute;
-  top: clamp(335px, 36vw, 450px);
-  right: clamp(92px, 12vw, 188px);
-  width: min(28vw, 360px);
+  top: clamp(370px, 39vw, 500px);
+  right: clamp(42px, 8vw, 126px);
+  width: min(42vw, 620px);
   margin: 0;
   color: var(--blue);
   font-family: var(--body-font);
@@ -640,6 +640,7 @@ h3 {
   font-weight: 400;
   line-height: 1.22;
   text-align: center;
+  white-space: nowrap;
 }
 
 .closing {
