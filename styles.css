@@ -387,7 +387,7 @@ h3 {
   position: absolute;
   top: clamp(86px, 9.2vw, 140px);
   left: clamp(28px, 4.1vw, 66px);
-  width: min(50vw, 800px);
+  width: min(45vw, 720px);
   margin: 0;
   display: grid;
   grid-template-columns: minmax(92px, 0.22fr) 1fr;
