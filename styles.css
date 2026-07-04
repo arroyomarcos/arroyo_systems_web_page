@@ -731,6 +731,16 @@ h3 {
   text-align: center;
 }
 
+.contact__panel h2 {
+  font-size: clamp(2.1rem, 3.35vw, 4rem);
+  line-height: 1.06;
+}
+
+.contact__panel h2 span {
+  display: block;
+  white-space: nowrap;
+}
+
 .contact__actions {
   justify-content: center;
 }
@@ -916,6 +926,10 @@ h3 {
   }
 
   .outcome-copy h2 span {
+    white-space: normal;
+  }
+
+  .contact__panel h2 span {
     white-space: normal;
   }
 }
