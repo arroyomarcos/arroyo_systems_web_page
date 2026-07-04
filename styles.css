@@ -111,6 +111,7 @@ a {
 }
 
 #approach,
+#capabilities,
 #decisions,
 #products {
   scroll-margin-top: clamp(8px, 1.2vw, 22px);
