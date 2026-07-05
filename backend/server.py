@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, Response, status, BackgroundTasks
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, Response, status
 from fastapi.security import OAuth2PasswordBearer
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -14,6 +14,7 @@ import smtplib
 import json
 import re
 import time
+import asyncio
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -53,6 +54,7 @@ SMTP_FROM = os.environ.get('SMTP_FROM', SMTP_USERNAME or 'contact@arroyo-systems
 CONTACT_NOTIFICATION_TO = os.environ.get('CONTACT_NOTIFICATION_TO', 'contact@arroyo-systems.com').strip()
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '').strip()
 RESEND_FROM = os.environ.get('RESEND_FROM', SMTP_FROM).strip()
+EMAIL_SEND_TIMEOUT_SECONDS = int(os.environ.get('EMAIL_SEND_TIMEOUT_SECONDS', '5'))
 CORS_ORIGINS = [
     origin.strip()
     for origin in os.environ.get('CORS_ORIGINS', '*').split(',')
@@ -294,9 +296,10 @@ def send_email_via_resend(email: EmailMessage) -> None:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=10) as response:
+        with urllib.request.urlopen(request, timeout=EMAIL_SEND_TIMEOUT_SECONDS) as response:
             if response.status >= 400:
                 raise RuntimeError(response.read().decode("utf-8"))
+            logger.info("Contact email notification accepted by Resend")
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8")
         raise RuntimeError(detail or str(exc)) from exc
@@ -308,11 +311,12 @@ def send_email_message(email: EmailMessage) -> None:
         return
 
     smtp_class = smtplib.SMTP_SSL if SMTP_PORT == 465 else smtplib.SMTP
-    with smtp_class(SMTP_HOST, SMTP_PORT, timeout=10) as smtp:
+    with smtp_class(SMTP_HOST, SMTP_PORT, timeout=EMAIL_SEND_TIMEOUT_SECONDS) as smtp:
         if SMTP_PORT != 465:
             smtp.starttls()
         smtp.login(SMTP_USERNAME, get_smtp_password())
         smtp.send_message(email)
+        logger.info("Contact email notification sent via SMTP")
 
 
 def send_contact_notification(msg: ContactMessage) -> None:
@@ -328,6 +332,10 @@ async def notify_contact_message(msg: ContactMessage) -> None:
         await run_in_threadpool(send_contact_notification, msg)
     except Exception:
         logger.exception("Could not send contact notification email")
+
+
+def schedule_contact_notification(msg: ContactMessage) -> None:
+    asyncio.create_task(notify_contact_message(msg))
 
 
 async def get_current_admin(token: Optional[str] = Depends(oauth2_scheme)) -> str:
@@ -421,7 +429,7 @@ async def root():
 
 
 @api_router.post("/contact", response_model=ContactSubmitResponse, status_code=201)
-async def submit_contact(payload: ContactCreate, request: Request, background_tasks: BackgroundTasks):
+async def submit_contact(payload: ContactCreate, request: Request):
     ip = get_client_ip(request)
     check_contact_rate_limit(ip)
     await verify_turnstile(payload.turnstileToken, ip)
@@ -443,7 +451,10 @@ async def submit_contact(payload: ContactCreate, request: Request, background_ta
     )
     doc = msg.model_dump(by_alias=True)
     await db.contact_messages.insert_one(doc)
-    background_tasks.add_task(notify_contact_message, msg)
+    try:
+        schedule_contact_notification(msg)
+    except Exception:
+        logger.exception("Could not schedule contact notification email")
     logger.info(f"New contact message from {msg.email}")
     return ContactSubmitResponse(id=msg.id, created_at=msg.created_at)
 
@@ -475,6 +486,7 @@ async def email_status(current: str = Depends(get_current_admin)):
         "smtp_password_set": bool(SMTP_PASSWORD),
         "resend_api_key_set": bool(RESEND_API_KEY),
         "resend_from": RESEND_FROM,
+        "email_send_timeout_seconds": EMAIL_SEND_TIMEOUT_SECONDS,
         "provider": "resend" if RESEND_API_KEY else "smtp",
     }
 

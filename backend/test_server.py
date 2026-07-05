@@ -79,13 +79,23 @@ def test_contact_accepts_valid_message(client):
 def test_contact_triggers_email_notification(client, monkeypatch):
     calls = []
 
-    async def fake_notify(message):
+    def fake_schedule(message):
         calls.append(message.email)
 
-    monkeypatch.setattr(server, "notify_contact_message", fake_notify)
+    monkeypatch.setattr(server, "schedule_contact_notification", fake_schedule)
     response = client.post("/api/contact", json=valid_payload(email="notify@example.com"))
     assert response.status_code == 201
     assert calls == ["notify@example.com"]
+
+
+def test_contact_response_survives_notification_scheduling_failure(client, monkeypatch):
+    def fail_if_called_inline(message):
+        raise AssertionError("notification should be scheduled after the message is saved")
+
+    monkeypatch.setattr(server, "schedule_contact_notification", fail_if_called_inline)
+    response = client.post("/api/contact", json=valid_payload(email="fast@example.com"))
+    assert response.status_code == 201
+    assert response.json()["status"] == "received"
 
 
 def test_smtp_password_strips_google_display_spaces(monkeypatch):
