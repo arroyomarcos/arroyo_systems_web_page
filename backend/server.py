@@ -10,16 +10,19 @@ import io
 import csv
 import uuid
 import hashlib
+import smtplib
 import json
 import re
 import time
 import urllib.parse
 import urllib.request
+from email.message import EmailMessage
 from pathlib import Path
 from pydantic import BaseModel, Field, EmailStr, ConfigDict, field_validator
 from typing import Optional, Literal
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
+from starlette.concurrency import run_in_threadpool
 import jwt
 
 
@@ -41,6 +44,12 @@ TURNSTILE_SECRET_KEY = os.environ.get('TURNSTILE_SECRET_KEY', '').strip()
 RATE_LIMIT_CONTACT_MAX = int(os.environ.get('RATE_LIMIT_CONTACT_MAX', '5'))
 RATE_LIMIT_CONTACT_WINDOW_SECONDS = int(os.environ.get('RATE_LIMIT_CONTACT_WINDOW_SECONDS', '60'))
 IP_HASH_SALT = os.environ.get('IP_HASH_SALT', JWT_SECRET)
+SMTP_HOST = os.environ.get('SMTP_HOST', '').strip()
+SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
+SMTP_USERNAME = os.environ.get('SMTP_USERNAME', '').strip()
+SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD', '').strip()
+SMTP_FROM = os.environ.get('SMTP_FROM', SMTP_USERNAME or 'contact@arroyo-systems.com').strip()
+CONTACT_NOTIFICATION_TO = os.environ.get('CONTACT_NOTIFICATION_TO', 'contact@arroyo-systems.com').strip()
 CORS_ORIGINS = [
     origin.strip()
     for origin in os.environ.get('CORS_ORIGINS', '*').split(',')
@@ -225,6 +234,55 @@ async def verify_turnstile(token: Optional[str], ip: str) -> None:
         raise HTTPException(status_code=400, detail="Invalid anti-spam token")
 
 
+def is_email_notifications_enabled() -> bool:
+    return bool(SMTP_HOST and SMTP_USERNAME and SMTP_PASSWORD and CONTACT_NOTIFICATION_TO)
+
+
+def build_contact_notification(msg: ContactMessage) -> EmailMessage:
+    email = EmailMessage()
+    email["Subject"] = f"New Arroyo Systems contact request: {msg.name}"
+    email["From"] = SMTP_FROM
+    email["To"] = CONTACT_NOTIFICATION_TO
+    email["Reply-To"] = msg.email
+    email.set_content(
+        "\n".join([
+            "A new contact request has been submitted from arroyo-systems.com.",
+            "",
+            f"Name: {msg.name}",
+            f"Email: {msg.email}",
+            f"Company: {msg.company or '-'}",
+            f"Project type: {msg.project_type or '-'}",
+            f"Privacy accepted: {'yes' if msg.privacyAccepted else 'no'}",
+            f"Privacy policy version: {msg.privacyPolicyVersion}",
+            "",
+            "Message:",
+            msg.message,
+            "",
+            "Open the admin panel:",
+            "https://arroyo-systems.com/admin",
+        ])
+    )
+    return email
+
+
+def send_contact_notification(msg: ContactMessage) -> None:
+    if not is_email_notifications_enabled():
+        return
+
+    email = build_contact_notification(msg)
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as smtp:
+        smtp.starttls()
+        smtp.login(SMTP_USERNAME, SMTP_PASSWORD)
+        smtp.send_message(email)
+
+
+async def notify_contact_message(msg: ContactMessage) -> None:
+    try:
+        await run_in_threadpool(send_contact_notification, msg)
+    except Exception:
+        logger.exception("Could not send contact notification email")
+
+
 async def get_current_admin(token: Optional[str] = Depends(oauth2_scheme)) -> str:
     credentials_exc = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -338,6 +396,7 @@ async def submit_contact(payload: ContactCreate, request: Request):
     )
     doc = msg.model_dump(by_alias=True)
     await db.contact_messages.insert_one(doc)
+    await notify_contact_message(msg)
     logger.info(f"New contact message from {msg.email}")
     return ContactSubmitResponse(id=msg.id, created_at=msg.created_at)
 

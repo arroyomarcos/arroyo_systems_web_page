@@ -74,6 +74,18 @@ def test_contact_accepts_valid_message(client):
     assert body["status"] == "received"
 
 
+def test_contact_triggers_email_notification(client, monkeypatch):
+    calls = []
+
+    async def fake_notify(message):
+        calls.append(message.email)
+
+    monkeypatch.setattr(server, "notify_contact_message", fake_notify)
+    response = client.post("/api/contact", json=valid_payload(email="notify@example.com"))
+    assert response.status_code == 201
+    assert calls == ["notify@example.com"]
+
+
 def test_contact_rejects_invalid_email(client):
     response = client.post("/api/contact", json=valid_payload(email="not-an-email"))
     assert response.status_code == 422
