@@ -1,4 +1,5 @@
 import importlib
+import json
 import os
 from pathlib import Path
 from email.message import EmailMessage
@@ -130,6 +131,48 @@ def test_send_email_message_uses_stripped_smtp_password(monkeypatch):
 
     assert ("login", "marcos@arroyo-systems.com", "abcdefghijklmnop") in calls
     assert ("send", "marcos@arroyo-systems.com") in calls
+
+
+def test_send_email_message_prefers_resend_when_configured(monkeypatch):
+    calls = []
+
+    class FakeResponse:
+        status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def read(self):
+            return b'{"id":"email_test"}'
+
+    def fake_urlopen(request, timeout):
+        calls.append((
+            request.full_url,
+            timeout,
+            json.loads(request.data.decode("utf-8")),
+            request.headers.get("Authorization"),
+        ))
+        return FakeResponse()
+
+    monkeypatch.setattr(server, "RESEND_API_KEY", "re_test")
+    monkeypatch.setattr(server, "RESEND_FROM", "Arroyo Systems <notifications@arroyo-systems.com>")
+    monkeypatch.setattr(server, "CONTACT_NOTIFICATION_TO", "marcos@arroyo-systems.com")
+    monkeypatch.setattr(server.urllib.request, "urlopen", fake_urlopen)
+
+    email = EmailMessage()
+    email["From"] = "Arroyo Systems <notifications@arroyo-systems.com>"
+    email["To"] = "marcos@arroyo-systems.com"
+    email["Subject"] = "Test"
+    email.set_content("Test body")
+
+    server.send_email_message(email)
+
+    assert calls[0][0] == "https://api.resend.com/emails"
+    assert calls[0][2]["from"] == "Arroyo Systems <notifications@arroyo-systems.com>"
+    assert calls[0][2]["to"] == ["marcos@arroyo-systems.com"]
 
 
 def test_contact_rejects_invalid_email(client):

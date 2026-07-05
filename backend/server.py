@@ -14,6 +14,7 @@ import smtplib
 import json
 import re
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from email.message import EmailMessage
@@ -50,6 +51,8 @@ SMTP_USERNAME = os.environ.get('SMTP_USERNAME', '').strip()
 SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD', '').strip()
 SMTP_FROM = os.environ.get('SMTP_FROM', SMTP_USERNAME or 'contact@arroyo-systems.com').strip()
 CONTACT_NOTIFICATION_TO = os.environ.get('CONTACT_NOTIFICATION_TO', 'contact@arroyo-systems.com').strip()
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '').strip()
+RESEND_FROM = os.environ.get('RESEND_FROM', SMTP_FROM).strip()
 CORS_ORIGINS = [
     origin.strip()
     for origin in os.environ.get('CORS_ORIGINS', '*').split(',')
@@ -235,7 +238,9 @@ async def verify_turnstile(token: Optional[str], ip: str) -> None:
 
 
 def is_email_notifications_enabled() -> bool:
-    return bool(SMTP_HOST and SMTP_USERNAME and SMTP_PASSWORD and CONTACT_NOTIFICATION_TO)
+    return bool(CONTACT_NOTIFICATION_TO and (
+        RESEND_API_KEY or (SMTP_HOST and SMTP_USERNAME and SMTP_PASSWORD)
+    ))
 
 
 def get_smtp_password() -> str:
@@ -246,7 +251,7 @@ def get_smtp_password() -> str:
 def build_contact_notification(msg: ContactMessage) -> EmailMessage:
     email = EmailMessage()
     email["Subject"] = f"New Arroyo Systems contact request: {msg.name}"
-    email["From"] = SMTP_FROM
+    email["From"] = RESEND_FROM if RESEND_API_KEY else SMTP_FROM
     email["To"] = CONTACT_NOTIFICATION_TO
     email["Reply-To"] = msg.email
     email.set_content(
@@ -270,7 +275,36 @@ def build_contact_notification(msg: ContactMessage) -> EmailMessage:
     return email
 
 
+def send_email_via_resend(email: EmailMessage) -> None:
+    payload = {
+        "from": RESEND_FROM,
+        "to": [CONTACT_NOTIFICATION_TO],
+        "subject": email["Subject"],
+        "text": email.get_content(),
+    }
+    request = urllib.request.Request(
+        "https://api.resend.com/emails",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {RESEND_API_KEY}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            if response.status >= 400:
+                raise RuntimeError(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8")
+        raise RuntimeError(detail or str(exc)) from exc
+
+
 def send_email_message(email: EmailMessage) -> None:
+    if RESEND_API_KEY:
+        send_email_via_resend(email)
+        return
+
     smtp_class = smtplib.SMTP_SSL if SMTP_PORT == 465 else smtplib.SMTP
     with smtp_class(SMTP_HOST, SMTP_PORT, timeout=10) as smtp:
         if SMTP_PORT != 465:
@@ -437,6 +471,9 @@ async def email_status(current: str = Depends(get_current_admin)):
         "smtp_from": SMTP_FROM,
         "contact_notification_to": CONTACT_NOTIFICATION_TO,
         "smtp_password_set": bool(SMTP_PASSWORD),
+        "resend_api_key_set": bool(RESEND_API_KEY),
+        "resend_from": RESEND_FROM,
+        "provider": "resend" if RESEND_API_KEY else "smtp",
     }
 
 
@@ -446,12 +483,12 @@ async def test_email(current: str = Depends(get_current_admin)):
         raise HTTPException(status_code=400, detail="SMTP is not fully configured")
 
     email = EmailMessage()
-    email["Subject"] = "Arroyo Systems SMTP test"
-    email["From"] = SMTP_FROM
+    email["Subject"] = "Arroyo Systems email test"
+    email["From"] = RESEND_FROM if RESEND_API_KEY else SMTP_FROM
     email["To"] = CONTACT_NOTIFICATION_TO
     email.set_content(
         "This is a test email from the Arroyo Systems backend.\n\n"
-        "If you received this message, SMTP notifications are configured correctly."
+        "If you received this message, email notifications are configured correctly."
     )
 
     try:
