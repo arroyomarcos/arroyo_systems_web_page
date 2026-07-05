@@ -1,0 +1,18 @@
+# Netlify configuration for the React frontend.
+# Root of the site to be deployed: frontend/
+
+[build]
+  base    = "frontend"
+  command = "yarn build"
+  publish = "frontend/build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # REACT_APP_BACKEND_URL is set via the Netlify dashboard so it can be rotated
+  # without a commit. It is picked up automatically at build time by CRA.
+
+# SPA rewrite — all client-side routes go to index.html
+[[redirects]]
+  from = "/*"
+  to   = "/index.html"
+  status = 200
