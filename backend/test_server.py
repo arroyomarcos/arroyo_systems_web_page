@@ -1,6 +1,7 @@
 import importlib
 import os
 from pathlib import Path
+from email.message import EmailMessage
 
 import pytest
 from fastapi import HTTPException
@@ -84,6 +85,51 @@ def test_contact_triggers_email_notification(client, monkeypatch):
     response = client.post("/api/contact", json=valid_payload(email="notify@example.com"))
     assert response.status_code == 201
     assert calls == ["notify@example.com"]
+
+
+def test_smtp_password_strips_google_display_spaces(monkeypatch):
+    monkeypatch.setattr(server, "SMTP_PASSWORD", "abcd efgh ijkl mnop")
+    assert server.get_smtp_password() == "abcdefghijklmnop"
+
+
+def test_send_email_message_uses_stripped_smtp_password(monkeypatch):
+    calls = []
+
+    class FakeSMTP:
+        def __init__(self, host, port, timeout):
+            calls.append(("init", host, port, timeout))
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def starttls(self):
+            calls.append(("starttls",))
+
+        def login(self, username, password):
+            calls.append(("login", username, password))
+
+        def send_message(self, email):
+            calls.append(("send", email["To"]))
+
+    monkeypatch.setattr(server, "SMTP_HOST", "smtp.gmail.com")
+    monkeypatch.setattr(server, "SMTP_PORT", 587)
+    monkeypatch.setattr(server, "SMTP_USERNAME", "marcos@arroyo-systems.com")
+    monkeypatch.setattr(server, "SMTP_PASSWORD", "abcd efgh ijkl mnop")
+    monkeypatch.setattr(server.smtplib, "SMTP", FakeSMTP)
+
+    email = EmailMessage()
+    email["From"] = "marcos@arroyo-systems.com"
+    email["To"] = "marcos@arroyo-systems.com"
+    email["Subject"] = "Test"
+    email.set_content("Test")
+
+    server.send_email_message(email)
+
+    assert ("login", "marcos@arroyo-systems.com", "abcdefghijklmnop") in calls
+    assert ("send", "marcos@arroyo-systems.com") in calls
 
 
 def test_contact_rejects_invalid_email(client):

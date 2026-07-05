@@ -238,6 +238,11 @@ def is_email_notifications_enabled() -> bool:
     return bool(SMTP_HOST and SMTP_USERNAME and SMTP_PASSWORD and CONTACT_NOTIFICATION_TO)
 
 
+def get_smtp_password() -> str:
+    # Google app passwords are often displayed in groups. SMTP expects the raw value.
+    return SMTP_PASSWORD.replace(" ", "")
+
+
 def build_contact_notification(msg: ContactMessage) -> EmailMessage:
     email = EmailMessage()
     email["Subject"] = f"New Arroyo Systems contact request: {msg.name}"
@@ -265,15 +270,21 @@ def build_contact_notification(msg: ContactMessage) -> EmailMessage:
     return email
 
 
+def send_email_message(email: EmailMessage) -> None:
+    smtp_class = smtplib.SMTP_SSL if SMTP_PORT == 465 else smtplib.SMTP
+    with smtp_class(SMTP_HOST, SMTP_PORT, timeout=10) as smtp:
+        if SMTP_PORT != 465:
+            smtp.starttls()
+        smtp.login(SMTP_USERNAME, get_smtp_password())
+        smtp.send_message(email)
+
+
 def send_contact_notification(msg: ContactMessage) -> None:
     if not is_email_notifications_enabled():
+        logger.info("Contact email notification skipped because SMTP is not configured")
         return
 
-    email = build_contact_notification(msg)
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as smtp:
-        smtp.starttls()
-        smtp.login(SMTP_USERNAME, SMTP_PASSWORD)
-        smtp.send_message(email)
+    send_email_message(build_contact_notification(msg))
 
 
 async def notify_contact_message(msg: ContactMessage) -> None:
@@ -414,6 +425,42 @@ async def admin_login(payload: LoginRequest):
 @api_router.get("/admin/me", response_model=AdminMe)
 async def admin_me(current: str = Depends(get_current_admin)):
     return AdminMe(username=current)
+
+
+@api_router.get("/admin/email/status")
+async def email_status(current: str = Depends(get_current_admin)):
+    return {
+        "enabled": is_email_notifications_enabled(),
+        "smtp_host_set": bool(SMTP_HOST),
+        "smtp_port": SMTP_PORT,
+        "smtp_username_set": bool(SMTP_USERNAME),
+        "smtp_from": SMTP_FROM,
+        "contact_notification_to": CONTACT_NOTIFICATION_TO,
+        "smtp_password_set": bool(SMTP_PASSWORD),
+    }
+
+
+@api_router.post("/admin/email/test")
+async def test_email(current: str = Depends(get_current_admin)):
+    if not is_email_notifications_enabled():
+        raise HTTPException(status_code=400, detail="SMTP is not fully configured")
+
+    email = EmailMessage()
+    email["Subject"] = "Arroyo Systems SMTP test"
+    email["From"] = SMTP_FROM
+    email["To"] = CONTACT_NOTIFICATION_TO
+    email.set_content(
+        "This is a test email from the Arroyo Systems backend.\n\n"
+        "If you received this message, SMTP notifications are configured correctly."
+    )
+
+    try:
+        await run_in_threadpool(send_email_message, email)
+    except Exception as exc:
+        logger.exception("SMTP test email failed")
+        raise HTTPException(status_code=502, detail=f"SMTP test failed: {exc}") from exc
+
+    return {"status": "sent", "to": CONTACT_NOTIFICATION_TO}
 
 
 @api_router.get("/admin/messages")
