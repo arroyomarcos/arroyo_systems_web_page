@@ -154,6 +154,8 @@ def test_send_email_message_prefers_resend_when_configured(monkeypatch):
             timeout,
             json.loads(request.data.decode("utf-8")),
             request.headers.get("Authorization"),
+            request.headers.get("User-agent"),
+            request.headers.get("Accept"),
         ))
         return FakeResponse()
 
@@ -173,6 +175,8 @@ def test_send_email_message_prefers_resend_when_configured(monkeypatch):
     assert calls[0][0] == "https://api.resend.com/emails"
     assert calls[0][2]["from"] == "Arroyo Systems <notifications@arroyo-systems.com>"
     assert calls[0][2]["to"] == ["marcos@arroyo-systems.com"]
+    assert calls[0][4] == "ArroyoSystemsAPI/1.0"
+    assert calls[0][5] == "application/json"
 
 
 def test_contact_rejects_invalid_email(client):

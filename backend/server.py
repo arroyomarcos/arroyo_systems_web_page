@@ -287,7 +287,9 @@ def send_email_via_resend(email: EmailMessage) -> None:
         data=json.dumps(payload).encode("utf-8"),
         headers={
             "Authorization": f"Bearer {RESEND_API_KEY}",
+            "Accept": "application/json",
             "Content-Type": "application/json",
+            "User-Agent": "ArroyoSystemsAPI/1.0",
         },
         method="POST",
     )
@@ -494,8 +496,8 @@ async def test_email(current: str = Depends(get_current_admin)):
     try:
         await run_in_threadpool(send_email_message, email)
     except Exception as exc:
-        logger.exception("SMTP test email failed")
-        raise HTTPException(status_code=502, detail=f"SMTP test failed: {exc}") from exc
+        logger.exception("Email test failed")
+        raise HTTPException(status_code=502, detail=f"Email test failed: {exc}") from exc
 
     return {"status": "sent", "to": CONTACT_NOTIFICATION_TO}
 
