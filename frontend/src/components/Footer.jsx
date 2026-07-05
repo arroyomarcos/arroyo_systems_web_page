@@ -64,7 +64,7 @@ const Footer = () => {
               <img
                 src={ASSETS.logo}
                 alt="Arroyo Systems"
-                className="logo-img h-10 w-auto object-contain"
+                className="logo-img h-8 w-auto object-contain"
               />
             </span>
           </div>
