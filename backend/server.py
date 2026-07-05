@@ -155,7 +155,7 @@ async def on_startup():
     await db.contact_messages.create_index("created_at")
     await db.admin_users.create_index("username", unique=True)
 
-    # Seed admin if none exists
+    # Keep the configured admin account in sync with deployment secrets.
     existing = await db.admin_users.find_one({"username": ADMIN_USERNAME})
     if not existing:
         await db.admin_users.insert_one({
@@ -165,6 +165,12 @@ async def on_startup():
             "created_at": datetime.now(timezone.utc),
         })
         logger.info(f"Seeded admin user '{ADMIN_USERNAME}'")
+    else:
+        await db.admin_users.update_one(
+            {"username": ADMIN_USERNAME},
+            {"$set": {"password_hash": hash_password(ADMIN_PASSWORD)}},
+        )
+        logger.info(f"Updated admin user '{ADMIN_USERNAME}' from environment")
 
 
 @app.on_event("shutdown")
