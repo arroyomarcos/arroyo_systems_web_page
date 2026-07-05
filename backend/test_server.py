@@ -1,6 +1,7 @@
 import importlib
 import json
 import os
+import io
 from pathlib import Path
 from email.message import EmailMessage
 
@@ -187,6 +188,53 @@ def test_send_email_message_prefers_resend_when_configured(monkeypatch):
     assert calls[0][2]["to"] == ["marcos@arroyo-systems.com"]
     assert calls[0][4] == "ArroyoSystemsAPI/1.0"
     assert calls[0][5] == "application/json"
+
+
+def test_resend_retries_with_fallback_sender_when_domain_is_unverified(monkeypatch):
+    calls = []
+
+    class FakeResponse:
+        status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def read(self):
+            return b'{"id":"email_test"}'
+
+    def fake_urlopen(request, timeout):
+        payload = json.loads(request.data.decode("utf-8"))
+        calls.append(payload["from"])
+        if len(calls) == 1:
+            raise server.urllib.error.HTTPError(
+                request.full_url,
+                403,
+                "Forbidden",
+                {},
+                io.BytesIO(b'{"statusCode":403,"message":"The arroyo-systems.com domain is not verified."}'),
+            )
+        return FakeResponse()
+
+    monkeypatch.setattr(server, "RESEND_API_KEY", "re_test")
+    monkeypatch.setattr(server, "RESEND_FROM", "Arroyo Systems <contact@arroyo-systems.com>")
+    monkeypatch.setattr(server, "RESEND_FALLBACK_FROM", "Arroyo Systems <onboarding@resend.dev>")
+    monkeypatch.setattr(server.urllib.request, "urlopen", fake_urlopen)
+
+    email = EmailMessage()
+    email["From"] = "Arroyo Systems <contact@arroyo-systems.com>"
+    email["To"] = "marcos@arroyo-systems.com"
+    email["Subject"] = "Test"
+    email.set_content("Test body")
+
+    server.send_email_message(email)
+
+    assert calls == [
+        "Arroyo Systems <contact@arroyo-systems.com>",
+        "Arroyo Systems <onboarding@resend.dev>",
+    ]
 
 
 def test_contact_rejects_invalid_email(client):

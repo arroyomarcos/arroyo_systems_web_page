@@ -54,6 +54,7 @@ SMTP_FROM = os.environ.get('SMTP_FROM', SMTP_USERNAME or 'contact@arroyo-systems
 CONTACT_NOTIFICATION_TO = os.environ.get('CONTACT_NOTIFICATION_TO', 'contact@arroyo-systems.com').strip()
 RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '').strip()
 RESEND_FROM = os.environ.get('RESEND_FROM', SMTP_FROM).strip()
+RESEND_FALLBACK_FROM = os.environ.get('RESEND_FALLBACK_FROM', 'Arroyo Systems <onboarding@resend.dev>').strip()
 EMAIL_SEND_TIMEOUT_SECONDS = int(os.environ.get('EMAIL_SEND_TIMEOUT_SECONDS', '5'))
 CORS_ORIGINS = [
     origin.strip()
@@ -277,13 +278,7 @@ def build_contact_notification(msg: ContactMessage) -> EmailMessage:
     return email
 
 
-def send_email_via_resend(email: EmailMessage) -> None:
-    payload = {
-        "from": RESEND_FROM,
-        "to": [CONTACT_NOTIFICATION_TO],
-        "subject": email["Subject"],
-        "text": email.get_content(),
-    }
+def post_resend_payload(payload: dict) -> None:
     request = urllib.request.Request(
         "https://api.resend.com/emails",
         data=json.dumps(payload).encode("utf-8"),
@@ -295,13 +290,29 @@ def send_email_via_resend(email: EmailMessage) -> None:
         },
         method="POST",
     )
+    with urllib.request.urlopen(request, timeout=EMAIL_SEND_TIMEOUT_SECONDS) as response:
+        if response.status >= 400:
+            raise RuntimeError(response.read().decode("utf-8"))
+
+
+def send_email_via_resend(email: EmailMessage) -> None:
+    payload = {
+        "from": RESEND_FROM,
+        "to": [CONTACT_NOTIFICATION_TO],
+        "subject": email["Subject"],
+        "text": email.get_content(),
+    }
     try:
-        with urllib.request.urlopen(request, timeout=EMAIL_SEND_TIMEOUT_SECONDS) as response:
-            if response.status >= 400:
-                raise RuntimeError(response.read().decode("utf-8"))
-            logger.info("Contact email notification accepted by Resend")
+        post_resend_payload(payload)
+        logger.info("Contact email notification accepted by Resend")
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8")
+        if "domain is not verified" in detail.lower() and RESEND_FALLBACK_FROM and RESEND_FALLBACK_FROM != RESEND_FROM:
+            logger.warning("Resend rejected unverified sender domain; retrying with fallback sender")
+            fallback_payload = {**payload, "from": RESEND_FALLBACK_FROM}
+            post_resend_payload(fallback_payload)
+            logger.info("Contact email notification accepted by Resend fallback sender")
+            return
         raise RuntimeError(detail or str(exc)) from exc
 
 
