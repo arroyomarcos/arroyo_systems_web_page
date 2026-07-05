@@ -71,6 +71,17 @@ const Footer = () => {
           <p className="text-xs text-[color:var(--arroyo-muted)]">
             &copy; {new Date().getFullYear()} Arroyo Systems. All rights reserved.
           </p>
+          <nav className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-[color:var(--arroyo-muted)]">
+            <a className="hover:text-[color:var(--arroyo-accent)] transition-colors" href="/privacy-policy">
+              Privacy Policy
+            </a>
+            <a className="hover:text-[color:var(--arroyo-accent)] transition-colors" href="/legal-notice">
+              Legal Notice
+            </a>
+            <a className="hover:text-[color:var(--arroyo-accent)] transition-colors" href="/cookies-policy">
+              Cookies Policy
+            </a>
+          </nav>
         </div>
       </div>
     </footer>

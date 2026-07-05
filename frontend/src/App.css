@@ -335,9 +335,50 @@ html, body {
   color: #e11d48;
   font-size: 0.78rem;
 }
+.cf-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  color: var(--arroyo-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.cf-checkbox input {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.18rem;
+  accent-color: var(--arroyo-accent);
+  flex: 0 0 auto;
+}
 .contact-form-success {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 2rem 0;
+}
+
+/* ---------- Legal Pages ---------- */
+.legal-page {
+  padding: 8rem 0 5rem;
+  background: #fff;
+}
+.legal-content {
+  margin-top: 3rem;
+  max-width: 860px;
+}
+.legal-section {
+  padding: 1.75rem 0;
+  border-top: 1px solid #e8ecf3;
+}
+.legal-section h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--arroyo-navy);
+  margin-bottom: 0.8rem;
+}
+.legal-section p {
+  color: var(--arroyo-muted);
+  line-height: 1.7;
+  margin: 0.4rem 0;
 }

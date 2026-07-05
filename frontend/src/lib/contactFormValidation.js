@@ -15,6 +15,7 @@ export const INITIAL_FORM = {
   company: "",
   project_type: "",
   message: "",
+  privacyAccepted: false,
 };
 
 /**
@@ -33,6 +34,9 @@ export const validateContactForm = (form) => {
   if (!form.message.trim() || form.message.trim().length < 10) {
     errors.message = "Please provide at least 10 characters";
   }
+  if (!form.privacyAccepted) {
+    errors.privacyAccepted = "Required";
+  }
   return errors;
 };
 
@@ -44,6 +48,7 @@ export const buildContactPayload = (form) => {
     name: form.name.trim(),
     email: form.email.trim(),
     message: form.message.trim(),
+    privacyAccepted: true,
   };
   const company = form.company.trim();
   if (company) payload.company = company;

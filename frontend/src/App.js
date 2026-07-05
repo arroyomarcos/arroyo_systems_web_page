@@ -10,6 +10,7 @@ import Products from "./components/sections/Products";
 import Footer from "./components/Footer";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import { CookiesPolicy, LegalNotice, PrivacyPolicy } from "./pages/LegalPage";
 import { Toaster } from "./components/ui/toaster";
 
 const Home = () => {
@@ -34,6 +35,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/legal-notice" element={<LegalNotice />} />
+          <Route path="/cookies-policy" element={<CookiesPolicy />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/messages" element={<AdminDashboard />} />
         </Routes>

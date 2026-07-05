@@ -60,6 +60,18 @@ const MessageDrawer = ({ message, onClose, onToggleRead, onDelete }) => {
             label="Status"
             value={message.read ? "Read" : "Unread"}
           />
+          <DetailRow
+            label="Privacy accepted"
+            value={message.privacyAccepted ? "Yes" : "No"}
+          />
+          <DetailRow
+            label="Privacy accepted at"
+            value={message.privacyAcceptedAt ? formatDate(message.privacyAcceptedAt) : "—"}
+          />
+          <DetailRow
+            label="Privacy policy version"
+            value={message.privacyPolicyVersion || "—"}
+          />
 
           <div>
             <p className="text-xs text-[color:var(--arroyo-muted)] uppercase tracking-widest mb-2">

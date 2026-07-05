@@ -44,7 +44,7 @@ const ContactForm = () => {
 
   const onChange = useCallback(
     (field) => (ev) => {
-      const value = ev.target.value;
+      const value = ev.target.type === "checkbox" ? ev.target.checked : ev.target.value;
       setForm((f) => ({ ...f, [field]: value }));
       setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
     },
@@ -156,6 +156,24 @@ const ContactForm = () => {
           placeholder="Tell us about your component, requirements, timeline..."
         />
       </TextField>
+
+      <label className="cf-checkbox">
+        <input
+          type="checkbox"
+          checked={form.privacyAccepted}
+          onChange={onChange("privacyAccepted")}
+        />
+        <span>
+          I have read and accept the{" "}
+          <a className="link-underline" href="/privacy-policy">
+            Privacy Policy
+          </a>
+          .
+        </span>
+      </label>
+      {errors.privacyAccepted && (
+        <span className="cf-error-text">{errors.privacyAccepted}</span>
+      )}
 
       <div className="mt-2">
         <button type="submit" disabled={submitting} className="contact-pill">
