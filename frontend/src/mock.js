@@ -1,7 +1,7 @@
 // Mock data for Arroyo Systems replica
 
 export const ASSETS = {
-  logo: "https://customer-assets.emergentagent.com/job_eng-restructure/artifacts/xqe1zw3i_LOGO-2.1.png",
+  logo: "/assets/brand/logo-arroyo-systems-transparent.png",
   hero: "https://arroyo-systems.com/assets/engineering/machined-component-hero.png",
   accessibilityFront: "https://arroyo-systems.com/assets/engineering/accessibility-front.png",
   accessibilitySide: "https://arroyo-systems.com/assets/engineering/accessibility-side.png",

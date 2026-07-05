@@ -125,7 +125,7 @@ body {
   );
 }
 
-/* Logo image — clean white-background logo, no badge needed */
+/* Logo image — transparent asset, no badge needed */
 .logo-badge {
   display: inline-flex;
   align-items: center;
