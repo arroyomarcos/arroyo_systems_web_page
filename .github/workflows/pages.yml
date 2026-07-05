@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: read
   pages: write
   id-token: write
@@ -24,6 +25,38 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Clear stuck Pages runs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const staleRuns = [];
+            for (const status of ["queued", "in_progress"]) {
+              const { data } = await github.rest.actions.listWorkflowRunsForRepo({
+                owner,
+                repo,
+                status,
+                per_page: 100,
+              });
+              staleRuns.push(
+                ...data.workflow_runs.filter((run) =>
+                  run.id !== context.runId &&
+                  [
+                    "pages build and deployment",
+                    "Deploy static site to Pages",
+                  ].includes(run.name)
+                )
+              );
+            }
+            for (const run of staleRuns) {
+              core.info(`Cancelling stuck Pages run ${run.id} (${run.name})`);
+              await github.rest.actions.cancelWorkflowRun({
+                owner,
+                repo,
+                run_id: run.id,
+              });
+            }
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
