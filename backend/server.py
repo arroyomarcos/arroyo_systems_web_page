@@ -28,6 +28,11 @@ JWT_EXPIRE_MINUTES = 60 * 24  # 24 h
 
 ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin')
+CORS_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get('CORS_ORIGINS', '*').split(',')
+    if origin.strip()
+]
 
 client = AsyncIOMotorClient(mongo_url)
 db = client[DB_NAME]
@@ -261,7 +266,7 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_methods=["*"],
     allow_headers=["*"],
 )
