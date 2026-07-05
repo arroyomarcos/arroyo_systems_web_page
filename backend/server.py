@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, Response, status
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, Response, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordBearer
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -374,7 +374,7 @@ async def root():
 
 
 @api_router.post("/contact", response_model=ContactSubmitResponse, status_code=201)
-async def submit_contact(payload: ContactCreate, request: Request):
+async def submit_contact(payload: ContactCreate, request: Request, background_tasks: BackgroundTasks):
     ip = get_client_ip(request)
     check_contact_rate_limit(ip)
     await verify_turnstile(payload.turnstileToken, ip)
@@ -396,7 +396,7 @@ async def submit_contact(payload: ContactCreate, request: Request):
     )
     doc = msg.model_dump(by_alias=True)
     await db.contact_messages.insert_one(doc)
-    await notify_contact_message(msg)
+    background_tasks.add_task(notify_contact_message, msg)
     logger.info(f"New contact message from {msg.email}")
     return ContactSubmitResponse(id=msg.id, created_at=msg.created_at)
 
