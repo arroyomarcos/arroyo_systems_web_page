@@ -17,11 +17,11 @@ export const ASSETS = {
 };
 
 export const NAV_LINKS = [
-  { label: "Approach", href: "#approach" },
-  { label: "Decisions", href: "#decisions" },
-  { label: "Capabilities", href: "#capabilities" },
-  { label: "Products", href: "#products" },
-  { label: "Contact", href: "#contact" },
+  { label: "Approach", href: "/#approach" },
+  { label: "Decisions", href: "/#decisions" },
+  { label: "Capabilities", href: "/#capabilities" },
+  { label: "Products", href: "/#products" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export const CONTACT_URL = "https://forms.gle/FXNFHgEaYVS8Afbr7";

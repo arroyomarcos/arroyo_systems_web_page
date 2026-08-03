@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { NAV_LINKS, ASSETS } from "../mock";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -14,14 +17,34 @@ const Header = () => {
 
   const closeMenu = useCallback(() => setOpen(false), []);
 
+  const handleHashNavigation = useCallback(
+    (e, href) => {
+      closeMenu();
+      const [path, hash] = href.split("#");
+
+      if (location.pathname !== path || !hash) return;
+
+      e.preventDefault();
+      const el = document.getElementById(hash);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+    [closeMenu, location.pathname]
+  );
+
   const scrollToContact = useCallback(
     (e) => {
       e.preventDefault();
       closeMenu();
+
+      if (location.pathname !== "/") {
+        navigate("/#contact");
+        return;
+      }
+
       const el = document.getElementById("contact");
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     },
-    [closeMenu]
+    [closeMenu, location.pathname, navigate]
   );
 
   return (
@@ -34,7 +57,7 @@ const Header = () => {
     >
       <div className="arroyo-container flex items-center justify-between h-20 md:h-24">
         {/* Logo */}
-        <a href="#top" className="shrink-0" onClick={closeMenu}>
+        <Link to="/" className="shrink-0" onClick={closeMenu}>
           <span className="logo-badge">
             <img
               src={ASSETS.logo}
@@ -42,19 +65,19 @@ const Header = () => {
               className="logo-img h-8 md:h-11 w-auto object-contain"
             />
           </span>
-        </a>
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-5 lg:gap-10">
           {NAV_LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="nav-link">
+            <Link key={l.href} to={l.href} className="nav-link" onClick={(e) => handleHashNavigation(e, l.href)}>
               {l.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
         {/* CTA - Desktop */}
-        <a href="#contact" onClick={scrollToContact} className="hidden md:inline-flex contact-pill">
+        <a href="/#contact" onClick={scrollToContact} className="hidden md:inline-flex contact-pill">
           Contact Us
         </a>
 
@@ -76,17 +99,17 @@ const Header = () => {
       >
         <div className="arroyo-container py-4 flex flex-col gap-4">
           {NAV_LINKS.map((l) => (
-            <a
+            <Link
               key={l.href}
-              href={l.href}
+              to={l.href}
               className="nav-link py-1 text-base"
-              onClick={closeMenu}
+              onClick={(e) => handleHashNavigation(e, l.href)}
             >
               {l.label}
-            </a>
+            </Link>
           ))}
           <a
-            href="#contact"
+            href="/#contact"
             className="contact-pill self-start mt-2"
             onClick={scrollToContact}
           >
