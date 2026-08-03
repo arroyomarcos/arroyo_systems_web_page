@@ -7,6 +7,7 @@ import Approach from "./components/sections/Approach";
 import Decisions from "./components/sections/Decisions";
 import Capabilities from "./components/sections/Capabilities";
 import Products from "./components/sections/Products";
+import Partners from "./components/sections/Partners";
 import Footer from "./components/Footer";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -105,6 +106,7 @@ const Home = () => {
         <Decisions />
         <Capabilities />
         <Products />
+        <Partners />
       </main>
       <Footer />
     </div>

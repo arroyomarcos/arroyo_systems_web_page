@@ -14,6 +14,7 @@ export const ASSETS = {
   conceptDevelopment: "https://arroyo-systems.com/assets/engineering/concept-development.png",
   manufacturingStudy: "https://arroyo-systems.com/assets/engineering/manufacturing-study.png",
   manufacturingStudyWhite: "https://arroyo-systems.com/assets/engineering/manufacturing-study-white.png",
+  threeDConnexionLogo: "/assets/brand/3dconnexion-logo.png",
 };
 
 export const NAV_LINKS = [
@@ -21,7 +22,19 @@ export const NAV_LINKS = [
   { label: "Decisions", href: "/#decisions" },
   { label: "Capabilities", href: "/#capabilities" },
   { label: "Products", href: "/#products" },
+  { label: "Partners", href: "/#partners" },
   { label: "Contact", href: "/#contact" },
+];
+
+export const PARTNERS = [
+  {
+    id: "3dconnexion",
+    name: "3Dconnexion",
+    logo: "threeDConnexionLogo",
+    url: "https://3dconnexion.com",
+    description:
+      "3Dconnexion joins Arroyo Systems as a Technology Partner, bringing precision 3D navigation and control hardware into our engineering workflow.",
+  },
 ];
 
 export const CONTACT_URL = "https://forms.gle/FXNFHgEaYVS8Afbr7";
