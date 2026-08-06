@@ -3,25 +3,13 @@
 export const ASSETS = {
   logo: "/assets/brand/logo-arroyo-systems-transparent.png",
   hero: "https://arroyo-systems.com/assets/engineering/machined-component-hero.png",
-  accessibilityFront: "https://arroyo-systems.com/assets/engineering/accessibility-front.png",
-  accessibilitySide: "https://arroyo-systems.com/assets/engineering/accessibility-side.png",
-  accessibilityTop: "https://arroyo-systems.com/assets/engineering/accessibility-top.png",
-  machiningAccessibility: "https://arroyo-systems.com/assets/engineering/machining-accessibility.png",
-  vmLegend: "https://arroyo-systems.com/assets/engineering/vm-legend.png",
   displacementVm: "https://arroyo-systems.com/assets/engineering/displacement-vm-component.png",
-  safetyFactor: "https://arroyo-systems.com/assets/engineering/safety-factor-component.png",
-  safetyFactorLegend: "https://arroyo-systems.com/assets/engineering/safety-factor-legend.png",
-  conceptDevelopment: "https://arroyo-systems.com/assets/engineering/concept-development.png",
-  manufacturingStudy: "https://arroyo-systems.com/assets/engineering/manufacturing-study.png",
-  manufacturingStudyWhite: "https://arroyo-systems.com/assets/engineering/manufacturing-study-white.png",
   threeDConnexionLogo: "/assets/brand/3dconnexion-logo.png",
 };
 
 export const NAV_LINKS = [
-  { label: "Approach", href: "/#approach" },
-  { label: "Decisions", href: "/#decisions" },
-  { label: "Capabilities", href: "/#capabilities" },
-  { label: "Products", href: "/#products" },
+  { label: "Engineering Solutions", href: "/#products" },
+  { label: "Why Arroyo", href: "/#why-arroyo" },
   { label: "Partners", href: "/#partners" },
 ];
 
@@ -40,20 +28,10 @@ export const CONTACT_URL = "https://forms.gle/FXNFHgEaYVS8Afbr7";
 export const LINKEDIN_URL = "https://www.linkedin.com/company/arroyo-systems-eng/";
 export const EMAIL = "contact@arroyo-systems.com";
 
-export const TRADE_OFFS = [
-  "Mechanical Performance",
-  "Manufacturing Costs",
-  "Manufacturability",
-  "Weight",
-  "Technical Risk",
-];
-
-export const CAPABILITIES = [
-  "Material selection",
-  "Design development",
-  "Geometry optimization",
-  "Structural validation",
-  "Manufacturing documentation",
+export const WHY_ARROYO_BULLETS = [
+  "Pricing is public. You see the range before you talk to us.",
+  "Turnaround is measured in business days — most projects ship in one to three weeks, start to finish.",
+  "Every design ships with structural validation. Not just a part that looks right — one that's proven to hold.",
 ];
 
 export const PACKAGES = [

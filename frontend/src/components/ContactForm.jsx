@@ -94,6 +94,7 @@ const ContactForm = () => {
       <div className="cf-row">
         <TextField label="Name *" error={errors.name}>
           <input
+            id="contact-name"
             type="text"
             value={form.name}
             onChange={onChange("name")}

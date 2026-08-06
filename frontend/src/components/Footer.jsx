@@ -1,7 +1,15 @@
 import React from "react";
 import { LINKEDIN_URL, EMAIL, ASSETS } from "../mock";
-import { Linkedin, Mail, MapPin } from "lucide-react";
+import { Linkedin, Mail, MapPin, ArrowRight } from "lucide-react";
 import ContactForm from "./ContactForm";
+
+const focusContactForm = (e) => {
+  e.preventDefault();
+  const nameInput = document.getElementById("contact-name");
+  if (!nameInput) return;
+  nameInput.scrollIntoView({ behavior: "smooth", block: "center" });
+  nameInput.focus({ preventScroll: true });
+};
 
 const Footer = () => {
   return (
@@ -10,13 +18,16 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-12 lg:gap-20 items-start">
           <div>
             <h2 className="section-heading">
-              Engineering for
+              Got a part to design
               <br />
-              machined components.
+              and not much time to lose?
             </h2>
             <p className="arroyo-body text-lg md:text-xl mt-6 max-w-md">
-              Designed to Manufacture. Validated to Perform.
+              Neither do we. That&apos;s the point.
             </p>
+            <a href="#contact-name" onClick={focusContactForm} className="contact-pill mt-8">
+              Tell us about your project <ArrowRight size={16} />
+            </a>
 
             <ul className="mt-10 space-y-5">
               <li className="flex items-center gap-3">

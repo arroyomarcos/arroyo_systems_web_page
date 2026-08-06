@@ -2,13 +2,13 @@ import React from "react";
 import { ArrowRight } from "lucide-react";
 import { ASSETS } from "../mock";
 
-const Hero = () => {
-  const scrollToContact = (e) => {
-    e.preventDefault();
-    const el = document.getElementById("contact");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+const scrollToId = (id) => (e) => {
+  e.preventDefault();
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+};
 
+const Hero = () => {
   return (
     <section id="top" className="relative pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-24 overflow-hidden">
       <div className="absolute inset-0 hero-glow pointer-events-none" />
@@ -30,23 +30,23 @@ const Hero = () => {
         <div className="min-h-[420px] sm:min-h-[480px] md:min-h-[520px] flex items-center">
           <div className="reveal max-w-xl">
             <h1 className="arroyo-display text-4xl sm:text-5xl md:text-6xl lg:text-[4.2rem] leading-[1.05]">
-              Designed to Manufacture.
+              Engineering,
               <br />
-              <span className="text-[color:var(--arroyo-navy)]">Validated to Perform.</span>
+              <span className="text-[color:var(--arroyo-navy)]">on demand.</span>
             </h1>
             <p className="mt-6 text-base sm:text-lg md:text-xl arroyo-body max-w-lg">
-              Engineering for Machined Components
+              No retainers. No six-week discovery phase. No &quot;we&apos;ll circle back.&quot;
+            </p>
+            <p className="mt-4 text-base sm:text-lg md:text-xl arroyo-body max-w-lg">
+              You send the part. We design it, prove it works, and get it manufacturing-ready —
+              in days, not months.
             </p>
             <div className="mt-8 md:mt-10 flex flex-wrap gap-4 items-center">
-              <a
-                href="#contact"
-                onClick={scrollToContact}
-                className="contact-pill"
-              >
-                Contact Us <ArrowRight size={16} />
+              <a href="#products" onClick={scrollToId("products")} className="contact-pill">
+                See pricing <ArrowRight size={16} />
               </a>
-              <a href="#approach" className="link-underline">
-                Explore Approach
+              <a href="#contact" onClick={scrollToId("contact")} className="link-underline">
+                Start a project
               </a>
             </div>
           </div>

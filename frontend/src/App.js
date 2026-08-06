@@ -3,10 +3,8 @@ import "./App.css";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
-import Approach from "./components/sections/Approach";
-import Decisions from "./components/sections/Decisions";
-import Capabilities from "./components/sections/Capabilities";
 import Products from "./components/sections/Products";
+import WhyArroyo from "./components/sections/WhyArroyo";
 import Partners from "./components/sections/Partners";
 import Footer from "./components/Footer";
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -102,10 +100,8 @@ const Home = () => {
       <Header />
       <main>
         <Hero />
-        <Approach />
-        <Decisions />
-        <Capabilities />
         <Products />
+        <WhyArroyo />
         <Partners />
       </main>
       <Footer />
