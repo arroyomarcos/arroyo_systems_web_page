@@ -77,7 +77,7 @@ logger = logging.getLogger("arroyo")
 
 
 # ---------- Models ----------
-ProjectType = Literal["DFM", "Structural Validation", "Engineering Performance", "Other"]
+ProjectType = Literal["Rapid Design", "Validated Design", "Performance Design", "Other"]
 TAG_RE = re.compile(r"<[^>]*>")
 CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 URL_RE = re.compile(r"https?://|www\.", re.IGNORECASE)

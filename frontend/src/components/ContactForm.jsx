@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { submitContact } from "../lib/api";
 import { useToast } from "../hooks/use-toast";
 import {
@@ -38,7 +38,6 @@ const SuccessCard = ({ onReset }) => (
 const ContactForm = () => {
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
-  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const { toast } = useToast();
 
@@ -58,7 +57,7 @@ const ContactForm = () => {
   }, []);
 
   const onSubmit = useCallback(
-    async (ev) => {
+    (ev) => {
       ev.preventDefault();
       const validationErrors = validateContactForm(form);
       if (Object.keys(validationErrors).length > 0) {
@@ -66,29 +65,24 @@ const ContactForm = () => {
         return;
       }
 
-      setSubmitting(true);
-      try {
-        await submitContact(buildContactPayload(form));
-        setSubmitted(true);
-        setForm(INITIAL_FORM);
-        setErrors({});
-        toast({
-          title: "Message sent",
-          description: "Thanks for reaching out. We'll get back to you shortly.",
-        });
-      } catch (err) {
+      // Show the confirmation immediately — the request keeps sending in the
+      // background so a slow/cold backend doesn't stall the user's feedback.
+      const payload = buildContactPayload(form);
+      setSubmitted(true);
+      setForm(INITIAL_FORM);
+      setErrors({});
+
+      submitContact(payload).catch((err) => {
         const detail = err?.response?.data?.detail;
         toast({
-          title: "Something went wrong",
+          title: "Message may not have been delivered",
           description:
             typeof detail === "string"
               ? detail
-              : "Could not submit your message. Please try again.",
+              : "We couldn't confirm your message was sent. Please contact us by email if you don't hear back.",
           variant: "destructive",
         });
-      } finally {
-        setSubmitting(false);
-      }
+      });
     },
     [form, toast]
   );
@@ -176,16 +170,8 @@ const ContactForm = () => {
       )}
 
       <div className="mt-2">
-        <button type="submit" disabled={submitting} className="contact-pill">
-          {submitting ? (
-            <>
-              <Loader2 size={16} className="animate-spin" /> Sending...
-            </>
-          ) : (
-            <>
-              Send message <ArrowRight size={16} />
-            </>
-          )}
+        <button type="submit" className="contact-pill">
+          Send message <ArrowRight size={16} />
         </button>
       </div>
     </form>

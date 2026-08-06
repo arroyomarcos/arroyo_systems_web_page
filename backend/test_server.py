@@ -46,7 +46,7 @@ def valid_payload(**overrides):
         "name": "Maria Navarro",
         "email": "maria@example.com",
         "company": "Materials Navarro",
-        "project_type": "DFM",
+        "project_type": "Rapid Design",
         "message": "I need engineering support for a machined component.",
         "privacyAccepted": True,
     }

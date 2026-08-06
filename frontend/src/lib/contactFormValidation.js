@@ -3,9 +3,9 @@
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const PROJECT_TYPES = [
-  "DFM",
-  "Structural Validation",
-  "Engineering Performance",
+  "Rapid Design",
+  "Validated Design",
+  "Performance Design",
   "Other",
 ];
 
