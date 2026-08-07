@@ -3,13 +3,14 @@
 export const ASSETS = {
   logo: "/assets/brand/logo-arroyo-systems-transparent.png",
   hero: "https://arroyo-systems.com/assets/engineering/machined-component-hero.png",
-  displacementVm: "https://arroyo-systems.com/assets/engineering/displacement-vm-component.png",
+  safetyFactor: "https://arroyo-systems.com/assets/engineering/safety-factor-component.png",
+  safetyFactorLegend: "https://arroyo-systems.com/assets/engineering/safety-factor-legend.png",
   threeDConnexionLogo: "/assets/brand/3dconnexion-logo.png",
 };
 
 export const NAV_LINKS = [
   { label: "Engineering Solutions", href: "/#products" },
-  { label: "Why Arroyo", href: "/#why-arroyo" },
+  { label: "Why Us", href: "/#why-us" },
   { label: "Partners", href: "/#partners" },
 ];
 
@@ -28,7 +29,7 @@ export const CONTACT_URL = "https://forms.gle/FXNFHgEaYVS8Afbr7";
 export const LINKEDIN_URL = "https://www.linkedin.com/company/arroyo-systems-eng/";
 export const EMAIL = "contact@arroyo-systems.com";
 
-export const WHY_ARROYO_BULLETS = [
+export const WHY_US_BULLETS = [
   "Pricing is public. You see the range before you talk to us.",
   "Turnaround is measured in business days — most projects ship in one to three weeks, start to finish.",
   "Every design ships with structural validation. Not just a part that looks right — one that's proven to hold.",

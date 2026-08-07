@@ -1,9 +1,9 @@
 import React from "react";
-import { ASSETS, WHY_ARROYO_BULLETS } from "../../mock";
+import { ASSETS, WHY_US_BULLETS } from "../../mock";
 
-const WhyArroyo = () => {
+const WhyUs = () => {
   return (
-    <section id="why-arroyo" className="py-20 md:py-28 relative bg-white">
+    <section id="why-us" className="py-20 md:py-28 relative bg-white">
       <div className="arroyo-container">
         <div className="max-w-5xl">
           <h2 className="section-heading">
@@ -22,19 +22,23 @@ const WhyArroyo = () => {
           </div>
 
           <div className="figure-wrap">
-            <img
-              src={ASSETS.displacementVm}
-              alt="Structural validation of a load-critical component"
-              className="w-full h-auto object-contain max-h-[360px]"
-            />
-            <p className="fig-caption mt-6">
-              Structural validation runs on every design before it ships.
-            </p>
+            <div className="flex items-center gap-3">
+              <img
+                src={ASSETS.safetyFactor}
+                alt="Safety factor assessment applied to a load-critical component"
+                className="flex-1 min-w-0 w-full h-auto object-contain max-h-[360px]"
+              />
+              <img
+                src={ASSETS.safetyFactorLegend}
+                alt="Safety factor legend"
+                className="h-40 sm:h-52 md:h-64 w-auto object-contain shrink-0"
+              />
+            </div>
           </div>
         </div>
 
         <div className="mt-16 md:mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-10">
-          {WHY_ARROYO_BULLETS.map((b, idx) => (
+          {WHY_US_BULLETS.map((b, idx) => (
             <div key={b} className="pt-6">
               <div className="thin-divider mb-6" />
               <span className="text-xs md:text-sm font-mono text-[color:var(--arroyo-muted)]">
@@ -51,4 +55,4 @@ const WhyArroyo = () => {
   );
 };
 
-export default WhyArroyo;
+export default WhyUs;

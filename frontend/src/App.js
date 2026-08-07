@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Products from "./components/sections/Products";
-import WhyArroyo from "./components/sections/WhyArroyo";
+import WhyUs from "./components/sections/WhyUs";
 import Partners from "./components/sections/Partners";
 import Footer from "./components/Footer";
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -101,7 +101,7 @@ const Home = () => {
       <main>
         <Hero />
         <Products />
-        <WhyArroyo />
+        <WhyUs />
         <Partners />
       </main>
       <Footer />
