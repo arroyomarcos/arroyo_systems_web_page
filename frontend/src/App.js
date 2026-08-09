@@ -16,9 +16,9 @@ const SITE_URL = "https://www.arroyo-systems.com";
 
 const ROUTE_SEO = {
   "/": {
-    title: "Arroyo Systems | Designed to Manufacture, Validated to Perform",
+    title: "Arroyo Systems | Engineering, on demand.",
     description:
-      "Engineering for machined components. Arroyo Systems helps develop mechanical components under load with less technical uncertainty before manufacturing.",
+      "Engineering, on demand. We design machined and sheet-metal parts, validate them structurally, and get them manufacturing-ready — in days, not months.",
     canonical: `${SITE_URL}/`,
     robots: "index,follow",
   },
@@ -39,6 +39,18 @@ const ROUTE_SEO = {
     description: "Cookies policy for Arroyo Systems website.",
     canonical: `${SITE_URL}/cookies-policy`,
     robots: "noindex,follow",
+  },
+  "/admin": {
+    title: "Admin Login | Arroyo Systems",
+    description: "Arroyo Systems admin login.",
+    canonical: `${SITE_URL}/admin`,
+    robots: "noindex,nofollow",
+  },
+  "/admin/messages": {
+    title: "Admin Dashboard | Arroyo Systems",
+    description: "Arroyo Systems admin dashboard.",
+    canonical: `${SITE_URL}/admin/messages`,
+    robots: "noindex,nofollow",
   },
 };
 
