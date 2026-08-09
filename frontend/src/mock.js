@@ -9,7 +9,7 @@ export const ASSETS = {
 };
 
 export const NAV_LINKS = [
-  { label: "Engineering Solutions", href: "/#products" },
+  { label: "Solutions", href: "/#products" },
   { label: "Why Us", href: "/#why-us" },
   { label: "Partners", href: "/#partners" },
 ];

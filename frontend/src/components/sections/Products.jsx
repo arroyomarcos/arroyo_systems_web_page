@@ -76,10 +76,10 @@ const Products = () => {
     <section id="products" className="py-20 md:py-28 relative bg-white">
       <div className="arroyo-container">
         <div className="max-w-3xl">
-          <h2 className="section-heading">Engineering Solutions</h2>
+          <h2 className="section-heading">Solutions</h2>
           <p className="arroyo-body mt-4 text-base md:text-lg max-w-xl">
-            Three complementary services that reduce risk, cost and uncertainty across the full
-            design-to-manufacture lifecycle.
+            Three complementary services for machined parts and bent sheet metal, reducing risk,
+            cost and uncertainty across the full design-to-manufacture lifecycle.
           </p>
         </div>
 
