@@ -80,7 +80,7 @@ const Header = () => {
       >
         EN
       </Link>
-      <span className="text-[color:var(--arroyo-muted)]">/</span>
+      <span className="text-[color:var(--arroyo-muted)]">|</span>
       <Link
         to={lang === "es" ? location.pathname + location.hash : otherLangPath}
         onClick={switchLang("es")}

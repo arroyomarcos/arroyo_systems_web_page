@@ -198,7 +198,7 @@ export const content = {
       titleLine2: "on demand.",
       body1: "No retainers. No six-week discovery phase. No “we’ll circle back.”",
       body2:
-        "You send the part. We design it, prove it works, and get it manufacturing-ready — in days, not months.",
+        "You send the part. We design it, prove it works, and get it manufacturing-ready. In days, not months.",
       ctaPrimary: "See pricing",
       ctaSecondary: "Start a project",
     },
@@ -215,11 +215,11 @@ export const content = {
     whyUs: {
       heading:
         "We're not a consultancy. We're the engineer you'd hire in-house if you could afford to wait for one.",
-      body: "AI-accelerated design workflow. Manufacturing coordination built in — from finished design to a part in your hands, without you chasing suppliers. No account managers between you and the person doing the work.",
+      body: "AI-accelerated design workflow. Manufacturing coordination built in. From finished design to a part in your hands, without you chasing suppliers. No account managers between you and the person doing the work.",
       bullets: [
         "Pricing is public. You see the range before you talk to us.",
-        "Turnaround is measured in business days — most projects ship in one to three weeks, start to finish.",
-        "Every design ships with structural validation. Not just a part that looks right — one that's proven to hold.",
+        "Turnaround is measured in business days. Most projects ship in one to three weeks, start to finish.",
+        "Every design ships with structural validation. Not just a part that looks right. One that's proven to hold.",
       ],
     },
     partners: {
@@ -288,7 +288,7 @@ export const content = {
       home: {
         title: "Arroyo Systems | Engineering, on demand.",
         description:
-          "Engineering, on demand. We design machined and sheet-metal parts, validate them structurally, and get them manufacturing-ready — in days, not months.",
+          "Engineering, on demand. We design machined and sheet-metal parts, validate them structurally, and get them manufacturing-ready. In days, not months.",
       },
       privacyPolicy: {
         title: "Privacy Policy | Arroyo Systems",
@@ -312,7 +312,7 @@ export const content = {
       titleLine2: "bajo demanda.",
       body1: "Sin contratos de permanencia. Sin fases de descubrimiento de seis semanas. Sin “ya te llamaremos”.",
       body2:
-        "Nos envías la pieza. La diseñamos, demostramos que funciona y la dejamos lista para fabricar — en días, no meses.",
+        "Nos envías la pieza. La diseñamos, demostramos que funciona y la dejamos lista para fabricar. En días, no meses.",
       ctaPrimary: "Ver precios",
       ctaSecondary: "Empezar un proyecto",
     },
@@ -329,10 +329,10 @@ export const content = {
     whyUs: {
       heading:
         "No somos una consultora. Somos el ingeniero que contratarías internamente si pudieras permitirte esperar a encontrarlo.",
-      body: "Flujo de diseño acelerado con IA. Coordinación de fabricación incluida — del diseño terminado a la pieza en tus manos, sin que tengas que perseguir proveedores. Sin gestores de cuenta entre tú y quien hace el trabajo.",
+      body: "Flujo de diseño acelerado con IA. Coordinación de fabricación incluida. Del diseño terminado a la pieza en tus manos, sin que tengas que perseguir proveedores. Sin gestores de cuenta entre tú y quien hace el trabajo.",
       bullets: [
         "Los precios son públicos. Ves el rango antes de hablar con nosotros.",
-        "Los plazos se miden en días laborables — la mayoría de proyectos se entregan en una a tres semanas, de principio a fin.",
+        "Los plazos se miden en días laborables. La mayoría de proyectos se entregan en una a tres semanas, de principio a fin.",
         "Todo diseño se entrega con validación estructural. No solo una pieza que parece correcta, sino una que está demostrado que aguanta.",
       ],
     },
@@ -401,7 +401,7 @@ export const content = {
       home: {
         title: "Arroyo Systems | Ingeniería, bajo demanda.",
         description:
-          "Ingeniería, bajo demanda. Diseñamos piezas mecanizadas y de chapa, las validamos estructuralmente, y las dejamos listas para fabricar — en días, no meses.",
+          "Ingeniería, bajo demanda. Diseñamos piezas mecanizadas y de chapa, las validamos estructuralmente, y las dejamos listas para fabricar. En días, no meses.",
       },
       privacyPolicy: {
         title: "Política de Privacidad | Arroyo Systems",
