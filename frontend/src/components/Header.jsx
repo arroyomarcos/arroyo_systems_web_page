@@ -1,13 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { NAV_LINKS, ASSETS } from "../mock";
+import { NAV_HREFS, ASSETS } from "../mock";
+import { content } from "../i18n/content";
+import { useLang, stripLangPrefix, withLang, LANG_PREF_KEY } from "../i18n/useLang";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const lang = useLang();
+  const t = content[lang];
+  const base = lang === "es" ? "/es" : "";
+  const homePath = lang === "es" ? "/es" : "/";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -16,6 +22,12 @@ const Header = () => {
   }, []);
 
   const closeMenu = useCallback(() => setOpen(false), []);
+
+  const navItems = [
+    { key: "solutions", label: t.nav.solutions, href: `${base}${NAV_HREFS.solutions}` },
+    { key: "whyUs", label: t.nav.whyUs, href: `${base}${NAV_HREFS.whyUs}` },
+    { key: "partners", label: t.nav.partners, href: `${base}${NAV_HREFS.partners}` },
+  ];
 
   const handleHashNavigation = useCallback(
     (e, href) => {
@@ -36,15 +48,48 @@ const Header = () => {
       e.preventDefault();
       closeMenu();
 
-      if (location.pathname !== "/") {
-        navigate("/#contact");
+      if (location.pathname !== homePath) {
+        navigate(`${base}/#contact`);
         return;
       }
 
       const el = document.getElementById("contact");
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     },
-    [closeMenu, location.pathname, navigate]
+    [closeMenu, location.pathname, navigate, homePath, base]
+  );
+
+  const otherLang = lang === "es" ? "en" : "es";
+  const otherLangPath = withLang(otherLang, stripLangPrefix(location.pathname)) + location.hash;
+
+  const switchLang = useCallback(
+    (nextLang) => () => {
+      window.localStorage.setItem(LANG_PREF_KEY, nextLang);
+      closeMenu();
+    },
+    [closeMenu]
+  );
+
+  const LangSwitch = ({ className = "" }) => (
+    <div className={`flex items-center gap-1 text-sm font-semibold ${className}`}>
+      <Link
+        to={lang === "en" ? location.pathname + location.hash : otherLangPath}
+        onClick={switchLang("en")}
+        aria-current={lang === "en" ? "true" : undefined}
+        className={lang === "en" ? "text-[color:var(--arroyo-navy)]" : "text-[color:var(--arroyo-muted)] hover:text-[color:var(--arroyo-navy)] transition-colors"}
+      >
+        EN
+      </Link>
+      <span className="text-[color:var(--arroyo-muted)]">/</span>
+      <Link
+        to={lang === "es" ? location.pathname + location.hash : otherLangPath}
+        onClick={switchLang("es")}
+        aria-current={lang === "es" ? "true" : undefined}
+        className={lang === "es" ? "text-[color:var(--arroyo-navy)]" : "text-[color:var(--arroyo-muted)] hover:text-[color:var(--arroyo-navy)] transition-colors"}
+      >
+        ES
+      </Link>
+    </div>
   );
 
   return (
@@ -57,7 +102,7 @@ const Header = () => {
     >
       <div className="arroyo-container flex items-center justify-between h-20 md:h-24">
         {/* Logo */}
-        <Link to="/" className="shrink-0" onClick={closeMenu}>
+        <Link to={homePath} className="shrink-0" onClick={closeMenu}>
           <span className="logo-badge">
             <img
               src={ASSETS.logo}
@@ -69,17 +114,19 @@ const Header = () => {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-5 lg:gap-10">
-          {NAV_LINKS.map((l) => (
-            <Link key={l.href} to={l.href} className="nav-link" onClick={(e) => handleHashNavigation(e, l.href)}>
+          {navItems.map((l) => (
+            <Link key={l.key} to={l.href} className="nav-link" onClick={(e) => handleHashNavigation(e, l.href)}>
               {l.label}
             </Link>
           ))}
         </nav>
 
-        {/* CTA - Desktop */}
-        <a href="/#contact" onClick={scrollToContact} className="hidden md:inline-flex contact-pill">
-          Contact Us
-        </a>
+        <div className="hidden md:flex items-center gap-5 lg:gap-6">
+          <LangSwitch />
+          <a href={`${base}/#contact`} onClick={scrollToContact} className="contact-pill">
+            {t.nav.contact}
+          </a>
+        </div>
 
         {/* Mobile toggle */}
         <button
@@ -98,9 +145,9 @@ const Header = () => {
         }`}
       >
         <div className="arroyo-container py-4 flex flex-col gap-4">
-          {NAV_LINKS.map((l) => (
+          {navItems.map((l) => (
             <Link
-              key={l.href}
+              key={l.key}
               to={l.href}
               className="nav-link py-1 text-base"
               onClick={(e) => handleHashNavigation(e, l.href)}
@@ -108,12 +155,13 @@ const Header = () => {
               {l.label}
             </Link>
           ))}
+          <LangSwitch className="py-1" />
           <a
-            href="/#contact"
+            href={`${base}/#contact`}
             className="contact-pill self-start mt-2"
             onClick={scrollToContact}
           >
-            Contact Us
+            {t.nav.contact}
           </a>
         </div>
       </div>

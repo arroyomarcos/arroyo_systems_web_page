@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { PACKAGES } from "../../mock";
 import { ArrowUpRight } from "lucide-react";
 import {
   Dialog,
@@ -8,6 +7,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "../ui/dialog";
+import { useContent } from "../../i18n/useLang";
 
 const MetaField = ({ label, value, valueClassName = "" }) => (
   <div>
@@ -18,7 +18,7 @@ const MetaField = ({ label, value, valueClassName = "" }) => (
   </div>
 );
 
-const PackageDialog = ({ pkg, onOpenChange }) => (
+const PackageDialog = ({ pkg, onOpenChange, t }) => (
   <Dialog open={!!pkg} onOpenChange={onOpenChange}>
     <DialogContent
       overlayClassName="bg-white/60"
@@ -47,7 +47,7 @@ const PackageDialog = ({ pkg, onOpenChange }) => (
 
           <div className="mt-8">
             <p className="text-xs font-semibold tracking-[0.15em] uppercase text-[color:var(--arroyo-accent)] mb-4">
-              Deliverables
+              {t.deliverablesLabel}
             </p>
             <ul className="space-y-4">
               {pkg.deliverables.map((d) => (
@@ -60,8 +60,8 @@ const PackageDialog = ({ pkg, onOpenChange }) => (
           </div>
 
           <div className="mt-8 pt-6 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
-            <MetaField label="Lead time" value={pkg.leadTime} />
-            <MetaField label="Revisions" value={pkg.revisions} />
+            <MetaField label={t.leadTimeLabel} value={pkg.leadTime} />
+            <MetaField label={t.revisionsLabel} value={pkg.revisions} />
           </div>
         </>
       )}
@@ -70,31 +70,29 @@ const PackageDialog = ({ pkg, onOpenChange }) => (
 );
 
 const Products = () => {
+  const t = useContent().products;
   const [activePackage, setActivePackage] = useState(null);
 
   return (
     <section id="products" className="py-20 md:py-28 relative bg-white">
       <div className="arroyo-container">
         <div className="max-w-3xl">
-          <h2 className="section-heading">Solutions</h2>
-          <p className="arroyo-body mt-4 text-base md:text-lg max-w-xl">
-            Three complementary services for machined parts and bent sheet metal, reducing risk,
-            cost and uncertainty across the full design-to-manufacture lifecycle.
-          </p>
+          <h2 className="section-heading">{t.heading}</h2>
+          <p className="arroyo-body mt-4 text-base md:text-lg max-w-xl">{t.subtitle}</p>
         </div>
 
         <div className="mt-14 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-10">
-          {PACKAGES.map((p, idx) => (
+          {t.packages.map((p, idx) => (
             <div key={p.id} className="group relative pt-6 flex flex-col">
               <div className="thin-divider mb-6" />
               <div className="flex items-start justify-between mb-4">
                 <span className="text-xs md:text-sm font-mono text-[color:var(--arroyo-muted)]">
-                  {String(idx + 1).padStart(2, "0")} / {String(PACKAGES.length).padStart(2, "0")}
+                  {String(idx + 1).padStart(2, "0")} / {String(t.packages.length).padStart(2, "0")}
                 </span>
                 <button
                   type="button"
                   onClick={() => setActivePackage(p)}
-                  aria-label={`View full details for ${p.name}`}
+                  aria-label={t.viewDetailsAria(p.name)}
                   className="-m-2 p-2 text-[color:var(--arroyo-muted)] hover:text-[color:var(--arroyo-accent)] transition-colors"
                 >
                   <ArrowUpRight
@@ -117,7 +115,7 @@ const Products = () => {
         </div>
       </div>
 
-      <PackageDialog pkg={activePackage} onOpenChange={(open) => !open && setActivePackage(null)} />
+      <PackageDialog pkg={activePackage} onOpenChange={(open) => !open && setActivePackage(null)} t={t} />
     </section>
   );
 };

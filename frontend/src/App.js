@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Products from "./components/sections/Products";
@@ -11,45 +11,29 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import { CookiesPolicy, LegalNotice, PrivacyPolicy } from "./pages/LegalPage";
 import { Toaster } from "./components/ui/toaster";
+import { getContent } from "./i18n/content";
+import { getLangFromPath, stripLangPrefix, withLang } from "./i18n/useLang";
 
 const SITE_URL = "https://www.arroyo-systems.com";
+const LANG_PREF_KEY = "arroyo_lang";
 
-const ROUTE_SEO = {
-  "/": {
-    title: "Arroyo Systems | Engineering, on demand.",
-    description:
-      "Engineering, on demand. We design machined and sheet-metal parts, validate them structurally, and get them manufacturing-ready — in days, not months.",
-    canonical: `${SITE_URL}/`,
-    robots: "index,follow",
-  },
-  "/privacy-policy": {
-    title: "Privacy Policy | Arroyo Systems",
-    description: "Privacy policy for Arroyo Systems website and contact form data processing.",
-    canonical: `${SITE_URL}/privacy-policy`,
-    robots: "noindex,follow",
-  },
-  "/legal-notice": {
-    title: "Legal Notice | Arroyo Systems",
-    description: "Legal notice and website owner information for Arroyo Systems.",
-    canonical: `${SITE_URL}/legal-notice`,
-    robots: "noindex,follow",
-  },
-  "/cookies-policy": {
-    title: "Cookies Policy | Arroyo Systems",
-    description: "Cookies policy for Arroyo Systems website.",
-    canonical: `${SITE_URL}/cookies-policy`,
-    robots: "noindex,follow",
-  },
+// Maps a language-stripped pathname to the content.seo key and canonical path.
+const PAGE_ROUTES = {
+  "/": "home",
+  "/privacy-policy": "privacyPolicy",
+  "/legal-notice": "legalNotice",
+  "/cookies-policy": "cookiesPolicy",
+};
+
+const ADMIN_SEO = {
   "/admin": {
     title: "Admin Login | Arroyo Systems",
     description: "Arroyo Systems admin login.",
-    canonical: `${SITE_URL}/admin`,
     robots: "noindex,nofollow",
   },
   "/admin/messages": {
     title: "Admin Dashboard | Arroyo Systems",
     description: "Arroyo Systems admin dashboard.",
-    canonical: `${SITE_URL}/admin/messages`,
     robots: "noindex,nofollow",
   },
 };
@@ -64,21 +48,52 @@ const setMetaTag = (selector, attrName, attrValue, content) => {
   tag.setAttribute("content", content);
 };
 
-const setLinkTag = (rel, href) => {
-  let tag = document.head.querySelector(`link[rel="${rel}"]`);
+const setLinkTag = (selector, rel, href, extraAttrs = {}) => {
+  let tag = document.head.querySelector(selector);
   if (!tag) {
     tag = document.createElement("link");
     tag.setAttribute("rel", rel);
+    Object.entries(extraAttrs).forEach(([k, v]) => tag.setAttribute(k, v));
     document.head.appendChild(tag);
   }
   tag.setAttribute("href", href);
 };
 
+const removeTag = (selector) => {
+  const tag = document.head.querySelector(selector);
+  if (tag) tag.remove();
+};
+
 const RouteEffects = () => {
   const location = useLocation();
+  const lang = getLangFromPath(location.pathname);
+  const basePath = stripLangPrefix(location.pathname);
 
   React.useEffect(() => {
-    const seo = ROUTE_SEO[location.pathname] || ROUTE_SEO["/"];
+    document.documentElement.lang = lang;
+
+    const adminSeo = ADMIN_SEO[basePath];
+    const pageKey = PAGE_ROUTES[basePath];
+
+    let seo;
+    let alternates = null;
+    if (adminSeo) {
+      seo = { ...adminSeo, canonical: `${SITE_URL}${basePath}` };
+    } else {
+      const pk = pageKey || "home";
+      const t = getContent(lang);
+      const enPath = pk === "home" ? "/" : basePath;
+      seo = {
+        title: t.seo[pk].title,
+        description: t.seo[pk].description,
+        robots: pk === "home" ? "index,follow" : "noindex,follow",
+        canonical: `${SITE_URL}${withLang(lang, enPath)}`,
+      };
+      alternates = {
+        en: `${SITE_URL}${enPath}`,
+        es: `${SITE_URL}${withLang("es", enPath)}`,
+      };
+    }
 
     document.title = seo.title;
     setMetaTag('meta[name="description"]', "name", "description", seo.description);
@@ -88,8 +103,20 @@ const RouteEffects = () => {
     setMetaTag('meta[property="og:url"]', "property", "og:url", seo.canonical);
     setMetaTag('meta[name="twitter:title"]', "name", "twitter:title", seo.title);
     setMetaTag('meta[name="twitter:description"]', "name", "twitter:description", seo.description);
-    setLinkTag("canonical", seo.canonical);
-  }, [location.pathname]);
+    setLinkTag('link[rel="canonical"]', "canonical", seo.canonical);
+
+    if (alternates) {
+      setLinkTag('link[rel="alternate"][hreflang="en"]', "alternate", alternates.en, { hreflang: "en" });
+      setLinkTag('link[rel="alternate"][hreflang="es"]', "alternate", alternates.es, { hreflang: "es" });
+      setLinkTag('link[rel="alternate"][hreflang="x-default"]', "alternate", alternates.en, {
+        hreflang: "x-default",
+      });
+    } else {
+      removeTag('link[rel="alternate"][hreflang="en"]');
+      removeTag('link[rel="alternate"][hreflang="es"]');
+      removeTag('link[rel="alternate"][hreflang="x-default"]');
+    }
+  }, [location.pathname, lang, basePath]);
 
   React.useEffect(() => {
     if (!location.hash) {
@@ -104,6 +131,17 @@ const RouteEffects = () => {
   }, [location.pathname, location.hash]);
 
   return null;
+};
+
+// Redirects a first-time visitor away from the English root to /es if their
+// browser prefers Spanish. Only runs on "/", never overrides a direct link,
+// and never fires again once the visitor has an explicit stored preference.
+const RootLanguageRedirect = () => {
+  const stored = window.localStorage.getItem(LANG_PREF_KEY);
+  if (stored) return stored === "es" ? <Navigate to="/es" replace /> : null;
+
+  const prefersSpanish = (window.navigator.language || "").toLowerCase().startsWith("es");
+  return prefersSpanish ? <Navigate to="/es" replace /> : null;
 };
 
 const Home = () => {
@@ -127,10 +165,22 @@ function App() {
       <BrowserRouter>
         <RouteEffects />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/"
+            element={
+              <>
+                <RootLanguageRedirect />
+                <Home />
+              </>
+            }
+          />
+          <Route path="/es" element={<Home />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/es/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/legal-notice" element={<LegalNotice />} />
+          <Route path="/es/legal-notice" element={<LegalNotice />} />
           <Route path="/cookies-policy" element={<CookiesPolicy />} />
+          <Route path="/es/cookies-policy" element={<CookiesPolicy />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/messages" element={<AdminDashboard />} />
         </Routes>

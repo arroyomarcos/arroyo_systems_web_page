@@ -1,13 +1,7 @@
-// Validation utilities for the contact form.
+// Validation utilities for the contact form. Language-agnostic: returns
+// error keys, which the form translates via content.contactForm.validation.
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-export const PROJECT_TYPES = [
-  "Rapid Design",
-  "Validated Design",
-  "Performance Design",
-  "Other",
-];
 
 export const INITIAL_FORM = {
   name: "",
@@ -21,21 +15,21 @@ export const INITIAL_FORM = {
 /**
  * Validate the contact form.
  * @param {typeof INITIAL_FORM} form
- * @returns {{[key: string]: string}} map of field -> error message (empty object when valid)
+ * @returns {{[key: string]: "required"|"invalidEmail"|"messageTooShort"}} map of field -> error key
  */
 export const validateContactForm = (form) => {
   const errors = {};
-  if (!form.name.trim()) errors.name = "Required";
+  if (!form.name.trim()) errors.name = "required";
   if (!form.email.trim()) {
-    errors.email = "Required";
+    errors.email = "required";
   } else if (!EMAIL_REGEX.test(form.email)) {
-    errors.email = "Invalid email";
+    errors.email = "invalidEmail";
   }
   if (!form.message.trim() || form.message.trim().length < 10) {
-    errors.message = "Please provide at least 10 characters";
+    errors.message = "messageTooShort";
   }
   if (!form.privacyAccepted) {
-    errors.privacyAccepted = "Required";
+    errors.privacyAccepted = "required";
   }
   return errors;
 };

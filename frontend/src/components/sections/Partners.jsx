@@ -1,21 +1,21 @@
 import React from "react";
-import { ASSETS, PARTNERS } from "../../mock";
+import { ASSETS } from "../../mock";
 import { ArrowUpRight } from "lucide-react";
+import { useContent } from "../../i18n/useLang";
 
 const Partners = () => {
+  const t = useContent().partners;
+
   return (
     <section id="partners" className="py-20 md:py-28 relative bg-white">
       <div className="arroyo-container">
         <div className="max-w-3xl">
-          <h2 className="section-heading">Partners</h2>
-          <p className="arroyo-body mt-4 text-base md:text-lg max-w-xl">
-            We collaborate with hardware and software providers that strengthen how we design,
-            validate and review mechanical components.
-          </p>
+          <h2 className="section-heading">{t.heading}</h2>
+          <p className="arroyo-body mt-4 text-base md:text-lg max-w-xl">{t.subtitle}</p>
         </div>
 
         <div className="mt-14 md:mt-20 flex justify-center">
-          {PARTNERS.map((p) => (
+          {t.items.map((p) => (
             <a
               key={p.id}
               href={p.url}
@@ -33,7 +33,7 @@ const Partners = () => {
               </div>
               <p className="arroyo-body text-sm md:text-base mb-4">{p.description}</p>
               <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--arroyo-navy)] group-hover:text-[color:var(--arroyo-accent)] transition-colors">
-                Visit website
+                {t.visitWebsite}
                 <ArrowUpRight
                   size={16}
                   className="group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform"
