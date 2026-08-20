@@ -11,7 +11,7 @@ from email.message import EmailMessage
 from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Response
-from pydantic import BaseModel, EmailStr, Field, model_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 from pymongo import ReturnDocument
 from starlette.concurrency import run_in_threadpool
 
@@ -76,6 +76,21 @@ class QuoteCreate(BaseModel):
     vat_rate: float = Field(default=0.21, ge=0, le=1)
     currency: str = Field(default="eur", min_length=3, max_length=3)
     items: list[QuoteItemInput] = Field(min_length=1)
+
+
+class FinalPaymentRequest(BaseModel):
+    # Extra Engineering Hours for delays or small scope changes discovered during the
+    # project. Always billed entirely in the final payment, never split with the deposit
+    # already collected - see compute_quote_totals.
+    additional_items: list[QuoteItemInput] = Field(default_factory=list)
+
+    @field_validator("additional_items")
+    @classmethod
+    def only_engineering_hours(cls, items: list[QuoteItemInput]) -> list[QuoteItemInput]:
+        for item in items:
+            if item.type != "engineering_hours":
+                raise ValueError("Only Engineering Hours can be added when requesting the final payment")
+        return items
 
 
 # ---------- Helpers ----------
@@ -409,28 +424,39 @@ async def send_quote(quote_id: str, current: str = Depends(server.get_current_ad
 
 
 @admin_quotes_router.post("/{quote_id}/request-final-payment")
-async def request_final_payment(quote_id: str, current: str = Depends(server.get_current_admin)):
+async def request_final_payment(
+    quote_id: str, payload: FinalPaymentRequest, current: str = Depends(server.get_current_admin)
+):
     quote = await _get_quote_or_404(quote_id)
     if quote["status"] != "IN_PROGRESS" or quote["payment_status"] != "DEPOSIT_PAID":
         raise HTTPException(status_code=409, detail="Final payment can only be requested for an in-progress quote with a paid deposit")
 
     customer = await _get_customer_or_404(quote["customer_id"])
     now = datetime.now(timezone.utc)
-    await server.db.quotes.update_one(
-        {"_id": quote_id},
-        {"$set": {"status": "FINAL_PAYMENT_REQUESTED", "final_requested_at": now, "updated_at": now}},
-    )
+
+    update = {"status": "FINAL_PAYMENT_REQUESTED", "final_requested_at": now, "updated_at": now}
+    if payload.additional_items:
+        # Recomputing totals here only ever grows remaining_amount: additional_items are
+        # restricted to Engineering Hours above, and deposit_amount depends solely on
+        # package items, so the deposit already charged is never altered retroactively.
+        new_items = _process_items(payload.additional_items)
+        all_items = quote["items"] + new_items
+        update["items"] = all_items
+        update.update(compute_quote_totals(all_items, quote["vat_rate"]))
+
+    await server.db.quotes.update_one({"_id": quote_id}, {"$set": update})
+    updated = await server.db.quotes.find_one({"_id": quote_id})
+
     await _send_quote_email(
-        quote, customer,
-        subject=f"Arroyo Systems - Final payment due for {quote['quote_number']}",
+        updated, customer,
+        subject=f"Arroyo Systems - Final payment due for {updated['quote_number']}",
         intro_lines=[
             f"Hi {customer.get('contact_person') or customer.get('company_name')},",
             "",
-            f"The work on {quote['project_name']} is complete. The remaining balance "
-            f"of {quote['remaining_amount']:.2f} {quote['currency'].upper()} is now due.",
+            f"The work on {updated['project_name']} is complete. The remaining balance "
+            f"of {updated['remaining_amount']:.2f} {updated['currency'].upper()} is now due.",
         ],
     )
-    updated = await server.db.quotes.find_one({"_id": quote_id})
     return _serialize_quote(updated)
 
 

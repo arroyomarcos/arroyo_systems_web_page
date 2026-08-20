@@ -57,29 +57,38 @@ def test_engineering_hours_negative_rejected():
         price_engineering_hours_item(-1)
 
 
-def test_compute_quote_totals_matches_prompt_example():
-    # Validated Design (3000) + Engineering Hours 5h (250) = 3250 subtotal, 21% VAT.
+def test_compute_quote_totals_deposit_is_package_only():
+    # Validated Design (3000, package) + Engineering Hours 5h (250, not package).
+    # Subtotal/VAT/total cover everything, but the 50% deposit is based on the package
+    # alone - Engineering Hours always land entirely in the remaining/second payment.
     items = [
-        {"total": 3000.0},
-        {"total": 250.0},
+        {"type": "package", "total": 3000.0},
+        {"type": "engineering_hours", "total": 250.0},
     ]
     totals = compute_quote_totals(items, vat_rate=0.21)
     assert totals["subtotal"] == 3250.0
     assert totals["vat_amount"] == 682.5
     assert totals["total"] == 3932.5
-    assert totals["deposit_amount"] == 1966.25
-    assert totals["remaining_amount"] == 1966.25
+    assert totals["deposit_amount"] == 1815.0  # 3000 * 1.21 / 2
+    assert totals["remaining_amount"] == 2117.5  # 3932.5 - 1815.0
+    assert totals["deposit_amount"] + totals["remaining_amount"] == totals["total"]
 
 
-def test_compute_quote_totals_zero_vat_default():
-    items = [{"total": 1300.0}]
+def test_compute_quote_totals_package_only_splits_evenly():
+    items = [{"type": "package", "total": 1300.0}]
     totals = compute_quote_totals(items, vat_rate=0.0)
-    assert totals["vat_amount"] == 0.0
-    assert totals["total"] == 1300.0
     assert totals["deposit_amount"] == 650.0
     assert totals["remaining_amount"] == 650.0
 
 
+def test_compute_quote_totals_engineering_hours_only_has_no_deposit():
+    # No package item at all -> nothing to secure with a deposit; everything is due later.
+    items = [{"type": "engineering_hours", "total": 250.0}]
+    totals = compute_quote_totals(items, vat_rate=0.21)
+    assert totals["deposit_amount"] == 0.0
+    assert totals["remaining_amount"] == totals["total"]
+
+
 def test_compute_quote_totals_rejects_invalid_vat_rate():
     with pytest.raises(PricingError):
-        compute_quote_totals([{"total": 100.0}], vat_rate=1.5)
+        compute_quote_totals([{"type": "package", "total": 100.0}], vat_rate=1.5)

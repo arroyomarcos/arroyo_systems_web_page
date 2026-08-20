@@ -125,8 +125,11 @@ def test_create_quote_matches_prompt_example(admin_client):
     assert body["subtotal"] == 3250.0
     assert body["vat_amount"] == 682.5
     assert body["total"] == 3932.5
-    assert body["deposit_amount"] == 1966.25
-    assert body["remaining_amount"] == 1966.25
+    # Deposit is 50% of the package (Validated Design) only, incl. VAT: 3000 * 1.21 / 2.
+    # Engineering Hours always land in the remaining/second payment, never split.
+    assert body["deposit_amount"] == 1815.0
+    assert body["remaining_amount"] == 2117.5
+    assert body["deposit_amount"] + body["remaining_amount"] == body["total"]
     assert body["status"] == "DRAFT"
     assert body["payment_status"] == "UNPAID"
     assert body["quote_number"].startswith("AS-")
@@ -296,6 +299,61 @@ def test_pay_final_only_allowed_after_final_payment_requested(admin_client, db):
     client = TestClient(server.app)
     response = client.post(f"/api/quotes/public/{token}/pay-final")
     assert response.status_code == 409
+
+
+def test_request_final_payment_requires_deposit_paid(admin_client):
+    quote = admin_client.post("/api/admin/quotes", json=quote_payload(items=[
+        {"type": "package", "product_key": "rapid_design"},
+    ])).json()
+    response = admin_client.post(
+        f"/api/admin/quotes/{quote['id']}/request-final-payment", json={"additional_items": []}
+    )
+    assert response.status_code == 409
+
+
+def test_request_final_payment_can_add_engineering_hours_without_touching_deposit(admin_client, db):
+    quote = admin_client.post("/api/admin/quotes", json=quote_payload(items=[
+        {"type": "package", "product_key": "rapid_design"},
+    ])).json()
+    original_deposit = quote["deposit_amount"]
+    original_remaining = quote["remaining_amount"]
+
+    for d in db.quotes.docs:
+        if d["_id"] == quote["id"]:
+            d["status"] = "IN_PROGRESS"
+            d["payment_status"] = "DEPOSIT_PAID"
+
+    response = admin_client.post(
+        f"/api/admin/quotes/{quote['id']}/request-final-payment",
+        json={"additional_items": [{"type": "engineering_hours", "quantity": 3, "description": "Delay rework"}]},
+    )
+    assert response.status_code == 200
+    body = response.json()
+
+    assert body["status"] == "FINAL_PAYMENT_REQUESTED"
+    # Deposit already charged must never change - only Engineering Hours are addable here,
+    # and deposit_amount depends solely on package items.
+    assert body["deposit_amount"] == original_deposit
+    # 3h x EUR50 = EUR150 excl. VAT; quote_payload() defaults to 21% VAT.
+    assert body["remaining_amount"] == round(original_remaining + 3 * 50.0 * 1.21, 2)
+    assert len(body["items"]) == 2
+    assert any(item["type"] == "engineering_hours" and item["quantity"] == 3 for item in body["items"])
+
+
+def test_request_final_payment_rejects_package_as_additional_item(admin_client, db):
+    quote = admin_client.post("/api/admin/quotes", json=quote_payload(items=[
+        {"type": "package", "product_key": "rapid_design"},
+    ])).json()
+    for d in db.quotes.docs:
+        if d["_id"] == quote["id"]:
+            d["status"] = "IN_PROGRESS"
+            d["payment_status"] = "DEPOSIT_PAID"
+
+    response = admin_client.post(
+        f"/api/admin/quotes/{quote['id']}/request-final-payment",
+        json={"additional_items": [{"type": "package", "product_key": "validated_design"}]},
+    )
+    assert response.status_code == 422
 
 
 def test_webhook_confirms_deposit_and_is_idempotent(admin_client, db, monkeypatch):

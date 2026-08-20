@@ -65,6 +65,9 @@ const AdminQuoteEditor = () => {
   const [vatPercent, setVatPercent] = useState(21);
   const [currency, setCurrency] = useState("eur");
   const [items, setItems] = useState([]);
+  const [extraHours, setExtraHours] = useState(""); // Engineering Hours added at final-payment time
+  const [extraHoursDesc, setExtraHoursDesc] = useState("");
+  const [requestingFinal, setRequestingFinal] = useState(false);
 
   React.useEffect(() => {
     if (!getToken()) navigate("/admin", { replace: true });
@@ -151,7 +154,12 @@ const AdminQuoteEditor = () => {
   const subtotal = items.reduce((sum, it) => sum + previewItemTotal(it), 0);
   const vatAmount = subtotal * (vatPercent / 100);
   const total = subtotal + vatAmount;
-  const deposit = total / 2;
+  // Deposit is 50% of package items only (incl. VAT) - Engineering Hours always fall
+  // entirely into the remaining/second payment. Mirrors backend/pricing.py.
+  const packageSubtotal = items
+    .filter((it) => it.type === "package")
+    .reduce((sum, it) => sum + previewItemTotal(it), 0);
+  const deposit = (packageSubtotal * (1 + vatPercent / 100)) / 2;
 
   const buildPayload = () => ({
     customer,
@@ -213,12 +221,20 @@ const AdminQuoteEditor = () => {
   };
 
   const onRequestFinalPayment = async () => {
+    const qty = Number(extraHours) || 0;
+    const additionalItems =
+      qty > 0 ? [{ type: "engineering_hours", quantity: qty, description: extraHoursDesc || undefined }] : [];
+    setRequestingFinal(true);
     try {
-      const updated = await requestFinalPayment(id);
+      const updated = await requestFinalPayment(id, additionalItems);
       setQuote(updated);
+      setExtraHours("");
+      setExtraHoursDesc("");
       toast({ title: "Final payment requested" });
     } catch (err) {
       handleError(err, "Could not request final payment");
+    } finally {
+      setRequestingFinal(false);
     }
   };
 
@@ -265,11 +281,6 @@ const AdminQuoteEditor = () => {
               {["DRAFT", "SENT"].includes(quote.status) && (
                 <Button variant="outline" size="sm" onClick={onSend}>
                   <Send size={14} /> {quote.status === "DRAFT" ? "Send" : "Resend"}
-                </Button>
-              )}
-              {quote.status === "IN_PROGRESS" && quote.payment_status === "DEPOSIT_PAID" && (
-                <Button size="sm" onClick={onRequestFinalPayment}>
-                  <Wallet size={14} /> Request final payment
                 </Button>
               )}
               {quote.payment_status === "UNPAID" && !editable && (
@@ -465,6 +476,47 @@ const AdminQuoteEditor = () => {
             </div>
           </div>
         </div>
+
+        {!isNew && quote?.status === "IN_PROGRESS" && quote?.payment_status === "DEPOSIT_PAID" && (
+          <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+            <div>
+              <h2 className="font-medium">Request final payment</h2>
+              <p className="text-sm text-[color:var(--arroyo-muted)] mt-1">
+                The remaining balance is always due in full. If delays or scope changes added
+                Engineering Hours, add them here - they're billed entirely in this final payment,
+                never split into the deposit already paid.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Field label="Extra Engineering Hours (optional)">
+                <Input
+                  type="number"
+                  min="0"
+                  value={extraHours}
+                  onChange={(e) => setExtraHours(e.target.value)}
+                  placeholder="0"
+                />
+              </Field>
+              <Field label="Description" className="md:col-span-2">
+                <Input
+                  value={extraHoursDesc}
+                  onChange={(e) => setExtraHoursDesc(e.target.value)}
+                  placeholder="e.g. Extra revisions requested by client"
+                />
+              </Field>
+            </div>
+            {Number(extraHours) > 0 && (
+              <p className="text-sm text-[color:var(--arroyo-muted)]">
+                Adds {formatAmount(Number(extraHours) * ENGINEERING_RATE, currency)} to the final payment.
+              </p>
+            )}
+            <div className="flex justify-end">
+              <Button onClick={onRequestFinalPayment} disabled={requestingFinal}>
+                <Wallet size={14} /> {requestingFinal ? "Requesting..." : "Request final payment"}
+              </Button>
+            </div>
+          </div>
+        )}
 
         {editable && (
           <div className="flex justify-end">

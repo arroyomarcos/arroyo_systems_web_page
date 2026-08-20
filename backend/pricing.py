@@ -102,14 +102,23 @@ class QuoteTotals(TypedDict):
 
 def compute_quote_totals(items: list[dict], vat_rate: float) -> QuoteTotals:
     """Single source of truth for quote totals - used by the create/edit endpoint, the PDF,
-    and the Stripe checkout amount, so the three can never disagree."""
+    and the Stripe checkout amount, so the three can never disagree.
+
+    The 50% deposit is calculated from package items only. Engineering Hours (and any other
+    non-package addition, whenever added - at quote creation or later when requesting the
+    final payment) always fall entirely into the remaining/second payment. This matches
+    Arroyo Systems' billing policy: the deposit secures the contracted package; extra hours
+    for delays or scope changes are settled at delivery, not split in half.
+    """
     if vat_rate < 0 or vat_rate > 1:
         raise PricingError("vat_rate must be between 0 and 1 (e.g. 0.21 for 21%)")
 
     subtotal = round(sum(item["total"] for item in items), 2)
     vat_amount = round(subtotal * vat_rate, 2)
     total = round(subtotal + vat_amount, 2)
-    deposit_amount = round(total / 2, 2)
+
+    package_subtotal = round(sum(item["total"] for item in items if item.get("type") == "package"), 2)
+    deposit_amount = round(package_subtotal * (1 + vat_rate) / 2, 2)
     remaining_amount = round(total - deposit_amount, 2)
     return {
         "subtotal": subtotal,

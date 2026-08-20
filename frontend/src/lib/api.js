@@ -93,8 +93,10 @@ export const sendQuote = async (id) => {
   return data;
 };
 
-export const requestFinalPayment = async (id) => {
-  const { data } = await api.post(`/admin/quotes/${id}/request-final-payment`);
+export const requestFinalPayment = async (id, additionalItems = []) => {
+  const { data } = await api.post(`/admin/quotes/${id}/request-final-payment`, {
+    additional_items: additionalItems,
+  });
   return data;
 };
 
