@@ -575,6 +575,7 @@ async def docusign_webhook(request: Request):
     payload = await request.body()
     signature = request.headers.get("x-docusign-signature-1", "")
     if not docusign_client.verify_webhook_signature(payload, signature):
+        logger.warning(f"DocuSign webhook signature mismatch. Headers: {dict(request.headers)}. Body (first 500): {payload[:500]!r}")
         raise HTTPException(status_code=400, detail="Invalid webhook signature")
 
     event = json.loads(payload)
