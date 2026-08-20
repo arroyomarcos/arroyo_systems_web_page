@@ -4,6 +4,7 @@ import { LogOut } from "lucide-react";
 
 const NAV_LINKS = [
   { to: "/admin/messages", label: "Messages" },
+  { to: "/admin/quotes", label: "Quotes" },
   { to: "/admin/payments", label: "Payments" },
 ];
 
@@ -24,7 +25,7 @@ const AdminTopBar = ({ me, onLogout }) => {
               key={link.to}
               to={link.to}
               className={`text-sm px-3 py-1.5 rounded-md ${
-                location.pathname === link.to
+                location.pathname.startsWith(link.to)
                   ? "bg-[color:var(--arroyo-bg-soft)] text-[color:var(--arroyo-navy)] font-medium"
                   : "text-[color:var(--arroyo-muted)] hover:text-[color:var(--arroyo-navy)]"
               }`}

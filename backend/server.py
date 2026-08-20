@@ -62,6 +62,7 @@ STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '').strip()
 STRIPE_SUCCESS_URL = os.environ.get('STRIPE_SUCCESS_URL', 'https://arroyo-systems.com/checkout/success?session_id={CHECKOUT_SESSION_ID}').strip()
 STRIPE_CANCEL_URL = os.environ.get('STRIPE_CANCEL_URL', 'https://arroyo-systems.com/checkout/cancel').strip()
 STRIPE_CURRENCY = os.environ.get('STRIPE_CURRENCY', 'eur').strip().lower()
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://arroyo-systems.com').strip().rstrip('/')
 CORS_ORIGINS = [
     origin.strip()
     for origin in os.environ.get('CORS_ORIGINS', '*').split(',')
@@ -211,6 +212,8 @@ class Order(BaseModel):
     reference: Optional[str] = None
     status: str = "pending"
     payment_intent: Optional[str] = None
+    quote_id: Optional[str] = None
+    payment_type: Optional[Literal["deposit", "final"]] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     paid_at: Optional[datetime] = None
 
@@ -469,6 +472,11 @@ async def on_startup():
     await db.admin_users.create_index("username", unique=True)
     await db.orders.create_index("created_at")
     await db.orders.create_index("stripe_session_id", unique=True)
+    await db.customers.create_index("email", unique=True)
+    await db.quotes.create_index("public_token", unique=True)
+    await db.quotes.create_index("quote_number")
+    await db.quotes.create_index("customer_id")
+    await db.quotes.create_index("created_at")
 
     # Keep the configured admin account in sync with deployment secrets.
     existing = await db.admin_users.find_one({"username": ADMIN_USERNAME})
@@ -530,6 +538,7 @@ async def stripe_webhook(request: Request):
 
     if event_type == "checkout.session.completed":
         session_id = data_object["id"]
+        order = await db.orders.find_one({"stripe_session_id": session_id})
         await db.orders.update_one(
             {"stripe_session_id": session_id},
             {"$set": {
@@ -539,6 +548,9 @@ async def stripe_webhook(request: Request):
             }},
         )
         logger.info(f"Checkout session {session_id} marked as paid")
+        if order and order.get("quote_id"):
+            from quotes import handle_quote_payment_confirmed
+            await handle_quote_payment_confirmed(order["quote_id"], order.get("payment_type"))
     elif event_type == "checkout.session.expired":
         session_id = data_object["id"]
         await db.orders.update_one(
@@ -663,30 +675,52 @@ async def delete_message(msg_id: str, current: str = Depends(get_current_admin))
     return Response(status_code=204)
 
 
-@api_router.post("/admin/checkout/session", response_model=CheckoutSessionOut, status_code=201)
-async def create_checkout_session(payload: CheckoutSessionCreate, current: str = Depends(get_current_admin)):
+async def create_stripe_payment_session(
+    *,
+    description: str,
+    amount: float,
+    currency: Optional[str],
+    customer_email: str,
+    quantity: int = 1,
+    reference: Optional[str] = None,
+    quote_id: Optional[str] = None,
+    payment_type: Optional[str] = None,
+    created_by: Optional[str] = None,
+    success_url: Optional[str] = None,
+    cancel_url: Optional[str] = None,
+):
+    """Shared Stripe Checkout Session creator, used by both the generic admin payment-link
+    endpoint and the quote deposit/final payment flow. Always records a matching `orders`
+    row so the webhook has a single place to look up what a session was for."""
     require_stripe_configured()
-    currency = (payload.currency or STRIPE_CURRENCY).lower()
-    unit_amount = round(payload.amount * 100)
+    currency = (currency or STRIPE_CURRENCY).lower()
+    unit_amount = round(amount * 100)
+    metadata = {"reference": reference or ""}
+    if created_by:
+        metadata["created_by"] = created_by
+    if quote_id:
+        metadata["quote_id"] = quote_id
+    if payment_type:
+        metadata["payment_type"] = payment_type
 
     try:
         session = await run_in_threadpool(
             stripe.checkout.Session.create,
             mode="payment",
             payment_method_types=["card"],
-            customer_email=str(payload.customer_email),
+            customer_email=customer_email,
             line_items=[{
                 "price_data": {
                     "currency": currency,
-                    "product_data": {"name": payload.description},
+                    "product_data": {"name": description},
                     "unit_amount": unit_amount,
                 },
-                "quantity": payload.quantity,
+                "quantity": quantity,
             }],
             automatic_tax={"enabled": True},
-            success_url=STRIPE_SUCCESS_URL,
-            cancel_url=STRIPE_CANCEL_URL,
-            metadata={"reference": payload.reference or "", "created_by": current},
+            success_url=success_url or STRIPE_SUCCESS_URL,
+            cancel_url=cancel_url or STRIPE_CANCEL_URL,
+            metadata=metadata,
         )
     except stripe.error.StripeError as exc:
         logger.exception("Stripe checkout session creation failed")
@@ -694,13 +728,29 @@ async def create_checkout_session(payload: CheckoutSessionCreate, current: str =
 
     order = Order(
         stripe_session_id=session["id"],
-        description=payload.description,
-        amount=payload.amount,
+        description=description,
+        amount=amount,
         currency=currency,
-        customer_email=str(payload.customer_email).lower().strip(),
-        reference=payload.reference,
+        customer_email=customer_email.lower().strip(),
+        reference=reference,
+        quote_id=quote_id,
+        payment_type=payment_type,
     )
     await db.orders.insert_one(order.model_dump(by_alias=True))
+    return session, order
+
+
+@api_router.post("/admin/checkout/session", response_model=CheckoutSessionOut, status_code=201)
+async def create_checkout_session(payload: CheckoutSessionCreate, current: str = Depends(get_current_admin)):
+    session, order = await create_stripe_payment_session(
+        description=payload.description,
+        amount=payload.amount,
+        currency=payload.currency,
+        customer_email=str(payload.customer_email),
+        quantity=payload.quantity,
+        reference=payload.reference,
+        created_by=current,
+    )
     logger.info(f"Created Stripe checkout session {session['id']} for {order.customer_email}")
     return CheckoutSessionOut(id=session["id"], url=session["url"])
 
@@ -743,6 +793,13 @@ async def export_messages_csv(current: str = Depends(get_current_admin)):
         headers={"Content-Disposition": "attachment; filename=arroyo_messages.csv"},
     )
 
+
+# Quotes module is imported here (not at the top) because it imports several names - db,
+# get_current_admin, create_stripe_payment_session, etc. - from this module, and needs them
+# to already exist in this file's namespace.
+from quotes import admin_quotes_router, public_quotes_router  # noqa: E402
+api_router.include_router(admin_quotes_router)
+api_router.include_router(public_quotes_router)
 
 # Include router
 app.include_router(api_router)

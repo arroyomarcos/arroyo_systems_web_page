@@ -62,4 +62,60 @@ export const getCheckoutSessionStatus = async (sessionId) => {
   return data;
 };
 
+// ---------- Quotes (admin) ----------
+export const createQuote = async (payload) => {
+  const { data } = await api.post("/admin/quotes", payload);
+  return data;
+};
+
+export const listQuotes = async () => {
+  const { data } = await api.get("/admin/quotes");
+  return data;
+};
+
+export const getQuote = async (id) => {
+  const { data } = await api.get(`/admin/quotes/${id}`);
+  return data;
+};
+
+export const updateQuote = async (id, payload) => {
+  const { data } = await api.patch(`/admin/quotes/${id}`, payload);
+  return data;
+};
+
+export const createQuoteVersion = async (id) => {
+  const { data } = await api.post(`/admin/quotes/${id}/versions`);
+  return data;
+};
+
+export const sendQuote = async (id) => {
+  const { data } = await api.post(`/admin/quotes/${id}/send`);
+  return data;
+};
+
+export const requestFinalPayment = async (id) => {
+  const { data } = await api.post(`/admin/quotes/${id}/request-final-payment`);
+  return data;
+};
+
+export const adminQuotePdfUrl = (id) => `${API}/admin/quotes/${id}/pdf`;
+
+// ---------- Quotes (public, client-facing) ----------
+export const getPublicQuote = async (token) => {
+  const { data } = await api.get(`/quotes/public/${token}`);
+  return data;
+};
+
+export const publicQuotePdfUrl = (token) => `${API}/quotes/public/${token}/pdf`;
+
+export const payQuoteDeposit = async (token) => {
+  const { data } = await api.post(`/quotes/public/${token}/pay-deposit`);
+  return data;
+};
+
+export const payQuoteFinal = async (token) => {
+  const { data } = await api.post(`/quotes/public/${token}/pay-final`);
+  return data;
+};
+
 export default api;

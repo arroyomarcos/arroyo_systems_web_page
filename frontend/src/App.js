@@ -10,6 +10,9 @@ import Footer from "./components/Footer";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminPayments from "./pages/admin/AdminPayments";
+import AdminQuotes from "./pages/admin/AdminQuotes";
+import AdminQuoteEditor from "./pages/admin/AdminQuoteEditor";
+import QuotePublic from "./pages/QuotePublic";
 import { CookiesPolicy, LegalNotice, PrivacyPolicy } from "./pages/LegalPage";
 import { CheckoutSuccess, CheckoutCancel } from "./pages/CheckoutResult";
 import { Toaster } from "./components/ui/toaster";
@@ -41,6 +44,11 @@ const STATIC_SEO = {
   "/admin/payments": {
     title: "Admin Payments | Arroyo Systems",
     description: "Arroyo Systems admin payments.",
+    robots: "noindex,nofollow",
+  },
+  "/admin/quotes": {
+    title: "Admin Quotes | Arroyo Systems",
+    description: "Arroyo Systems admin quotes.",
     robots: "noindex,nofollow",
   },
   "/checkout/success": {
@@ -89,7 +97,13 @@ const RouteEffects = () => {
   React.useEffect(() => {
     document.documentElement.lang = lang;
 
-    const adminSeo = STATIC_SEO[basePath];
+    const adminSeo =
+      STATIC_SEO[basePath] ||
+      (basePath.startsWith("/admin/quotes/")
+        ? { title: "Admin Quote | Arroyo Systems", description: "Arroyo Systems admin quote.", robots: "noindex,nofollow" }
+        : basePath.startsWith("/quote/")
+        ? { title: "Quote | Arroyo Systems", description: "Your Arroyo Systems quote.", robots: "noindex,nofollow" }
+        : null);
     const pageKey = PAGE_ROUTES[basePath];
 
     let seo;
@@ -201,6 +215,10 @@ function App() {
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/messages" element={<AdminDashboard />} />
           <Route path="/admin/payments" element={<AdminPayments />} />
+          <Route path="/admin/quotes" element={<AdminQuotes />} />
+          <Route path="/admin/quotes/new" element={<AdminQuoteEditor />} />
+          <Route path="/admin/quotes/:id" element={<AdminQuoteEditor />} />
+          <Route path="/quote/:token" element={<QuotePublic />} />
           <Route path="/checkout/success" element={<CheckoutSuccess />} />
           <Route path="/checkout/cancel" element={<CheckoutCancel />} />
         </Routes>
