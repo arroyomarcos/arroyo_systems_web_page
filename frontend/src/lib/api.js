@@ -1,7 +1,11 @@
 import axios from "axios";
 import { getToken } from "./auth";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://api.arroyo-systems.com";
+// Falls back to the raw Render hostname, not the api.arroyo-systems.com custom domain: that
+// domain's registration on Render is currently stuck (blocked by a stale claim on another,
+// unreachable service - see project notes), so it doesn't route to this backend. Revert once
+// that's resolved with Render support.
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://arroyo-systems-api-1t0k.onrender.com";
 export const API = `${BACKEND_URL}/api`;
 
 const api = axios.create({ baseURL: API });
