@@ -28,6 +28,8 @@ from starlette.concurrency import run_in_threadpool
 import jwt
 import stripe
 
+import docusign_client
+
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -63,6 +65,10 @@ STRIPE_SUCCESS_URL = os.environ.get('STRIPE_SUCCESS_URL', 'https://arroyo-system
 STRIPE_CANCEL_URL = os.environ.get('STRIPE_CANCEL_URL', 'https://arroyo-systems.com/checkout/cancel').strip()
 STRIPE_CURRENCY = os.environ.get('STRIPE_CURRENCY', 'eur').strip().lower()
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://arroyo-systems.com').strip().rstrip('/')
+CONTRACT_PROVIDER_NIF = os.environ.get('CONTRACT_PROVIDER_NIF', '').strip()
+CONTRACT_LIABILITY_TEXT = os.environ.get('CONTRACT_LIABILITY_TEXT', 'a determinar').strip()
+CONTRACT_JURISDICTION_CITY = os.environ.get('CONTRACT_JURISDICTION_CITY', 'Madrid').strip()
+BACKEND_PUBLIC_URL = os.environ.get('BACKEND_PUBLIC_URL', '').strip().rstrip('/')
 CORS_ORIGINS = [
     origin.strip()
     for origin in os.environ.get('CORS_ORIGINS', '*').split(',')
@@ -561,6 +567,29 @@ async def stripe_webhook(request: Request):
     return {"received": True}
 
 
+@api_router.post("/webhooks/docusign", status_code=200)
+async def docusign_webhook(request: Request):
+    if not docusign_client.DOCUSIGN_HMAC_KEY:
+        raise HTTPException(status_code=503, detail="DocuSign webhook secret is not configured")
+
+    payload = await request.body()
+    signature = request.headers.get("x-docusign-signature-1", "")
+    if not docusign_client.verify_webhook_signature(payload, signature):
+        raise HTTPException(status_code=400, detail="Invalid webhook signature")
+
+    event = json.loads(payload)
+    if event.get("event") == "envelope-completed":
+        envelope_id = event.get("data", {}).get("envelopeId")
+        quote = await db.quotes.find_one({"docusign_envelope_id": envelope_id})
+        if quote:
+            from contracts import handle_contract_signed
+            await handle_contract_signed(quote["_id"])
+        else:
+            logger.warning(f"DocuSign webhook: no quote found for envelope {envelope_id}")
+
+    return {"received": True}
+
+
 @api_router.post("/contact", response_model=ContactSubmitResponse, status_code=201)
 async def submit_contact(payload: ContactCreate, request: Request):
     ip = get_client_ip(request)
@@ -798,8 +827,11 @@ async def export_messages_csv(current: str = Depends(get_current_admin)):
 # get_current_admin, create_stripe_payment_session, etc. - from this module, and needs them
 # to already exist in this file's namespace.
 from quotes import admin_quotes_router, public_quotes_router  # noqa: E402
+from contracts import admin_contracts_router, public_contracts_router  # noqa: E402
 api_router.include_router(admin_quotes_router)
 api_router.include_router(public_quotes_router)
+api_router.include_router(admin_contracts_router)
+api_router.include_router(public_contracts_router)
 
 # Include router
 app.include_router(api_router)

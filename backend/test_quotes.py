@@ -265,7 +265,9 @@ def test_pdf_amount_matches_quote_total(admin_client, db, monkeypatch):
 def test_pay_deposit_stripe_amount_matches_quote(admin_client, db, monkeypatch):
     quote = admin_client.post("/api/admin/quotes", json=quote_payload()).json()
     admin_client.post(f"/api/admin/quotes/{quote['id']}/send")
-    token = next(d["public_token"] for d in db.quotes.docs if d["_id"] == quote["id"])
+    quote_doc = next(d for d in db.quotes.docs if d["_id"] == quote["id"])
+    quote_doc["contract_status"] = "SIGNED"  # deposit requires a signed contract
+    token = quote_doc["public_token"]
 
     monkeypatch.setattr(server, "STRIPE_SECRET_KEY", "sk_test_fake")
     captured = {}

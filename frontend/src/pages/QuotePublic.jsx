@@ -1,9 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { CheckCircle2, Download } from "lucide-react";
+import { CheckCircle2, Download, FileSignature } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { getPublicQuote, payQuoteDeposit, payQuoteFinal, publicQuotePdfUrl } from "../lib/api";
+import {
+  getContractSigningUrl,
+  getPublicQuote,
+  payQuoteDeposit,
+  payQuoteFinal,
+  publicQuotePdfUrl,
+} from "../lib/api";
 import { Button } from "../components/ui/button";
 
 const formatAmount = (amount, currency = "eur") => {
@@ -41,7 +47,9 @@ const QuotePublic = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [paying, setPaying] = useState(false);
+  const [signing, setSigning] = useState(false);
   const paymentFlag = searchParams.get("payment");
+  const signingEvent = searchParams.get("event");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -60,6 +68,16 @@ const QuotePublic = () => {
     load();
   }, [load]);
 
+  // DocuSign's own redirect param is optimistic UI only - the source of truth for
+  // contract_status is the webhook, so if we come back still showing GENERATED, poll once
+  // more shortly after in case the webhook simply hasn't landed yet.
+  useEffect(() => {
+    if (signingEvent === "signing_complete" && quote?.contract_status === "GENERATED") {
+      const t = setTimeout(load, 2500);
+      return () => clearTimeout(t);
+    }
+  }, [signingEvent, quote?.contract_status, load]);
+
   const onPayDeposit = async () => {
     setPaying(true);
     try {
@@ -77,6 +95,16 @@ const QuotePublic = () => {
       window.location.href = url;
     } catch (err) {
       setPaying(false);
+    }
+  };
+
+  const onSignContract = async () => {
+    setSigning(true);
+    try {
+      const { url } = await getContractSigningUrl(token);
+      window.location.href = url;
+    } catch (err) {
+      setSigning(false);
     }
   };
 
@@ -113,7 +141,10 @@ const QuotePublic = () => {
     );
   }
 
-  const canPayDeposit = ["SENT", "VIEWED"].includes(quote.status);
+  const contractStatus = quote.contract_status || "NOT_GENERATED";
+  const contractSigned = contractStatus === "SIGNED";
+  const canSignContract = contractStatus === "GENERATED";
+  const canPayDeposit = ["SENT", "VIEWED"].includes(quote.status) && contractSigned;
   const canPayFinal = quote.status === "FINAL_PAYMENT_REQUESTED";
   const depositPaid = quote.payment_status !== "UNPAID";
   const fullyPaid = quote.payment_status === "PAID";
@@ -159,6 +190,34 @@ const QuotePublic = () => {
             </div>
           </div>
 
+          {(canSignContract || contractSigned) && (
+            <div className="mt-6 bg-white rounded-xl border border-slate-200 p-6">
+              <h2 className="font-medium mb-3 flex items-center gap-2">
+                <FileSignature size={18} /> Service contract
+              </h2>
+              {contractSigned ? (
+                <div className="flex items-center gap-2 text-emerald-700 text-sm">
+                  <CheckCircle2 size={16} /> Contract signed{quote.contract_number ? ` (${quote.contract_number})` : ""}.
+                </div>
+              ) : (
+                <>
+                  <p className="arroyo-body text-sm mb-4">
+                    Please sign the service contract before paying the 50% deposit. Signing opens
+                    a secure DocuSign window.
+                  </p>
+                  <Button onClick={onSignContract} disabled={signing} size="lg" className="w-full sm:w-auto">
+                    {signing ? "Opening DocuSign..." : "Sign the service contract"}
+                  </Button>
+                  {signingEvent && signingEvent !== "signing_complete" && (
+                    <p className="text-sm text-amber-700 mt-3">
+                      Signing was not completed ({signingEvent.replaceAll("_", " ")}). You can try again above.
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
           <div className="mt-6 bg-white rounded-xl border border-slate-200 p-6">
             <h2 className="font-medium mb-3">Payment terms</h2>
             <div className="flex justify-between text-sm py-1">
@@ -193,7 +252,7 @@ const QuotePublic = () => {
             </a>
           </div>
 
-          {!canPayDeposit && !canPayFinal && !fullyPaid && (
+          {!canPayDeposit && !canPayFinal && !fullyPaid && !canSignContract && (
             <p className="text-sm text-[color:var(--arroyo-muted)] mt-4">
               This quote is currently: {quote.status.replaceAll("_", " ").toLowerCase()}.
             </p>

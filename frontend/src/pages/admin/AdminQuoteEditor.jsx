@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Copy, Download, ExternalLink, Plus, Send, Trash2, Wallet } from "lucide-react";
+import { Copy, Download, ExternalLink, FileSignature, Plus, Send, Trash2, Wallet } from "lucide-react";
 import { getToken, clearToken } from "../../lib/auth";
 import {
   adminQuotePdfUrl,
   createQuote,
   createQuoteVersion,
   getQuote,
+  previewContractPdfUrl,
   requestFinalPayment,
+  sendContract,
   sendQuote,
   updateQuote,
 } from "../../lib/api";
@@ -68,6 +70,7 @@ const AdminQuoteEditor = () => {
   const [extraHours, setExtraHours] = useState(""); // Engineering Hours added at final-payment time
   const [extraHoursDesc, setExtraHoursDesc] = useState("");
   const [requestingFinal, setRequestingFinal] = useState(false);
+  const [sendingContract, setSendingContract] = useState(false);
 
   React.useEffect(() => {
     if (!getToken()) navigate("/admin", { replace: true });
@@ -238,6 +241,19 @@ const AdminQuoteEditor = () => {
     }
   };
 
+  const onSendContract = async () => {
+    setSendingContract(true);
+    try {
+      const updated = await sendContract(id);
+      setQuote(updated);
+      toast({ title: "Contract sent for signature" });
+    } catch (err) {
+      handleError(err, "Could not send the contract");
+    } finally {
+      setSendingContract(false);
+    }
+  };
+
   const onNewVersion = async () => {
     try {
       const versioned = await createQuoteVersion(id);
@@ -267,7 +283,8 @@ const AdminQuoteEditor = () => {
             <h1 className="arroyo-display text-2xl">{isNew ? "New quote" : quote?.quote_number}</h1>
             {quote && (
               <p className="text-sm text-[color:var(--arroyo-muted)]">
-                {quote.status.replaceAll("_", " ")} · {quote.payment_status.replaceAll("_", " ")}
+                {quote.status.replaceAll("_", " ")} · {quote.payment_status.replaceAll("_", " ")} · Contract:{" "}
+                {(quote.contract_status || "NOT_GENERATED").replaceAll("_", " ")}
               </p>
             )}
           </div>
@@ -283,6 +300,17 @@ const AdminQuoteEditor = () => {
                   <Send size={14} /> {quote.status === "DRAFT" ? "Send" : "Resend"}
                 </Button>
               )}
+              <a href={previewContractPdfUrl(id)} target="_blank" rel="noreferrer">
+                <Button variant="outline" size="sm">
+                  <FileSignature size={14} /> Preview contract
+                </Button>
+              </a>
+              {["SENT", "VIEWED"].includes(quote.status) &&
+                (quote.contract_status || "NOT_GENERATED") === "NOT_GENERATED" && (
+                  <Button size="sm" onClick={onSendContract} disabled={sendingContract}>
+                    <FileSignature size={14} /> {sendingContract ? "Sending..." : "Send for signature"}
+                  </Button>
+                )}
               {quote.payment_status === "UNPAID" && !editable && (
                 <Button variant="outline" size="sm" onClick={onNewVersion}>
                   New version

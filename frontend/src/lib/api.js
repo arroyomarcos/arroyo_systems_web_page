@@ -102,6 +102,14 @@ export const requestFinalPayment = async (id, additionalItems = []) => {
 
 export const adminQuotePdfUrl = (id) => `${API}/admin/quotes/${id}/pdf`;
 
+// ---------- Contracts (admin) ----------
+export const previewContractPdfUrl = (quoteId) => `${API}/admin/contracts/${quoteId}/pdf`;
+
+export const sendContract = async (quoteId) => {
+  const { data } = await api.post(`/admin/contracts/${quoteId}/send`);
+  return data;
+};
+
 // ---------- Quotes (public, client-facing) ----------
 export const getPublicQuote = async (token) => {
   const { data } = await api.get(`/quotes/public/${token}`);
@@ -117,6 +125,12 @@ export const payQuoteDeposit = async (token) => {
 
 export const payQuoteFinal = async (token) => {
   const { data } = await api.post(`/quotes/public/${token}/pay-final`);
+  return data;
+};
+
+// ---------- Contracts (public, client-facing) ----------
+export const getContractSigningUrl = async (token) => {
+  const { data } = await api.post(`/contracts/public/${token}/signing-url`);
   return data;
 };
 

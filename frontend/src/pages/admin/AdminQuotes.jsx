@@ -33,6 +33,13 @@ const PAYMENT_STYLES = {
   PAID: "bg-emerald-100 text-emerald-700",
 };
 
+const CONTRACT_STYLES = {
+  NOT_GENERATED: "bg-slate-100 text-slate-600",
+  GENERATED: "bg-amber-100 text-amber-700",
+  SIGNED: "bg-emerald-100 text-emerald-700",
+  VOID: "bg-slate-200 text-slate-400",
+};
+
 const StatusBadge = ({ value, styles }) => (
   <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${styles[value] || "bg-slate-100 text-slate-600"}`}>
     {value?.replaceAll("_", " ")}
@@ -100,6 +107,7 @@ const AdminQuotes = () => {
                 <TableHead>Project</TableHead>
                 <TableHead>Total</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Contract</TableHead>
                 <TableHead>Payment</TableHead>
                 <TableHead>Created</TableHead>
               </TableRow>
@@ -107,14 +115,14 @@ const AdminQuotes = () => {
             <TableBody>
               {loading && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-[color:var(--arroyo-muted)]">
+                  <TableCell colSpan={8} className="text-center text-[color:var(--arroyo-muted)]">
                     Loading...
                   </TableCell>
                 </TableRow>
               )}
               {!loading && items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-[color:var(--arroyo-muted)]">
+                  <TableCell colSpan={8} className="text-center text-[color:var(--arroyo-muted)]">
                     No quotes yet
                   </TableCell>
                 </TableRow>
@@ -131,6 +139,9 @@ const AdminQuotes = () => {
                   <TableCell>{formatAmount(quote.total, quote.currency)}</TableCell>
                   <TableCell>
                     <StatusBadge value={quote.status} styles={STATUS_STYLES} />
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge value={quote.contract_status || "NOT_GENERATED"} styles={CONTRACT_STYLES} />
                   </TableCell>
                   <TableCell>
                     <StatusBadge value={quote.payment_status} styles={PAYMENT_STYLES} />

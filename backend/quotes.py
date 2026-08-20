@@ -36,6 +36,7 @@ QuoteStatus = Literal[
     "FINAL_PAYMENT_REQUESTED", "COMPLETED", "EXPIRED", "VOID",
 ]
 PaymentStatus = Literal["UNPAID", "DEPOSIT_PAID", "PAID"]
+ContractStatus = Literal["NOT_GENERATED", "GENERATED", "SIGNED", "VOID"]
 
 EDITABLE_STATUSES = {"DRAFT", "SENT", "VIEWED"}
 
@@ -187,9 +188,11 @@ def _serialize_quote(doc: dict) -> dict:
     for key in (
         "issue_date", "valid_until", "created_at", "updated_at", "sent_at", "viewed_at",
         "accepted_at", "deposit_paid_at", "final_requested_at", "paid_at", "completed_at",
+        "contract_generated_at", "contract_signed_at",
     ):
         if isinstance(out.get(key), datetime):
             out[key] = out[key].isoformat()
+    out.setdefault("contract_status", "NOT_GENERATED")
     return out
 
 
@@ -295,6 +298,11 @@ async def create_quote(payload: QuoteCreate, current: str = Depends(server.get_c
         **totals,
         "status": "DRAFT",
         "payment_status": "UNPAID",
+        "contract_status": "NOT_GENERATED",
+        "contract_number": None,
+        "docusign_envelope_id": None,
+        "contract_generated_at": None,
+        "contract_signed_at": None,
         "public_token": uuid.uuid4().hex + uuid.uuid4().hex,
         "created_at": now,
         "updated_at": now,
@@ -377,10 +385,16 @@ async def create_quote_version(quote_id: str, current: str = Depends(server.get_
     new_quote["quote_number"] = quote["quote_number"]
     new_quote["status"] = "DRAFT"
     new_quote["payment_status"] = "UNPAID"
+    new_quote["contract_status"] = "NOT_GENERATED"
+    new_quote["contract_number"] = None
+    new_quote["docusign_envelope_id"] = None
     new_quote["public_token"] = uuid.uuid4().hex + uuid.uuid4().hex
     new_quote["created_at"] = now
     new_quote["updated_at"] = now
-    for key in ("sent_at", "viewed_at", "accepted_at", "deposit_paid_at", "final_requested_at", "paid_at", "completed_at"):
+    for key in (
+        "sent_at", "viewed_at", "accepted_at", "deposit_paid_at", "final_requested_at",
+        "paid_at", "completed_at", "contract_generated_at", "contract_signed_at",
+    ):
         new_quote[key] = None
 
     await server.db.quotes.insert_one(new_quote)
@@ -499,6 +513,8 @@ async def pay_deposit(token: str):
     quote = await _get_quote_by_token_or_404(token)
     if quote["status"] not in ("SENT", "VIEWED"):
         raise HTTPException(status_code=409, detail="This quote cannot be accepted in its current state")
+    if quote.get("contract_status", "NOT_GENERATED") != "SIGNED":
+        raise HTTPException(status_code=409, detail="The service contract must be signed before paying the deposit")
     customer = await _get_customer_or_404(quote["customer_id"])
 
     now = datetime.now(timezone.utc)
