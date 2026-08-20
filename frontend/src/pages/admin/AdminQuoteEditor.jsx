@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Download, Plus, Send, Trash2, Wallet } from "lucide-react";
+import { Copy, Download, ExternalLink, Plus, Send, Trash2, Wallet } from "lucide-react";
 import { getToken, clearToken } from "../../lib/auth";
 import {
   adminQuotePdfUrl,
@@ -193,6 +193,13 @@ const AdminQuoteEditor = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const clientQuoteUrl = quote?.public_token ? `${window.location.origin}/quote/${quote.public_token}` : "";
+
+  const onCopyClientLink = () => {
+    navigator.clipboard.writeText(clientQuoteUrl);
+    toast({ title: "Link copied" });
   };
 
   const onSend = async () => {
@@ -464,6 +471,25 @@ const AdminQuoteEditor = () => {
             <Button onClick={onSave} disabled={saving}>
               {saving ? "Saving..." : isNew ? "Create quote" : "Save changes"}
             </Button>
+          </div>
+        )}
+
+        {!isNew && quote?.public_token && (
+          <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-[color:var(--arroyo-muted)] mb-1">Client link</p>
+              <p className="text-sm truncate">{clientQuoteUrl}</p>
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <Button variant="outline" size="sm" onClick={onCopyClientLink}>
+                <Copy size={14} /> Copy
+              </Button>
+              <a href={clientQuoteUrl} target="_blank" rel="noreferrer">
+                <Button variant="outline" size="sm">
+                  <ExternalLink size={14} /> Open
+                </Button>
+              </a>
+            </div>
           </div>
         )}
       </main>
