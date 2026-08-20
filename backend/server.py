@@ -579,8 +579,12 @@ async def docusign_webhook(request: Request):
         raise HTTPException(status_code=400, detail="Invalid webhook signature")
 
     event = json.loads(payload)
-    if event.get("event") == "envelope-completed":
-        envelope_id = event.get("data", {}).get("envelopeId")
+    # DocuSign's per-envelope eventNotification sends the flat/legacy payload shape
+    # (top-level `status`/`envelopeId`), not the nested JSON-SIM `{"event", "data"}` shape -
+    # verified against a real sandbox delivery. Accept both so this survives either format.
+    is_completed = event.get("status") == "completed" or event.get("event") == "envelope-completed"
+    envelope_id = event.get("envelopeId") or event.get("data", {}).get("envelopeId")
+    if is_completed:
         quote = await db.quotes.find_one({"docusign_envelope_id": envelope_id})
         if quote:
             from contracts import handle_contract_signed

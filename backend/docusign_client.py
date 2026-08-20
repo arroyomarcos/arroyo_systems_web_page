@@ -166,12 +166,18 @@ def create_envelope(
         },
     }
     if webhook_url:
-        # Field-level shape confirmed against a real sandbox payload before Go-Live (see plan).
+        # `events` + `deliveryMode: SIM` (not `envelopeEvents`, which is the legacy flat/
+        # aggregate payload shape) selects the JSON SIM event-focused payload. `includeHMAC`
+        # requires an account-level HMAC key to already exist (see setup_connect_hmac_key) -
+        # confirmed against a real sandbox delivery: without it DocuSign silently sends an
+        # unsigned legacy-format payload instead of erroring.
         envelope_definition["eventNotification"] = {
             "url": webhook_url,
             "requireAcknowledgment": "true",
-            "envelopeEvents": [{"envelopeEventStatusCode": "completed"}],
-            "eventData": {"version": "restv2.1", "format": "json"},
+            "includeHMAC": "true",
+            "deliveryMode": "SIM",
+            "events": ["envelope-completed"],
+            "eventData": {"version": "restv2.1"},
         }
 
     response = _request_json(
