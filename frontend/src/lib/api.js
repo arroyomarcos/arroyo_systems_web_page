@@ -47,4 +47,19 @@ export const deleteMessage = async (id) => {
 
 export const exportCsvUrl = () => `${API}/admin/messages/export.csv`;
 
+export const createCheckoutSession = async (payload) => {
+  const { data } = await api.post("/admin/checkout/session", payload);
+  return data;
+};
+
+export const listOrders = async () => {
+  const { data } = await api.get("/admin/orders");
+  return data;
+};
+
+export const getCheckoutSessionStatus = async (sessionId) => {
+  const { data } = await api.get(`/checkout/session/${sessionId}`);
+  return data;
+};
+
 export default api;

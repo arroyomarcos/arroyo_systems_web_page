@@ -26,6 +26,7 @@ from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
 from starlette.concurrency import run_in_threadpool
 import jwt
+import stripe
 
 
 ROOT_DIR = Path(__file__).parent
@@ -56,6 +57,11 @@ RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '').strip()
 RESEND_FROM = os.environ.get('RESEND_FROM', SMTP_FROM).strip()
 RESEND_FALLBACK_FROM = os.environ.get('RESEND_FALLBACK_FROM', 'Arroyo Systems <onboarding@resend.dev>').strip()
 EMAIL_SEND_TIMEOUT_SECONDS = int(os.environ.get('EMAIL_SEND_TIMEOUT_SECONDS', '5'))
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '').strip()
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '').strip()
+STRIPE_SUCCESS_URL = os.environ.get('STRIPE_SUCCESS_URL', 'https://arroyo-systems.com/checkout/success?session_id={CHECKOUT_SESSION_ID}').strip()
+STRIPE_CANCEL_URL = os.environ.get('STRIPE_CANCEL_URL', 'https://arroyo-systems.com/checkout/cancel').strip()
+STRIPE_CURRENCY = os.environ.get('STRIPE_CURRENCY', 'eur').strip().lower()
 CORS_ORIGINS = [
     origin.strip()
     for origin in os.environ.get('CORS_ORIGINS', '*').split(',')
@@ -64,6 +70,9 @@ CORS_ORIGINS = [
 
 client = AsyncIOMotorClient(mongo_url)
 db = client[DB_NAME]
+
+if STRIPE_SECRET_KEY:
+    stripe.api_key = STRIPE_SECRET_KEY
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/admin/login", auto_error=False)
@@ -170,6 +179,40 @@ class AdminMe(BaseModel):
 
 class UpdateMessage(BaseModel):
     read: bool
+
+
+class CheckoutSessionCreate(BaseModel):
+    description: str = Field(min_length=1, max_length=500)
+    amount: float = Field(gt=0, description="Amount in the major currency unit, e.g. 1500.00 for EUR 1500")
+    currency: Optional[str] = Field(default=None, min_length=3, max_length=3)
+    customer_email: EmailStr
+    quantity: int = Field(default=1, ge=1, le=100)
+    reference: Optional[str] = Field(default=None, max_length=120)
+
+    @field_validator("description")
+    @classmethod
+    def validate_description(cls, value: str) -> str:
+        return sanitize_text(value)
+
+
+class CheckoutSessionOut(BaseModel):
+    id: str
+    url: str
+
+
+class Order(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    stripe_session_id: str
+    description: str
+    amount: float
+    currency: str
+    customer_email: str
+    reference: Optional[str] = None
+    status: str = "pending"
+    payment_intent: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    paid_at: Optional[datetime] = None
 
 
 # ---------- Helpers ----------
@@ -385,6 +428,21 @@ def _serialize_message(doc: dict) -> dict:
     return out
 
 
+def _serialize_order(doc: dict) -> dict:
+    out = dict(doc)
+    if "_id" in out:
+        out["id"] = out.pop("_id")
+    for key in ("created_at", "paid_at"):
+        if isinstance(out.get(key), datetime):
+            out[key] = out[key].isoformat()
+    return out
+
+
+def require_stripe_configured() -> None:
+    if not STRIPE_SECRET_KEY:
+        raise HTTPException(status_code=503, detail="Stripe is not configured on this server")
+
+
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
@@ -409,6 +467,8 @@ async def on_startup():
     # Ensure indexes
     await db.contact_messages.create_index("created_at")
     await db.admin_users.create_index("username", unique=True)
+    await db.orders.create_index("created_at")
+    await db.orders.create_index("stripe_session_id", unique=True)
 
     # Keep the configured admin account in sync with deployment secrets.
     existing = await db.admin_users.find_one({"username": ADMIN_USERNAME})
@@ -437,6 +497,56 @@ async def shutdown_db_client():
 @api_router.get("/")
 async def root():
     return {"service": "Arroyo Systems API", "status": "ok"}
+
+
+@api_router.get("/checkout/session/{session_id}")
+async def get_checkout_session_status(session_id: str):
+    order = await db.orders.find_one({"stripe_session_id": session_id})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return {
+        "status": order.get("status"),
+        "description": order.get("description"),
+        "amount": order.get("amount"),
+        "currency": order.get("currency"),
+    }
+
+
+@api_router.post("/webhooks/stripe", status_code=200)
+async def stripe_webhook(request: Request):
+    require_stripe_configured()
+    if not STRIPE_WEBHOOK_SECRET:
+        raise HTTPException(status_code=503, detail="Stripe webhook secret is not configured")
+
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature", "")
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, STRIPE_WEBHOOK_SECRET)
+    except (ValueError, stripe.error.SignatureVerificationError):
+        raise HTTPException(status_code=400, detail="Invalid webhook signature")
+
+    event_type = event["type"]
+    data_object = event["data"]["object"]
+
+    if event_type == "checkout.session.completed":
+        session_id = data_object["id"]
+        await db.orders.update_one(
+            {"stripe_session_id": session_id},
+            {"$set": {
+                "status": "paid",
+                "payment_intent": data_object["payment_intent"],
+                "paid_at": datetime.now(timezone.utc),
+            }},
+        )
+        logger.info(f"Checkout session {session_id} marked as paid")
+    elif event_type == "checkout.session.expired":
+        session_id = data_object["id"]
+        await db.orders.update_one(
+            {"stripe_session_id": session_id},
+            {"$set": {"status": "expired"}},
+        )
+
+    return {"received": True}
 
 
 @api_router.post("/contact", response_model=ContactSubmitResponse, status_code=201)
@@ -551,6 +661,57 @@ async def delete_message(msg_id: str, current: str = Depends(get_current_admin))
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Message not found")
     return Response(status_code=204)
+
+
+@api_router.post("/admin/checkout/session", response_model=CheckoutSessionOut, status_code=201)
+async def create_checkout_session(payload: CheckoutSessionCreate, current: str = Depends(get_current_admin)):
+    require_stripe_configured()
+    currency = (payload.currency or STRIPE_CURRENCY).lower()
+    unit_amount = round(payload.amount * 100)
+
+    try:
+        session = await run_in_threadpool(
+            stripe.checkout.Session.create,
+            mode="payment",
+            payment_method_types=["card"],
+            customer_email=str(payload.customer_email),
+            line_items=[{
+                "price_data": {
+                    "currency": currency,
+                    "product_data": {"name": payload.description},
+                    "unit_amount": unit_amount,
+                },
+                "quantity": payload.quantity,
+            }],
+            automatic_tax={"enabled": True},
+            success_url=STRIPE_SUCCESS_URL,
+            cancel_url=STRIPE_CANCEL_URL,
+            metadata={"reference": payload.reference or "", "created_by": current},
+        )
+    except stripe.error.StripeError as exc:
+        logger.exception("Stripe checkout session creation failed")
+        raise HTTPException(status_code=502, detail=f"Stripe error: {exc.user_message or str(exc)}") from exc
+
+    order = Order(
+        stripe_session_id=session["id"],
+        description=payload.description,
+        amount=payload.amount,
+        currency=currency,
+        customer_email=str(payload.customer_email).lower().strip(),
+        reference=payload.reference,
+    )
+    await db.orders.insert_one(order.model_dump(by_alias=True))
+    logger.info(f"Created Stripe checkout session {session['id']} for {order.customer_email}")
+    return CheckoutSessionOut(id=session["id"], url=session["url"])
+
+
+@api_router.get("/admin/orders")
+async def list_orders(current: str = Depends(get_current_admin)):
+    cursor = db.orders.find({}).sort("created_at", -1).limit(1000)
+    items = []
+    async for d in cursor:
+        items.append(_serialize_order(d))
+    return {"items": items, "total": len(items)}
 
 
 @api_router.get("/admin/messages/export.csv")

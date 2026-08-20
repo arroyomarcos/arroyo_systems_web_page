@@ -9,7 +9,9 @@ import Partners from "./components/sections/Partners";
 import Footer from "./components/Footer";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminPayments from "./pages/admin/AdminPayments";
 import { CookiesPolicy, LegalNotice, PrivacyPolicy } from "./pages/LegalPage";
+import { CheckoutSuccess, CheckoutCancel } from "./pages/CheckoutResult";
 import { Toaster } from "./components/ui/toaster";
 import { getContent } from "./i18n/content";
 import { getLangFromPath, stripLangPrefix, withLang } from "./i18n/useLang";
@@ -25,7 +27,7 @@ const PAGE_ROUTES = {
   "/cookies-policy": "cookiesPolicy",
 };
 
-const ADMIN_SEO = {
+const STATIC_SEO = {
   "/admin": {
     title: "Admin Login | Arroyo Systems",
     description: "Arroyo Systems admin login.",
@@ -34,6 +36,21 @@ const ADMIN_SEO = {
   "/admin/messages": {
     title: "Admin Dashboard | Arroyo Systems",
     description: "Arroyo Systems admin dashboard.",
+    robots: "noindex,nofollow",
+  },
+  "/admin/payments": {
+    title: "Admin Payments | Arroyo Systems",
+    description: "Arroyo Systems admin payments.",
+    robots: "noindex,nofollow",
+  },
+  "/checkout/success": {
+    title: "Payment received | Arroyo Systems",
+    description: "Payment confirmation.",
+    robots: "noindex,nofollow",
+  },
+  "/checkout/cancel": {
+    title: "Payment cancelled | Arroyo Systems",
+    description: "Payment cancelled.",
     robots: "noindex,nofollow",
   },
 };
@@ -72,7 +89,7 @@ const RouteEffects = () => {
   React.useEffect(() => {
     document.documentElement.lang = lang;
 
-    const adminSeo = ADMIN_SEO[basePath];
+    const adminSeo = STATIC_SEO[basePath];
     const pageKey = PAGE_ROUTES[basePath];
 
     let seo;
@@ -183,6 +200,9 @@ function App() {
           <Route path="/es/cookies-policy" element={<CookiesPolicy />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/messages" element={<AdminDashboard />} />
+          <Route path="/admin/payments" element={<AdminPayments />} />
+          <Route path="/checkout/success" element={<CheckoutSuccess />} />
+          <Route path="/checkout/cancel" element={<CheckoutCancel />} />
         </Routes>
       </BrowserRouter>
       <Toaster />

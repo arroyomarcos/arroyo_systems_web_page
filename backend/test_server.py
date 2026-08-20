@@ -27,9 +27,32 @@ class FakeContactMessages:
         return None
 
 
+class FakeOrders:
+    def __init__(self):
+        self.docs = []
+
+    async def insert_one(self, doc):
+        self.docs.append(doc)
+        return None
+
+    async def find_one(self, query):
+        for d in self.docs:
+            if all(d.get(k) == v for k, v in query.items()):
+                return d
+        return None
+
+    async def update_one(self, query, update):
+        for d in self.docs:
+            if all(d.get(k) == v for k, v in query.items()):
+                d.update(update.get("$set", {}))
+                return None
+        return None
+
+
 class FakeDB:
     def __init__(self):
         self.contact_messages = FakeContactMessages()
+        self.orders = FakeOrders()
 
 
 @pytest.fixture()
@@ -39,6 +62,13 @@ def client(monkeypatch):
     monkeypatch.setattr(server, "TURNSTILE_SECRET_KEY", "")
     monkeypatch.setattr(server, "REQUIRE_PRIVACY_ACCEPTANCE", False)
     return TestClient(server.app)
+
+
+@pytest.fixture()
+def admin_client(client):
+    server.app.dependency_overrides[server.get_current_admin] = lambda: "test-admin"
+    yield client
+    server.app.dependency_overrides.pop(server.get_current_admin, None)
 
 
 def valid_payload(**overrides):
@@ -250,6 +280,110 @@ def test_contact_rejects_too_long_message(client):
 def test_admin_messages_are_protected(client):
     response = client.get("/api/admin/messages")
     assert response.status_code == 401
+
+
+def checkout_payload(**overrides):
+    payload = {
+        "description": "DFM review - bracket assembly",
+        "amount": 1500.0,
+        "customer_email": "client@example.com",
+        "reference": "Q-2026-014",
+    }
+    payload.update(overrides)
+    return payload
+
+
+def test_checkout_session_requires_admin_auth(client):
+    response = client.post("/api/admin/checkout/session", json=checkout_payload())
+    assert response.status_code == 401
+
+
+def test_checkout_session_fails_when_stripe_not_configured(admin_client, monkeypatch):
+    monkeypatch.setattr(server, "STRIPE_SECRET_KEY", "")
+    response = admin_client.post("/api/admin/checkout/session", json=checkout_payload())
+    assert response.status_code == 503
+
+
+def test_checkout_session_creates_order(admin_client, monkeypatch):
+    monkeypatch.setattr(server, "STRIPE_SECRET_KEY", "sk_test_fake")
+    monkeypatch.setattr(server, "STRIPE_CURRENCY", "eur")
+
+    captured = {}
+
+    def fake_create(**kwargs):
+        captured.update(kwargs)
+        return {"id": "cs_test_123", "url": "https://checkout.stripe.com/pay/cs_test_123"}
+
+    monkeypatch.setattr(server.stripe.checkout.Session, "create", fake_create)
+
+    response = admin_client.post("/api/admin/checkout/session", json=checkout_payload())
+    assert response.status_code == 201
+    body = response.json()
+    assert body == {"id": "cs_test_123", "url": "https://checkout.stripe.com/pay/cs_test_123"}
+
+    assert captured["line_items"][0]["price_data"]["unit_amount"] == 150000
+    assert captured["line_items"][0]["price_data"]["currency"] == "eur"
+    assert captured["automatic_tax"] == {"enabled": True}
+    assert captured["customer_email"] == "client@example.com"
+
+    assert len(server.db.orders.docs) == 1
+    order = server.db.orders.docs[0]
+    assert order["stripe_session_id"] == "cs_test_123"
+    assert order["status"] == "pending"
+    assert order["reference"] == "Q-2026-014"
+
+
+def test_stripe_webhook_rejects_invalid_signature(client, monkeypatch):
+    monkeypatch.setattr(server, "STRIPE_SECRET_KEY", "sk_test_fake")
+    monkeypatch.setattr(server, "STRIPE_WEBHOOK_SECRET", "whsec_fake")
+
+    def fake_construct_event(payload, sig_header, secret):
+        raise server.stripe.error.SignatureVerificationError("bad signature", sig_header)
+
+    monkeypatch.setattr(server.stripe.Webhook, "construct_event", fake_construct_event)
+
+    response = client.post("/api/webhooks/stripe", data=b"{}", headers={"stripe-signature": "bad"})
+    assert response.status_code == 400
+
+
+class ItemOnlyObject:
+    """Mimics stripe's StripeObject: supports `obj["key"]` but NOT `obj.get("key")`,
+    unlike a plain dict. A real webhook handler that calls `.get()` on the event's
+    data object raises AttributeError against the actual SDK - this catches that."""
+
+    def __init__(self, data):
+        self._data = data
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+
+def test_stripe_webhook_marks_order_as_paid(client, monkeypatch):
+    monkeypatch.setattr(server, "STRIPE_SECRET_KEY", "sk_test_fake")
+    monkeypatch.setattr(server, "STRIPE_WEBHOOK_SECRET", "whsec_fake")
+
+    server.db.orders.docs.append({
+        "_id": "order-1",
+        "stripe_session_id": "cs_test_123",
+        "status": "pending",
+    })
+
+    fake_event = {
+        "type": "checkout.session.completed",
+        "data": {"object": ItemOnlyObject({"id": "cs_test_123", "payment_intent": "pi_test_456"})},
+    }
+
+    def fake_construct_event(payload, sig_header, secret):
+        return fake_event
+
+    monkeypatch.setattr(server.stripe.Webhook, "construct_event", fake_construct_event)
+
+    response = client.post("/api/webhooks/stripe", data=b"{}", headers={"stripe-signature": "valid"})
+    assert response.status_code == 200
+
+    order = server.db.orders.docs[0]
+    assert order["status"] == "paid"
+    assert order["payment_intent"] == "pi_test_456"
 
 
 def test_legal_pages_are_registered():
