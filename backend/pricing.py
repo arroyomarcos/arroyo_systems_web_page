@@ -8,7 +8,7 @@ from typing import Literal, Optional, TypedDict
 
 ENGINEERING_HOURS_RATE = 50.0
 
-PackageKey = Literal["rapid_design", "validated_design", "performance_design"]
+PackageKey = Literal["product_design", "product_validation", "product_development"]
 ItemType = Literal["package", "engineering_hours"]
 
 
@@ -21,26 +21,26 @@ class PackageSpec(TypedDict):
 
 
 PACKAGES: dict[PackageKey, PackageSpec] = {
-    "rapid_design": {
-        "name": "Rapid Design",
+    "product_design": {
+        "name": "Product Design",
         "base_price": 1300.0,
         "max_price": 1550.0,
         "base_hours": 15,
         "max_extra_hours": 5,
     },
-    "validated_design": {
-        "name": "Validated Design",
+    "product_validation": {
+        "name": "Product Validation",
+        "base_price": 1850.0,
+        "max_price": 2100.0,
+        "base_hours": 20,
+        "max_extra_hours": 5,
+    },
+    "product_development": {
+        "name": "Product Development",
         "base_price": 3000.0,
         "max_price": 3500.0,
         "base_hours": 35,
         "max_extra_hours": 10,
-    },
-    "performance_design": {
-        "name": "Performance Design",
-        "base_price": 5000.0,
-        "max_price": 5750.0,
-        "base_hours": 60,
-        "max_extra_hours": 15,
     },
 }
 

@@ -110,7 +110,7 @@ def quote_payload(**overrides):
         "project_name": "Structural Bracket",
         "vat_rate": 0.21,
         "items": [
-            {"type": "package", "product_key": "validated_design"},
+            {"type": "package", "product_key": "product_development"},
             {"type": "engineering_hours", "quantity": 5, "description": "Extra structural review"},
         ],
     }
@@ -125,7 +125,7 @@ def test_create_quote_matches_prompt_example(admin_client):
     assert body["subtotal"] == 3250.0
     assert body["vat_amount"] == 682.5
     assert body["total"] == 3932.5
-    # Deposit is 50% of the package (Validated Design) only, incl. VAT: 3000 * 1.21 / 2.
+    # Deposit is 50% of the package (Product Development) only, incl. VAT: 3000 * 1.21 / 2.
     # Engineering Hours always land in the remaining/second payment, never split.
     assert body["deposit_amount"] == 1815.0
     assert body["remaining_amount"] == 2117.5
@@ -162,14 +162,14 @@ def test_create_quote_rejects_negative_engineering_hours(admin_client):
 
 
 def test_create_quote_rejects_extra_hours_beyond_package_max_without_override(admin_client):
-    payload = quote_payload(items=[{"type": "package", "product_key": "rapid_design", "extra_hours": 20}])
+    payload = quote_payload(items=[{"type": "package", "product_key": "product_design", "extra_hours": 20}])
     response = admin_client.post("/api/admin/quotes", json=payload)
     assert response.status_code == 422
 
 
 def test_create_quote_allows_extra_hours_beyond_max_with_override(admin_client):
     payload = quote_payload(
-        items=[{"type": "package", "product_key": "rapid_design", "extra_hours": 20, "override_confirmed": True}]
+        items=[{"type": "package", "product_key": "product_design", "extra_hours": 20, "override_confirmed": True}]
     )
     response = admin_client.post("/api/admin/quotes", json=payload)
     assert response.status_code == 201
@@ -305,7 +305,7 @@ def test_pay_final_only_allowed_after_final_payment_requested(admin_client, db):
 
 def test_request_final_payment_requires_deposit_paid(admin_client):
     quote = admin_client.post("/api/admin/quotes", json=quote_payload(items=[
-        {"type": "package", "product_key": "rapid_design"},
+        {"type": "package", "product_key": "product_design"},
     ])).json()
     response = admin_client.post(
         f"/api/admin/quotes/{quote['id']}/request-final-payment", json={"additional_items": []}
@@ -315,7 +315,7 @@ def test_request_final_payment_requires_deposit_paid(admin_client):
 
 def test_request_final_payment_can_add_engineering_hours_without_touching_deposit(admin_client, db):
     quote = admin_client.post("/api/admin/quotes", json=quote_payload(items=[
-        {"type": "package", "product_key": "rapid_design"},
+        {"type": "package", "product_key": "product_design"},
     ])).json()
     original_deposit = quote["deposit_amount"]
     original_remaining = quote["remaining_amount"]
@@ -344,7 +344,7 @@ def test_request_final_payment_can_add_engineering_hours_without_touching_deposi
 
 def test_request_final_payment_rejects_package_as_additional_item(admin_client, db):
     quote = admin_client.post("/api/admin/quotes", json=quote_payload(items=[
-        {"type": "package", "product_key": "rapid_design"},
+        {"type": "package", "product_key": "product_design"},
     ])).json()
     for d in db.quotes.docs:
         if d["_id"] == quote["id"]:
@@ -353,7 +353,7 @@ def test_request_final_payment_rejects_package_as_additional_item(admin_client, 
 
     response = admin_client.post(
         f"/api/admin/quotes/{quote['id']}/request-final-payment",
-        json={"additional_items": [{"type": "package", "product_key": "validated_design"}]},
+        json={"additional_items": [{"type": "package", "product_key": "product_development"}]},
     )
     assert response.status_code == 422
 

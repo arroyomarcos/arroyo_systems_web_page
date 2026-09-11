@@ -21,9 +21,9 @@ import AdminTopBar from "./components/AdminTopBar";
 // Mirrors backend/pricing.py exactly - a live preview only. The server always recomputes
 // and is the authoritative source for what actually gets saved, PDF'd and charged.
 const PACKAGES_PREVIEW = {
-  rapid_design: { name: "Rapid Design", basePrice: 1300, maxPrice: 1550, maxExtraHours: 5 },
-  validated_design: { name: "Validated Design", basePrice: 3000, maxPrice: 3500, maxExtraHours: 10 },
-  performance_design: { name: "Performance Design", basePrice: 5000, maxPrice: 5750, maxExtraHours: 15 },
+  product_design: { name: "Product Design", basePrice: 1300, maxPrice: 1550, maxExtraHours: 5 },
+  product_validation: { name: "Product Validation", basePrice: 1850, maxPrice: 2100, maxExtraHours: 5 },
+  product_development: { name: "Product Development", basePrice: 3000, maxPrice: 3500, maxExtraHours: 10 },
 };
 const ENGINEERING_RATE = 50;
 const EDITABLE_STATUSES = ["DRAFT", "SENT", "VIEWED"];

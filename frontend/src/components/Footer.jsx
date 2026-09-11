@@ -4,12 +4,16 @@ import { Linkedin, Mail, MapPin, ArrowRight } from "lucide-react";
 import ContactForm from "./ContactForm";
 import { useLang, useContent } from "../i18n/useLang";
 
+// Lands on the top of the contact section, exactly like the hero's "Start a
+// project" link and the header's contact button. Scrolling the name input into
+// view instead leaves the section cropped mid-form, so the cursor is placed
+// with preventScroll to keep the landing position identical.
 const focusContactForm = (e) => {
   e.preventDefault();
+  const section = document.getElementById("contact");
+  if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
   const nameInput = document.getElementById("contact-name");
-  if (!nameInput) return;
-  nameInput.scrollIntoView({ behavior: "smooth", block: "center" });
-  nameInput.focus({ preventScroll: true });
+  if (nameInput) nameInput.focus({ preventScroll: true });
 };
 
 const Footer = () => {
@@ -28,7 +32,7 @@ const Footer = () => {
               {t.heading2}
             </h2>
             <p className="arroyo-body text-lg md:text-xl mt-6 max-w-md">{t.subheading}</p>
-            <a href="#contact-name" onClick={focusContactForm} className="contact-pill mt-8">
+            <a href="#contact" onClick={focusContactForm} className="contact-pill mt-8">
               {t.cta} <ArrowRight size={16} />
             </a>
 

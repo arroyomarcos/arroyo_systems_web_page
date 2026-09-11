@@ -3,8 +3,8 @@
 
 const packagesEn = [
   {
-    id: "rapid-design",
-    name: "Rapid Design",
+    id: "product-design",
+    name: "Product Design",
     tagline: "Turn your idea into a part you can manufacture. Fast.",
     priceRange: "€1,300 – €1,550",
     priceInclVat: "€1,573 – €1,876 (incl. 21% VAT)",
@@ -31,17 +31,50 @@ const packagesEn = [
     ],
   },
   {
-    id: "validated-design",
-    name: "Validated Design",
+    id: "product-validation",
+    name: "Product Validation",
+    tagline: "Already have a design? Prove it holds up before you manufacture it.",
+    priceRange: "€1,850 – €2,100",
+    priceInclVat: "€2,239 – €2,541 (incl. 21% VAT)",
+    leadTime: "8–11 business days",
+    revisions: "1 revision cycle included",
+    hours: "Base: 20h · Up to +5h if complexity increases",
+    bestFor: "Teams with an existing design, in-house or third-party, needing structural certainty before production.",
+    description:
+      "You already have a CAD model, designed in-house or by another provider. We check that it will survive real operating loads before you commit to tooling or production, and tell you exactly what to change if it won't.",
+    deliverables: [
+      { title: "Structural Simulation", description: "Stress, deformation and safety factor calculated using FEM." },
+      {
+        title: "Fatigue Analysis",
+        description: "S-N based fatigue check on the critical load cases identified.",
+      },
+      {
+        title: "Design Optimization Recommendations",
+        description: "Where material can be safely removed, and where it must be reinforced.",
+      },
+      {
+        title: "Updated Technical Drawings",
+        description: "Revised only where the analysis requires a geometry change.",
+      },
+      {
+        title: "Engineering Validation Report",
+        description: "Clear evidence that your design meets its intended requirements.",
+      },
+    ],
+    note: "Requires the client to provide the CAD model in a compatible format (STEP, IGES, SolidWorks, or another format agreed in advance). Arroyo Systems is not responsible for design flaws originating in a model it did not produce.",
+  },
+  {
+    id: "product-development",
+    name: "Product Development",
     tagline: "Know your design will work before you spend money manufacturing it.",
     priceRange: "€3,000 – €3,500",
-    priceInclVat: "€3,630 – €4,235 (incl. 21% VAT)",
+    priceInclVat: "€3,630 – €4,235 (incl. 21% VAT) · vs. €3,150 – €3,650 booked separately",
     leadTime: "10–14 business days",
     revisions: "2 revision cycles included",
-    hours: "Base: 35h · Up to +10h if complexity increases",
-    bestFor: "PyMEs and startups with funding that need structural certainty before production.",
+    hours: "Base: 35h (15h design + 20h validation) · Up to +10h if complexity increases",
+    bestFor: "PyMEs and industrial manufacturers that need a design built and validated together, from scratch.",
     description:
-      "Anyone can design a part that looks good. We prove it will survive the real loads before the first prototype is built. Less risk, fewer redesigns and fewer expensive mistakes.",
+      "Anyone can design a part that looks good. We prove it will survive the real loads before the first prototype is built, designed and validated together in one engagement, at a discount versus booking Product Design and Product Validation as two separate projects.",
     deliverables: [
       { title: "Optimized CAD Model", description: "Design refined after engineering analysis." },
       { title: "Structural Simulation", description: "Stress, deformation and safety factor calculated using FEM." },
@@ -56,46 +89,12 @@ const packagesEn = [
       },
     ],
   },
-  {
-    id: "performance-design",
-    name: "Performance Design",
-    tagline: "Don't just prove it works. Make it better. Iterative optimization for weight, cost, and reliability.",
-    priceRange: "€5,000 – €5,750",
-    priceInclVat: "€6,050 – €6,957 (incl. 21% VAT)",
-    leadTime: "14–21 business days",
-    revisions: "3 revision cycles included",
-    hours: "Base: 60h · Up to +15h if complexity increases",
-    bestFor: "Fabricantes, technical PyMEs, and well-funded startups needing full documentation.",
-    description:
-      "Your part already works. Now make it lighter, stronger and cheaper to manufacture. We optimize the design through multiple engineering iterations, so you get the highest performance without unnecessary material or cost.",
-    deliverables: [
-      { title: "Optimized CAD Model", description: "Final geometry refined through engineering optimization." },
-      {
-        title: "Advanced Structural Analysis",
-        description: "Static and fatigue simulations under real operating conditions.",
-      },
-      {
-        title: "Iterative Design Optimization",
-        description:
-          "Multiple engineering iterations to reduce weight, improve strength and lower manufacturing cost.",
-      },
-      { title: "Technical Drawings", description: "Manufacturing drawings ready for production." },
-      {
-        title: "Material & Manufacturing Specification",
-        description: "Recommended material, manufacturing process and finishing requirements.",
-      },
-      {
-        title: "Engineering Validation Reports",
-        description: "Complete documentation showing why the final design performs better than the original.",
-      },
-    ],
-  },
 ];
 
 const packagesEs = [
   {
-    id: "rapid-design",
-    name: "Rapid Design",
+    id: "product-design",
+    name: "Product Design",
     tagline: "Convierte tu idea en una pieza lista para fabricar. Rápido.",
     priceRange: "1.300 € – 1.550 €",
     priceInclVat: "1.573 € – 1.876 € (IVA del 21% incluido)",
@@ -122,17 +121,53 @@ const packagesEs = [
     ],
   },
   {
-    id: "validated-design",
-    name: "Validated Design",
+    id: "product-validation",
+    name: "Product Validation",
+    tagline: "¿Ya tienes un diseño? Demuestra que aguanta antes de fabricarlo.",
+    priceRange: "1.850 € – 2.100 €",
+    priceInclVat: "2.239 € – 2.541 € (IVA del 21% incluido)",
+    leadTime: "8–11 días laborables",
+    revisions: "1 ciclo de revisión incluido",
+    hours: "Base: 20 h · Hasta +5 h si aumenta la complejidad",
+    bestFor: "Equipos con un diseño ya existente, propio o de un tercero, que necesitan certeza estructural antes de producción.",
+    description:
+      "Ya tienes un modelo CAD, diseñado internamente o por otro proveedor. Comprobamos que soportará las cargas reales de operación antes de que te comprometas con utillaje o producción, y te decimos exactamente qué cambiar si no lo hace.",
+    deliverables: [
+      {
+        title: "Simulación estructural",
+        description: "Tensión, deformación y factor de seguridad calculados mediante FEM.",
+      },
+      {
+        title: "Análisis de fatiga",
+        description: "Comprobación de fatiga basada en curvas S-N sobre los casos de carga críticos identificados.",
+      },
+      {
+        title: "Recomendaciones de optimización del diseño",
+        description: "Dónde se puede quitar material de forma segura y dónde hay que reforzar.",
+      },
+      {
+        title: "Planos técnicos actualizados",
+        description: "Revisados solo donde el análisis exige un cambio de geometría.",
+      },
+      {
+        title: "Informe de validación de ingeniería",
+        description: "Evidencia clara de que tu diseño cumple los requisitos previstos.",
+      },
+    ],
+    note: "Requiere que el cliente aporte el modelo CAD en un formato compatible (STEP, IGES, SolidWorks u otro formato acordado previamente). Arroyo Systems no se responsabiliza de fallos de diseño originados en un modelo que no ha producido.",
+  },
+  {
+    id: "product-development",
+    name: "Product Development",
     tagline: "Sabe que tu diseño funcionará antes de gastar dinero en fabricarlo.",
     priceRange: "3.000 € – 3.500 €",
-    priceInclVat: "3.630 € – 4.235 € (IVA del 21% incluido)",
+    priceInclVat: "3.630 € – 4.235 € (IVA del 21% incluido) · frente a 3.150 € – 3.650 € contratados por separado",
     leadTime: "10–14 días laborables",
     revisions: "2 ciclos de revisión incluidos",
-    hours: "Base: 35 h · Hasta +10 h si aumenta la complejidad",
-    bestFor: "PyMEs y startups con financiación que necesitan certeza estructural antes de producción.",
+    hours: "Base: 35 h (15 h de diseño + 20 h de validación) · Hasta +10 h si aumenta la complejidad",
+    bestFor: "PyMEs y fabricantes industriales que necesitan un diseño construido y validado a la vez, desde cero.",
     description:
-      "Cualquiera puede diseñar una pieza que tenga buen aspecto. Nosotros demostramos que soportará las cargas reales antes de construir el primer prototipo. Menos riesgo, menos rediseños y menos errores costosos.",
+      "Cualquiera puede diseñar una pieza que tenga buen aspecto. Nosotros demostramos que soportará las cargas reales antes de construir el primer prototipo, diseñado y validado en un mismo proyecto, con descuento frente a contratar Product Design y Product Validation por separado.",
     deliverables: [
       { title: "Modelo CAD optimizado", description: "Diseño refinado tras el análisis de ingeniería." },
       {
@@ -150,40 +185,6 @@ const packagesEs = [
       {
         title: "Informe de ingeniería",
         description: "Evidencia clara de que tu diseño cumple los requisitos previstos.",
-      },
-    ],
-  },
-  {
-    id: "performance-design",
-    name: "Performance Design",
-    tagline: "No te quedes en demostrar que funciona. Hazlo mejor. Optimización iterativa de peso, coste y fiabilidad.",
-    priceRange: "5.000 € – 5.750 €",
-    priceInclVat: "6.050 € – 6.957 € (IVA del 21% incluido)",
-    leadTime: "14–21 días laborables",
-    revisions: "3 ciclos de revisión incluidos",
-    hours: "Base: 60 h · Hasta +15 h si aumenta la complejidad",
-    bestFor: "Fabricantes, PyMEs técnicas y startups bien financiadas que necesitan documentación completa.",
-    description:
-      "Tu pieza ya funciona. Ahora hazla más ligera, más resistente y más barata de fabricar. Optimizamos el diseño mediante múltiples iteraciones de ingeniería, para que obtengas el máximo rendimiento sin material ni coste innecesarios.",
-    deliverables: [
-      { title: "Modelo CAD optimizado", description: "Geometría final refinada mediante optimización de ingeniería." },
-      {
-        title: "Análisis estructural avanzado",
-        description: "Simulaciones estáticas y de fatiga bajo condiciones reales de operación.",
-      },
-      {
-        title: "Optimización iterativa del diseño",
-        description:
-          "Múltiples iteraciones de ingeniería para reducir peso, mejorar la resistencia y bajar el coste de fabricación.",
-      },
-      { title: "Planos técnicos", description: "Planos de fabricación listos para producción." },
-      {
-        title: "Especificación de material y fabricación",
-        description: "Material recomendado, proceso de fabricación y requisitos de acabado.",
-      },
-      {
-        title: "Informes de validación de ingeniería",
-        description: "Documentación completa que muestra por qué el diseño final rinde mejor que el original.",
       },
     ],
   },
@@ -263,9 +264,9 @@ export const content = {
       messagePlaceholder: "Tell us about your component, requirements, timeline...",
       selectOption: "Select an option",
       projectTypes: [
-        { value: "Rapid Design", label: "Rapid Design" },
-        { value: "Validated Design", label: "Validated Design" },
-        { value: "Performance Design", label: "Performance Design" },
+        { value: "Product Design", label: "Product Design" },
+        { value: "Product Validation", label: "Product Validation" },
+        { value: "Product Development", label: "Product Development" },
         { value: "Other", label: "Other" },
       ],
       privacyPrefix: "I have read and accept the",
@@ -377,9 +378,9 @@ export const content = {
       messagePlaceholder: "Cuéntanos sobre tu componente, requisitos, plazos...",
       selectOption: "Selecciona una opción",
       projectTypes: [
-        { value: "Rapid Design", label: "Rapid Design" },
-        { value: "Validated Design", label: "Validated Design" },
-        { value: "Performance Design", label: "Performance Design" },
+        { value: "Product Design", label: "Product Design" },
+        { value: "Product Validation", label: "Product Validation" },
+        { value: "Product Development", label: "Product Development" },
         { value: "Other", label: "Otro" },
       ],
       privacyPrefix: "He leído y acepto la",

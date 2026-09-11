@@ -29,9 +29,9 @@ from pdf_quote import (
 )
 
 PACKAGE_NAMES = {
-    "rapid_design": "Rapid Design",
-    "validated_design": "Validated Design",
-    "performance_design": "Performance Design",
+    "product_design": "Product Design",
+    "product_validation": "Product Validation",
+    "product_development": "Product Development",
 }
 
 SIGNATURE_ANCHOR = "/firma_cliente/"
@@ -155,8 +155,8 @@ def build_contract_pdf(
 
     clause(2, "Alcance del servicio")
     p(
-        "El alcance de cada modalidad de servicio (Rapid Design, Validated Design, Performance "
-        "Design), incluyendo lo que incluye y lo que queda expresamente excluido, es el publicado en "
+        "El alcance de cada modalidad de servicio (Product Design, Product Validation, Product "
+        "Development), incluyendo lo que incluye y lo que queda expresamente excluido, es el publicado en "
         "el catálogo de servicios de ingeniería de Arroyo Systems vigente en la fecha del "
         "Presupuesto. El precio final dentro del rango indicado para cada servicio se fija en el "
         "Presupuesto (Anexo I) en función de la complejidad específica del proyecto, y podrá "

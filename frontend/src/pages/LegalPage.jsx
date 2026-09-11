@@ -174,7 +174,7 @@ export const PrivacyPolicy = () => (useLang() === "es" ? <PrivacyPolicyES /> : <
 // ---------- Legal Notice ----------
 
 const LegalNoticeEN = () => (
-  <LegalLayout title="Legal Notice" updated="Last updated: July 5, 2026">
+  <LegalLayout title="Legal Notice" updated="Last updated: September 11, 2026">
     <Section title="Website owner">
       <p>Owner: Marcos Arroyo Navarro</p>
       <p>Commercial name: Arroyo Systems</p>
@@ -195,6 +195,29 @@ const LegalNoticeEN = () => (
       <p>
         This website does not sell products or services directly. It is intended to provide
         information and receive contact or project assessment requests.
+      </p>
+    </Section>
+
+    <Section title="Professional registration">
+      <p>
+        Marcos Arroyo Navarro holds a Bachelor's degree in Mechanical Engineering, issued in
+        Spain, and is registered with the Colegio Oficial de Graduados e Ingenieros Técnicos
+        Industriales de Madrid (COGITI Madrid) under membership number 0027580.
+      </p>
+      <p>
+        Engineering services are provided in accordance with the General Statutes of the Colegios
+        Oficiales de Graduados e Ingenieros Técnicos Industriales and COGITI Madrid's code of
+        professional conduct, both available at www.cogitim.es.
+      </p>
+    </Section>
+
+    <Section title="Scope of technical reports">
+      <p>
+        Technical reports issued by Arroyo Systems are design and validation reports of defined
+        scope. They are not subject to mandatory professional association review (visado
+        colegial), in accordance with Article 2 of Royal Decree 1000/2010, and do not constitute
+        certification of regulatory conformity for the final product. The scope and limitations
+        of each report are detailed in the document itself.
       </p>
     </Section>
 
@@ -237,7 +260,7 @@ const LegalNoticeEN = () => (
 );
 
 const LegalNoticeES = () => (
-  <LegalLayout title="Aviso Legal" updated="Última actualización: 5 de julio de 2026">
+  <LegalLayout title="Aviso Legal" updated="Última actualización: 11 de septiembre de 2026">
     <Section title="Titular de la web">
       <p>Titular: Marcos Arroyo Navarro</p>
       <p>Nombre comercial: Arroyo Systems</p>
@@ -258,6 +281,29 @@ const LegalNoticeES = () => (
       <p>
         Esta web no vende productos ni servicios de forma directa. Su finalidad es proporcionar
         información y recibir solicitudes de contacto o evaluación de proyectos.
+      </p>
+    </Section>
+
+    <Section title="Colegiación profesional">
+      <p>
+        Marcos Arroyo Navarro es Graduado en Ingeniería Mecánica, título expedido en España, y
+        está colegiado en el Colegio Oficial de Graduados e Ingenieros Técnicos Industriales de
+        Madrid (COGITI Madrid) con el número de colegiado 0027580.
+      </p>
+      <p>
+        Los servicios de ingeniería se prestan conforme a los Estatutos Generales de los Colegios
+        Oficiales de Graduados e Ingenieros Técnicos Industriales y al código deontológico de
+        COGITI Madrid, disponibles ambos en www.cogitim.es.
+      </p>
+    </Section>
+
+    <Section title="Alcance de los informes técnicos">
+      <p>
+        Los informes técnicos emitidos por Arroyo Systems son informes de validación y diseño de
+        alcance definido. No están sujetos a visado colegial obligatorio, conforme al artículo 2
+        del Real Decreto 1000/2010, y no constituyen una certificación de conformidad normativa
+        del producto final. El alcance y las limitaciones de cada informe se detallan en el propio
+        documento.
       </p>
     </Section>
 

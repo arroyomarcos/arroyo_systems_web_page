@@ -19,6 +19,7 @@ from pdf_quote import build_quote_pdf
 from pricing import (
     ENGINEERING_HOURS_RATE,
     PACKAGES,
+    PackageKey,
     PricingError,
     compute_quote_totals,
     price_engineering_hours_item,
@@ -52,7 +53,7 @@ class CustomerIn(BaseModel):
 
 class QuoteItemInput(BaseModel):
     type: Literal["package", "engineering_hours"]
-    product_key: Optional[Literal["rapid_design", "validated_design", "performance_design"]] = None
+    product_key: Optional[PackageKey] = None
     description: Optional[str] = Field(default=None, max_length=500)
     quantity: float = Field(default=1, ge=0)
     extra_hours: float = Field(default=0, ge=0)

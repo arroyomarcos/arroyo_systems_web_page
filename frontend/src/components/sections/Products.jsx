@@ -63,6 +63,12 @@ const PackageDialog = ({ pkg, onOpenChange, t }) => (
             <MetaField label={t.leadTimeLabel} value={pkg.leadTime} />
             <MetaField label={t.revisionsLabel} value={pkg.revisions} />
           </div>
+
+          {pkg.note && (
+            <p className="mt-6 pt-6 border-t border-slate-200 text-xs text-[color:var(--arroyo-muted)] leading-relaxed">
+              {pkg.note}
+            </p>
+          )}
         </>
       )}
     </DialogContent>

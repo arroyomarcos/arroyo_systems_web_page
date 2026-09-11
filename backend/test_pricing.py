@@ -12,9 +12,9 @@ from pricing import (
 @pytest.mark.parametrize(
     "key,expected_base,expected_max",
     [
-        ("rapid_design", 1300.0, 1550.0),
-        ("validated_design", 3000.0, 3500.0),
-        ("performance_design", 5000.0, 5750.0),
+        ("product_design", 1300.0, 1550.0),
+        ("product_validation", 1850.0, 2100.0),
+        ("product_development", 3000.0, 3500.0),
     ],
 )
 def test_package_base_and_max_price(key, expected_base, expected_max):
@@ -24,22 +24,22 @@ def test_package_base_and_max_price(key, expected_base, expected_max):
 
 
 def test_package_price_scales_linearly_with_extra_hours():
-    # Validated Design: 3000 base + 4h * 50 = 3200, within the 3000-3500 range.
-    assert price_package_item("validated_design", extra_hours=4, override_confirmed=False) == 3200.0
+    # Product Development: 3000 base + 4h * 50 = 3200, within the 3000-3500 range.
+    assert price_package_item("product_development", extra_hours=4, override_confirmed=False) == 3200.0
 
 
 def test_package_extra_hours_beyond_max_requires_override():
     with pytest.raises(PricingError):
-        price_package_item("rapid_design", extra_hours=6, override_confirmed=False)
+        price_package_item("product_design", extra_hours=6, override_confirmed=False)
 
     # With override confirmed, it's allowed and priced past the catalog max.
-    price = price_package_item("rapid_design", extra_hours=6, override_confirmed=True)
+    price = price_package_item("product_design", extra_hours=6, override_confirmed=True)
     assert price == 1300.0 + 6 * 50.0
 
 
 def test_package_negative_hours_rejected():
     with pytest.raises(PricingError):
-        price_package_item("rapid_design", extra_hours=-1, override_confirmed=True)
+        price_package_item("product_design", extra_hours=-1, override_confirmed=True)
 
 
 def test_unknown_package_rejected():
@@ -58,7 +58,7 @@ def test_engineering_hours_negative_rejected():
 
 
 def test_compute_quote_totals_deposit_is_package_only():
-    # Validated Design (3000, package) + Engineering Hours 5h (250, not package).
+    # Product Development (3000, package) + Engineering Hours 5h (250, not package).
     # Subtotal/VAT/total cover everything, but the 50% deposit is based on the package
     # alone - Engineering Hours always land entirely in the remaining/second payment.
     items = [
