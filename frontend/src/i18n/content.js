@@ -335,7 +335,9 @@ export const content = {
     contact: {
       heading1: "Tell us",
       heading2: "what you need.",
-      subheading: "We reply with a closed-price quote, in writing.",
+      subheading: "A short summary is enough. We'll then get in touch to pin down the details.",
+      emailLabel: "Email",
+      locationTitle: "Location",
       formEyebrow: "Send us a message",
       locationLabel: "Madrid, Spain",
       linkedinLabel: "LinkedIn",
@@ -473,7 +475,9 @@ export const content = {
     contact: {
       heading1: "Cuéntanos",
       heading2: "qué necesitas.",
-      subheading: "Te respondemos con un presupuesto cerrado, por escrito.",
+      subheading: "Un breve resumen basta. Después te contactamos para concretar los detalles.",
+      emailLabel: "Correo",
+      locationTitle: "Ubicación",
       formEyebrow: "Envíanos un mensaje",
       locationLabel: "Madrid, España",
       linkedinLabel: "LinkedIn",

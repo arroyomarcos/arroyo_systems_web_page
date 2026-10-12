@@ -1,6 +1,5 @@
 import React from "react";
 import { LINKEDIN_URL, EMAIL, ASSETS } from "../mock";
-import { Linkedin, Mail, MapPin } from "lucide-react";
 import ContactForm from "./ContactForm";
 import { useLang, useContent } from "../i18n/useLang";
 
@@ -21,34 +20,26 @@ const Footer = () => {
             </h2>
             <p className="section-lead mt-6 max-w-md">{t.subheading}</p>
 
-            <ul className="mt-8 space-y-5">
-              <li className="flex items-center gap-3">
-                <Mail size={18} className="text-[color:var(--arroyo-accent)]" />
-                <a
-                  href={`mailto:${EMAIL}`}
-                  className="text-base md:text-lg text-[color:var(--arroyo-navy)] font-medium hover:text-[color:var(--arroyo-accent)] transition-colors"
-                >
-                  {EMAIL}
-                </a>
-              </li>
-              <li className="flex items-center gap-3">
-                <MapPin size={18} className="text-[color:var(--arroyo-accent)]" />
-                <span className="text-base md:text-lg text-[color:var(--arroyo-navy)] font-medium">
-                  {t.locationLabel}
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Linkedin size={18} className="text-[color:var(--arroyo-accent)]" />
-                <a
-                  href={LINKEDIN_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-base md:text-lg text-[color:var(--arroyo-navy)] font-medium hover:text-[color:var(--arroyo-accent)] transition-colors"
-                >
-                  {t.linkedinLabel}
-                </a>
-              </li>
-            </ul>
+            <dl className="contact-details mt-10">
+              <div>
+                <dt>{t.emailLabel}</dt>
+                <dd>
+                  <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+                </dd>
+              </div>
+              <div>
+                <dt>{t.locationTitle}</dt>
+                <dd>{t.locationLabel}</dd>
+              </div>
+              <div>
+                <dt>LinkedIn</dt>
+                <dd>
+                  <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className="link-chevron">
+                    {t.linkedinLabel}
+                  </a>
+                </dd>
+              </div>
+            </dl>
           </div>
 
           {/* Contact form */}

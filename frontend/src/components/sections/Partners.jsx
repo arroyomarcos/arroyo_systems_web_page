@@ -12,7 +12,7 @@ const LogoTile = ({ src, alt }) => (
 
 const GroupLabel = ({ children }) => (
   <>
-    <p className="eyebrow mb-4">{children}</p>
+    <p className="eyebrow mb-2 text-center">{children}</p>
   </>
 );
 
@@ -27,8 +27,8 @@ const Partners = () => {
           <p className="section-lead mt-5">{t.subtitle}</p>
         </div>
 
-        <div className="mt-14 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-12 lg:gap-x-10">
-          <div className="md:col-span-2">
+        <div className="mt-14 md:mt-20 grid grid-cols-1 md:grid-cols-3 max-w-5xl mx-auto">
+          <div className="md:col-span-2 md:pr-10">
             <GroupLabel>{t.softwareLabel}</GroupLabel>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-10">
               {t.softwareItems.map((item) => (
@@ -37,7 +37,7 @@ const Partners = () => {
             </div>
           </div>
 
-          <div>
+          <div className="mt-12 pt-12 border-t border-[color:var(--arroyo-line)] md:mt-0 md:pt-0 md:border-t-0 md:border-l md:pl-10">
             <GroupLabel>{t.partnersLabel}</GroupLabel>
             {t.items.map((p) => (
               <LogoTile key={p.id} src={ASSETS[p.logo]} alt={`${p.name} logo`} />

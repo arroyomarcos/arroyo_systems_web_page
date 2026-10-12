@@ -558,3 +558,34 @@ html, body {
   line-height: 1.6;
   margin: 0.4rem 0;
 }
+
+/* Contact details: hairline rows, label on the left, no icons. */
+.contact-details {
+  max-width: 28rem;
+  border-top: 1px solid var(--arroyo-line);
+}
+.contact-details > div {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--arroyo-line);
+}
+.contact-details dt {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--arroyo-muted);
+}
+.contact-details dd {
+  margin: 0;
+  font-size: 1.0625rem;
+  color: var(--arroyo-navy);
+}
+.contact-details a:not(.link-chevron) {
+  color: inherit;
+  transition: color 0.2s;
+}
+.contact-details a:not(.link-chevron):hover {
+  color: var(--arroyo-accent);
+}
