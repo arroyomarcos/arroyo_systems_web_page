@@ -432,7 +432,7 @@ html {
 .process-stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 3;
 }
 @media (min-width: 768px) {
   .process-stage {
@@ -456,8 +456,8 @@ html {
   background: linear-gradient(to bottom, transparent, #2e3440 20%, #2e3440 80%, transparent);
   pointer-events: none;
 }
-/* Images are shown at their own pixel size (never enlarged), only ever scaled down, and
-   their edges dissolve into the page instead of ending in a hard frame. */
+/* All four images share one canvas size, so the fade is identical for each. They are only
+   ever scaled down, never zoomed, and their edges dissolve into the band behind them. */
 .process-stage__img {
   position: absolute;
   inset: 0;
@@ -475,13 +475,7 @@ html {
   mask-composite: intersect;
 }
 @media (min-width: 768px) {
-  .process-stage__img {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: initial;
-  }
+  .process-stage__img { object-fit: contain; }
 }
 .process-stage__img.is-active {
   opacity: 1;
