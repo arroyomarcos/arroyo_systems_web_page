@@ -1,10 +1,12 @@
 """Product catalog and pricing rules for Arroyo Systems quotes.
 
-Pricing model (Brief_Rediseno_Web, 2026-10-12, with the price ranges kept from the catalog
+Pricing model (Brief_Rediseno_Web, 2026-10-12, with the price ranges derived from the catalog
 PDF's "Pricing Formula"): each engineering package starts at a minimum price that covers its
 budgeted hours (hours x ENGINEERING_HOURS_RATE) and may rise, hour by hour at that same rate,
-up to a published maximum that is never exceeded: base_price + max_extra_hours x rate. The
-quote fixes the final price inside that range, as a closed price for its written scope.
+up to a published maximum that is never exceeded. The published minimum and maximum are the
+formula's values rounded to the nearest 50 EUR (Development's minimum is Design + Validation),
+and those rounded figures are what the engine charges, so the website, quotes and Stripe agree.
+The quote fixes the final price inside that range, as a closed price for its written scope.
 Anything beyond the range is billed at the same hourly rate, only with prior notice and
 acceptance. Manufacturing has no catalog price: it is the workshop's cost plus Arroyo Systems'
 manufacturing-management fee, both entered per quote.
@@ -29,23 +31,23 @@ class PackageSpec(TypedDict):
 PACKAGES: dict[PackageKey, PackageSpec] = {
     "product_design": {
         "name": "Product Design",
-        "base_price": 1482.0,
-        "max_price": 1872.0,
+        "base_price": 1500.0,
+        "max_price": 1850.0,
         "base_hours": 19,
         "max_extra_hours": 5,
     },
     "product_validation": {
         "name": "Product Validation",
-        "base_price": 2028.0,
-        "max_price": 2418.0,
+        "base_price": 2050.0,
+        "max_price": 2400.0,
         "base_hours": 26,
         "max_extra_hours": 5,
     },
     # Design (19h) + Validation (26h). No package discount any more.
     "product_development": {
         "name": "Product Development",
-        "base_price": 3510.0,
-        "max_price": 4290.0,
+        "base_price": 3550.0,
+        "max_price": 4300.0,
         "base_hours": 45,
         "max_extra_hours": 10,
     },

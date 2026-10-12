@@ -122,13 +122,13 @@ def test_create_quote_matches_prompt_example(admin_client):
     response = admin_client.post("/api/admin/quotes", json=quote_payload())
     assert response.status_code == 201
     body = response.json()
-    assert body["subtotal"] == 3900.0
-    assert body["vat_amount"] == 819.0
-    assert body["total"] == 4719.0
-    # Deposit is 50% of the package (Product Development) only, incl. VAT: 3510 * 1.21 / 2.
+    assert body["subtotal"] == 3940.0
+    assert body["vat_amount"] == 827.4
+    assert body["total"] == 4767.4
+    # Deposit is 50% of the package (Product Development) only, incl. VAT: 3550 * 1.21 / 2.
     # Engineering Hours always land in the remaining/second payment, never split.
-    assert body["deposit_amount"] == 2123.55
-    assert body["remaining_amount"] == 2595.45
+    assert body["deposit_amount"] == 2147.75
+    assert body["remaining_amount"] == 2619.65
     assert body["deposit_amount"] + body["remaining_amount"] == body["total"]
     assert body["status"] == "DRAFT"
     assert body["payment_status"] == "UNPAID"
@@ -173,7 +173,7 @@ def test_create_quote_allows_extra_hours_beyond_max_with_override(admin_client):
     )
     response = admin_client.post("/api/admin/quotes", json=payload)
     assert response.status_code == 201
-    assert response.json()["items"][0]["total"] == 1482.0 + 20 * 78.0
+    assert response.json()["items"][0]["total"] == 1500.0 + 20 * 78.0
 
 
 def test_create_quote_with_manufacturing_line(admin_client):
@@ -280,7 +280,7 @@ def test_pdf_amount_matches_quote_total(admin_client, db, monkeypatch):
     quote = admin_client.post("/api/admin/quotes", json=quote_payload()).json()
     response = admin_client.get(f"/api/admin/quotes/{quote['id']}/pdf")
     assert response.status_code == 200
-    assert captured["quote_total"] == quote["total"] == 4719.0
+    assert captured["quote_total"] == quote["total"] == 4767.4
 
 
 def test_pay_deposit_stripe_amount_matches_quote(admin_client, db, monkeypatch):
