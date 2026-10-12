@@ -98,14 +98,14 @@ const Header = () => {
         scrolled ? "bg-[#fbfbfd]/80 border-black/10" : "bg-[#fbfbfd]/70 border-transparent"
       }`}
     >
-      <div className="arroyo-container flex items-center justify-between h-14">
+      <div className="arroyo-container flex items-center justify-between h-16 md:h-[68px]">
         {/* Logo */}
         <Link to={homePath} className="shrink-0" onClick={closeMenu}>
           <span className="logo-badge">
             <img
               src={ASSETS.logo}
               alt="Arroyo Systems"
-              className="logo-img h-7 md:h-8 w-auto object-contain"
+              className="logo-img h-8 md:h-9 w-auto object-contain"
             />
           </span>
         </Link>

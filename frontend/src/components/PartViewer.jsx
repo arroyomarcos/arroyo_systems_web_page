@@ -109,7 +109,7 @@ const PartViewer = ({ onReady, onFail }) => {
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       // Narrow stages (phones) pull the camera back so the part is never cropped.
-      camera.zoom = Math.min(1, camera.aspect / 1.55);
+      camera.zoom = Math.min(1, 0.55 + 0.25 * camera.aspect);
       camera.updateProjectionMatrix();
       if (reducedMotion || !visible) render();
     };

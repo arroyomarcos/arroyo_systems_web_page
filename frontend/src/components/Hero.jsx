@@ -33,9 +33,9 @@ const Hero = () => {
   const [viewer, setViewer] = useState("loading"); // loading | ready | failed
 
   return (
-    <section id="top" className="relative pt-28 md:pt-36 pb-10 md:pb-16 overflow-hidden">
-      <div className="arroyo-container relative">
-        <div className="reveal text-center">
+    <section id="top" className="relative pt-28 md:pt-36 pb-14 md:pb-24 overflow-hidden">
+      <div className="arroyo-container relative grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-16 items-center">
+        <div className="reveal md:col-span-6">
           <h1 className="hero-title">
             {t.titleLines.map((line) => (
               <span key={line}>{line}</span>
@@ -47,7 +47,7 @@ const Hero = () => {
             ))}
           </p>
 
-          <div className="mt-8 md:mt-10 flex flex-wrap justify-center gap-3 items-center">
+          <div className="mt-8 md:mt-10 flex flex-wrap gap-3 items-center">
             <a href="#contact" onClick={scrollToId("contact")} className="contact-pill contact-pill--solid">
               {t.ctaPrimary}
             </a>
@@ -63,7 +63,7 @@ const Hero = () => {
           </ul>
         </div>
 
-        <figure className="viewer-frame mt-6 md:mt-10">
+        <figure className="viewer-frame md:col-span-6">
           <div className={`viewer-frame__stage ${viewer !== "loading" ? "is-ready" : ""}`}>
             {viewer === "failed" ? (
               <img src={ASSETS.hero} alt="" className="viewer-frame__fallback" loading="eager" />
