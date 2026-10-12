@@ -1,7 +1,6 @@
 import React from "react";
-import { Download, Mail, MailOpen, Trash2 } from "lucide-react";
+import { Mail, MailOpen, Trash2 } from "lucide-react";
 import { formatDate } from "../../../lib/messageUtils";
-import { downloadMessageAttachment } from "../../../lib/api";
 
 const DetailRow = ({ label, value }) => (
   <div>
@@ -56,32 +55,6 @@ const MessageDrawer = ({ message, onClose, onToggleRead, onDelete }) => {
           <DetailRow
             label="Project type"
             value={message.project_type || "—"}
-          />
-          <DetailRow
-            label="Quantity"
-            value={message.quantity ?? "—"}
-          />
-          <DetailRow label="Desired lead time" value={message.deadline || "—"} />
-          <DetailRow label="Preferred material" value={message.material || "—"} />
-          <DetailRow
-            label="Already has a design"
-            value={message.has_design === null || message.has_design === undefined ? "—" : message.has_design ? "Yes" : "No"}
-          />
-          <DetailRow
-            label="Attachment"
-            value={
-              message.attachment_name ? (
-                <button
-                  type="button"
-                  className="link-underline inline-flex items-center gap-2"
-                  onClick={() => downloadMessageAttachment(message.id, message.attachment_name)}
-                >
-                  <Download size={14} /> {message.attachment_name}
-                </button>
-              ) : (
-                "—"
-              )
-            }
           />
           <DetailRow
             label="Status"

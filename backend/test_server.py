@@ -26,21 +26,6 @@ class FakeContactMessages:
         self.docs.append(doc)
         return None
 
-    async def find_one(self, query):
-        for d in self.docs:
-            if all(d.get(k) == v for k, v in query.items()):
-                return d
-        return None
-
-    async def delete_one(self, query):
-        before = len(self.docs)
-        self.docs = [d for d in self.docs if not all(d.get(k) == v for k, v in query.items())]
-
-        class Result:
-            deleted_count = before - len(self.docs)
-
-        return Result()
-
 
 class FakeOrders:
     def __init__(self):
@@ -67,7 +52,6 @@ class FakeOrders:
 class FakeDB:
     def __init__(self):
         self.contact_messages = FakeContactMessages()
-        self.contact_attachments = FakeContactMessages()
         self.orders = FakeOrders()
 
 
@@ -123,10 +107,20 @@ def test_contact_accepts_valid_message(client):
     assert body["status"] == "received"
 
 
+def test_contact_accepts_the_manufacturing_project_type(client):
+    response = client.post("/api/contact", json=valid_payload(project_type="Product Manufacturing"))
+    assert response.status_code == 201
+
+
+def test_contact_accepts_the_manufacturing_project_type(client):
+    response = client.post("/api/contact", json=valid_payload(project_type="Product Manufacturing"))
+    assert response.status_code == 201
+
+
 def test_contact_triggers_email_notification(client, monkeypatch):
     calls = []
 
-    def fake_schedule(message, attachment=None):
+    def fake_schedule(message):
         calls.append(message.email)
 
     monkeypatch.setattr(server, "schedule_contact_notification", fake_schedule)
@@ -136,7 +130,7 @@ def test_contact_triggers_email_notification(client, monkeypatch):
 
 
 def test_contact_response_survives_notification_scheduling_failure(client, monkeypatch):
-    def fail_if_called_inline(message, attachment=None):
+    def fail_if_called_inline(message):
         raise AssertionError("notification should be scheduled after the message is saved")
 
     monkeypatch.setattr(server, "schedule_contact_notification", fail_if_called_inline)
@@ -408,159 +402,3 @@ def test_legal_pages_are_registered():
     assert "/privacy-policy" in content
     assert "/legal-notice" in content
     assert "/cookies-policy" in content
-
-
-# ---------- Contact form with attachment ----------
-
-STEP_SAMPLE = b"ISO-10303-21;\nHEADER;\nFILE_SCHEMA (('AUTOMOTIVE_DESIGN { 1 0 10303 214 3 1 1 }'));\nENDSEC;\nDATA;\nENDSEC;\nEND-ISO-10303-21;\n"
-
-
-def form_fields(**overrides):
-    fields = {
-        "name": "Maria Navarro",
-        "email": "maria@example.com",
-        "message": "I need a machined bracket, 10 pieces in aluminium.",
-        "company": "Materials Navarro",
-        "quantity": "10",
-        "deadline": "4 weeks",
-        "material": "Aluminium 6082",
-        "has_design": "true",
-        "privacyAccepted": "true",
-    }
-    fields.update(overrides)
-    return fields
-
-
-def test_contact_form_stores_qualifying_fields_and_the_step_file(client, monkeypatch):
-    sent = []
-    monkeypatch.setattr(server, "schedule_contact_notification", lambda msg, attachment=None: sent.append(attachment))
-
-    response = client.post(
-        "/api/contact/form",
-        data=form_fields(),
-        files={"file": ("part.step", STEP_SAMPLE, "application/octet-stream")},
-    )
-    assert response.status_code == 201
-
-    doc = server.db.contact_messages.docs[0]
-    assert doc["quantity"] == 10
-    assert doc["deadline"] == "4 weeks"
-    assert doc["material"] == "Aluminium 6082"
-    assert doc["has_design"] is True
-    assert doc["attachment_name"] == "part.step"
-    assert doc["attachment_size"] == len(STEP_SAMPLE)
-
-    stored = server.db.contact_attachments.docs[0]
-    assert stored["_id"] == doc["_id"]
-    assert bytes(stored["content"]) == STEP_SAMPLE
-    assert sent and sent[0]["filename"] == "part.step"
-
-
-def test_contact_form_works_without_a_file(client):
-    response = client.post("/api/contact/form", data=form_fields(quantity="", deadline="", has_design=""))
-    assert response.status_code == 201
-    doc = server.db.contact_messages.docs[0]
-    assert doc["quantity"] is None
-    assert doc["has_design"] is None
-    assert doc["attachment_name"] is None
-    assert server.db.contact_attachments.docs == []
-
-
-def test_contact_form_rejects_a_disguised_file(client):
-    response = client.post(
-        "/api/contact/form",
-        data=form_fields(),
-        files={"file": ("part.step", b"MZ\x90\x00 this is an executable", "application/octet-stream")},
-    )
-    assert response.status_code == 400
-    assert server.db.contact_messages.docs == []
-
-
-def test_contact_form_rejects_unsupported_extensions(client):
-    response = client.post(
-        "/api/contact/form",
-        data=form_fields(),
-        files={"file": ("notes.exe", STEP_SAMPLE, "application/octet-stream")},
-    )
-    assert response.status_code == 400
-
-
-def test_contact_form_rejects_oversized_files(client, monkeypatch):
-    monkeypatch.setattr(server, "CONTACT_ATTACHMENT_MAX_BYTES", 100)
-    response = client.post(
-        "/api/contact/form",
-        data=form_fields(),
-        files={"file": ("big.step", STEP_SAMPLE + b"x" * 200, "application/octet-stream")},
-    )
-    assert response.status_code == 413
-
-
-def test_contact_form_accepts_a_pdf(client):
-    response = client.post(
-        "/api/contact/form",
-        data=form_fields(),
-        files={"file": ("../../drawing.pdf", b"%PDF-1.4 fake", "application/pdf")},
-    )
-    assert response.status_code == 201
-    assert server.db.contact_messages.docs[0]["attachment_name"] == "drawing.pdf"
-
-
-def test_contact_form_validates_like_the_json_endpoint(client):
-    response = client.post("/api/contact/form", data=form_fields(email="not-an-email"))
-    assert response.status_code == 422
-
-
-def test_contact_form_requires_privacy_when_enabled(client, monkeypatch):
-    monkeypatch.setattr(server, "REQUIRE_PRIVACY_ACCEPTANCE", True)
-    response = client.post("/api/contact/form", data=form_fields(privacyAccepted="false"))
-    assert response.status_code == 400
-
-
-def test_notification_email_carries_the_attachment_to_resend(monkeypatch):
-    captured = {}
-
-    class FakeResponse:
-        status = 200
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *exc):
-            return False
-
-        def read(self):
-            return b"{}"
-
-    def fake_urlopen(request, timeout=None):
-        captured["payload"] = json.loads(request.data.decode("utf-8"))
-        return FakeResponse()
-
-    monkeypatch.setattr(server, "RESEND_API_KEY", "re_test")
-    monkeypatch.setattr(server, "RESEND_FROM", "Arroyo Systems <notifications@arroyo-systems.com>")
-    monkeypatch.setattr(server, "CONTACT_NOTIFICATION_TO", "marcos@arroyo-systems.com")
-    monkeypatch.setattr(server.urllib.request, "urlopen", fake_urlopen)
-
-    msg = server.ContactMessage(name="Maria", email="maria@example.com", message="Need a bracket", quantity=5)
-    attachment = {"filename": "part.step", "content_type": "model/step", "size": len(STEP_SAMPLE), "data": STEP_SAMPLE}
-    server.send_email_message(server.build_contact_notification(msg, attachment))
-
-    payload = captured["payload"]
-    assert "Quantity: 5" in payload["text"]
-    assert payload["attachments"][0]["filename"] == "part.step"
-    import base64
-    assert base64.b64decode(payload["attachments"][0]["content"]) == STEP_SAMPLE
-
-
-def test_admin_can_download_the_attachment(admin_client):
-    admin_client.post(
-        "/api/contact/form", data=form_fields(), files={"file": ("part.step", STEP_SAMPLE, "application/octet-stream")}
-    )
-    msg_id = server.db.contact_messages.docs[0]["_id"]
-    response = admin_client.get(f"/api/admin/messages/{msg_id}/attachment")
-    assert response.status_code == 200
-    assert response.content == STEP_SAMPLE
-    assert "part.step" in response.headers["content-disposition"]
-
-
-def test_attachment_download_is_protected(client):
-    assert client.get("/api/admin/messages/abc/attachment").status_code == 401

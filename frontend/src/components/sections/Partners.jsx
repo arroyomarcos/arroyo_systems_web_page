@@ -1,74 +1,60 @@
 import React from "react";
 import { ASSETS } from "../../mock";
-import { ArrowUpRight } from "lucide-react";
 import { useContent } from "../../i18n/useLang";
 
-// Deliberately smaller than the other sections: it supports the purchase, it isn't the pitch.
+// Every logo sits in an identical tile, on one shared row, so the different logo
+// typefaces never decide the layout: same box, same height, same alignment.
+const LogoTile = ({ src, alt }) => (
+  <div className="partner-tile">
+    <img src={src} alt={alt} className="partner-tile__logo" loading="lazy" />
+  </div>
+);
+
+const GroupLabel = ({ children }) => (
+  <>
+    <div className="thin-divider mb-6" />
+    <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[color:var(--arroyo-muted)] mb-5">
+      {children}
+    </p>
+  </>
+);
+
 const Partners = () => {
   const t = useContent().partners;
 
   return (
-    <section id="partners" className="py-16 md:py-20 relative bg-white">
+    <section id="partners" className="py-20 md:py-28 relative bg-white">
       <div className="arroyo-container">
         <div className="max-w-3xl">
           <h2 className="section-heading">{t.heading}</h2>
           <p className="arroyo-body mt-4 text-base md:text-lg max-w-xl">{t.subtitle}</p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
-          <div>
-            <div className="thin-divider mb-6" />
-            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[color:var(--arroyo-muted)]">
-              {t.softwareLabel}
-            </p>
-            <ul className="mt-6 flex flex-wrap items-center gap-x-10 gap-y-6">
+        <div className="mt-14 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-12 lg:gap-x-10">
+          <div className="md:col-span-2">
+            <GroupLabel>{t.softwareLabel}</GroupLabel>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-10">
               {t.softwareItems.map((item) => (
-                <li key={item.id}>
-                  <img
-                    src={ASSETS[item.logo]}
-                    alt={item.name}
-                    className="h-9 md:h-10 w-auto object-contain"
-                    loading="lazy"
-                  />
-                </li>
+                <LogoTile key={item.id} src={ASSETS[item.logo]} alt={item.name} />
               ))}
-            </ul>
-            <p className="mt-6 text-[11px] leading-relaxed text-[color:var(--arroyo-muted)] max-w-md">
-              {t.trademark}
-            </p>
+            </div>
           </div>
 
           <div>
-            <div className="thin-divider mb-6" />
-            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[color:var(--arroyo-muted)]">
-              {t.partnersLabel}
-            </p>
+            <GroupLabel>{t.partnersLabel}</GroupLabel>
             {t.items.map((p) => (
-              <a
-                key={p.id}
-                href={p.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group mt-6 flex flex-col items-start"
-              >
-                <img
-                  src={ASSETS[p.logo]}
-                  alt={`${p.name} logo`}
-                  className="h-9 md:h-10 w-auto object-contain"
-                  loading="lazy"
-                />
-                <p className="arroyo-body text-sm md:text-base mt-5 max-w-md">{p.description}</p>
-                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--arroyo-navy)] group-hover:text-[color:var(--arroyo-accent)] transition-colors">
-                  {t.visitWebsite}
-                  <ArrowUpRight
-                    size={16}
-                    className="group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform"
-                  />
-                </span>
-              </a>
+              <LogoTile key={p.id} src={ASSETS[p.logo]} alt={`${p.name} logo`} />
             ))}
           </div>
         </div>
+
+        <p className="mt-12 text-[11px] leading-relaxed text-[color:var(--arroyo-muted)] max-w-3xl">
+          {t.trademark.map((line) => (
+            <span key={line} className="block">
+              {line}
+            </span>
+          ))}
+        </p>
       </div>
     </section>
   );

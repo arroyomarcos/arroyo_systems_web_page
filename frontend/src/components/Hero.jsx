@@ -40,12 +40,20 @@ const Hero = () => {
       <div className="arroyo-container relative">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-14 items-center md:min-h-[540px]">
           <div className="reveal md:col-span-7">
-            <h1 className="arroyo-display text-4xl sm:text-5xl md:text-[3.2rem] lg:text-[3.8rem] leading-[1.05] [text-wrap:balance]">
-              {t.titleLine1}
-              <br />
-              {t.titleLine2}
+            <h1 className="arroyo-display text-5xl sm:text-6xl md:text-[3.6rem] lg:text-[4.4rem] leading-[1.02]">
+              {t.titleLines.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
             </h1>
-            <p className="mt-6 text-base sm:text-lg md:text-xl arroyo-body max-w-lg">{t.body1}</p>
+            <p className="mt-6 text-lg sm:text-xl md:text-2xl arroyo-body">
+              {t.body.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+            </p>
 
             <div className="mt-8 md:mt-10 flex flex-wrap gap-x-6 gap-y-4 items-center">
               <a href="#contact" onClick={scrollToId("contact")} className="contact-pill contact-pill--solid">

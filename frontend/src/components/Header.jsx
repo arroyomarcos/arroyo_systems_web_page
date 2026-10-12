@@ -25,7 +25,6 @@ const Header = () => {
 
   const navItems = [
     { key: "solutions", label: t.nav.solutions, href: `${base}${NAV_HREFS.solutions}` },
-    { key: "whyUs", label: t.nav.whyUs, href: `${base}${NAV_HREFS.whyUs}` },
     { key: "process", label: t.nav.process, href: `${base}${NAV_HREFS.process}` },
     { key: "partners", label: t.nav.partners, href: `${base}${NAV_HREFS.partners}` },
   ];
@@ -114,7 +113,7 @@ const Header = () => {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-5 xl:gap-9">
+        <nav className="hidden lg:flex items-center gap-7 xl:gap-10">
           {navItems.map((l) => (
             <Link key={l.key} to={l.href} className="nav-link" onClick={(e) => handleHashNavigation(e, l.href)}>
               {l.label}

@@ -267,6 +267,25 @@ body {
   cursor: grabbing;
 }
 
+/* ---------- Software & partners ---------- */
+.partner-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 7rem;
+  padding: 1.5rem;
+  border: 1px solid #e3e8f0;
+  border-radius: 14px;
+  background: #fff;
+}
+.partner-tile__logo {
+  width: 100%;
+  max-width: 11rem;
+  max-height: 3rem;
+  height: auto;
+  object-fit: contain;
+}
+
 /* ---------- Process ---------- */
 .process-steps {
   position: relative;
@@ -473,66 +492,6 @@ html, body {
   resize: vertical;
   min-height: 120px;
   font-family: inherit;
-}
-.cf-hint {
-  color: var(--arroyo-muted);
-  font-size: 0.78rem;
-}
-.cf-file {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  width: 100%;
-  padding: 0.7rem 0.9rem;
-  border: 1.5px dashed #c9d1de;
-  border-radius: 10px;
-  background: #fff;
-  color: var(--arroyo-navy);
-  font-size: 0.92rem;
-  min-width: 0;
-}
-.cf-file--empty {
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-.cf-file--empty:hover {
-  border-color: var(--arroyo-accent);
-  background: var(--arroyo-bg-soft);
-}
-#contact-file:focus-visible + .cf-file--empty {
-  border-color: var(--arroyo-accent);
-  box-shadow: 0 0 0 3px rgba(43, 107, 214, 0.15);
-}
-.cf-file__remove {
-  margin-left: auto;
-  display: inline-flex;
-  color: var(--arroyo-muted);
-  transition: color 0.2s ease;
-}
-.cf-file__remove:hover {
-  color: #e11d48;
-}
-.cf-segmented {
-  display: inline-flex;
-  width: 100%;
-  border: 1.5px solid #dfe3ec;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #fff;
-}
-.cf-segmented button {
-  flex: 1;
-  padding: 0.7rem 0.9rem;
-  font-size: 0.95rem;
-  color: var(--arroyo-navy);
-  transition: background 0.2s ease, color 0.2s ease;
-}
-.cf-segmented button + button {
-  border-left: 1.5px solid #dfe3ec;
-}
-.cf-segmented button.is-active {
-  background: var(--arroyo-navy);
-  color: #fff;
 }
 .cf-error {
   border-color: #e11d48 !important;

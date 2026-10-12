@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-route
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Products from "./components/sections/Products";
-import WhyUs from "./components/sections/WhyUs";
 import Process from "./components/sections/Process";
 import Partners from "./components/sections/Partners";
 import Footer from "./components/Footer";
@@ -183,7 +182,6 @@ const Home = () => {
       <main>
         <Hero />
         <Products />
-        <WhyUs />
         <Process />
         <Partners />
       </main>

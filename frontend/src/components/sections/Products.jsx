@@ -124,47 +124,42 @@ const Products = () => {
           <p className="arroyo-body mt-4 text-base md:text-lg max-w-xl">{t.subtitle}</p>
         </div>
 
-        <div className="mt-14 md:mt-20 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-x-8 gap-y-12 xl:gap-x-6">
+        <div className="mt-12 md:mt-16">
           {t.packages.map((p, idx) => (
-            <div key={p.id} className="group relative pt-6 flex flex-col">
-              <div className="thin-divider mb-6" />
-              <div className="flex items-start justify-between mb-4">
-                <span className="text-xs md:text-sm font-mono text-[color:var(--arroyo-muted)]">
-                  {String(idx + 1).padStart(2, "0")} / {String(t.packages.length).padStart(2, "0")}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setActivePackage(p)}
-                  aria-label={t.viewDetailsAria(p.name)}
-                  className="-m-2 p-2 text-[color:var(--arroyo-muted)] hover:text-[color:var(--arroyo-accent)] transition-colors"
-                >
-                  <ArrowUpRight
-                    className="group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform"
-                    size={18}
-                  />
-                </button>
-              </div>
-              <h3 className="arroyo-display text-xl md:text-2xl leading-snug mb-3">{p.name}</h3>
-              <p className="arroyo-body text-sm md:text-base mb-6">{p.tagline}</p>
+            <div key={p.id} className="group">
+              <div className="thin-divider" />
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 py-8 md:py-10">
+                <div className="md:col-span-5">
+                  <span className="text-xs md:text-sm font-mono text-[color:var(--arroyo-muted)]">
+                    {String(idx + 1).padStart(2, "0")} / {String(t.packages.length).padStart(2, "0")}
+                  </span>
+                  <h3 className="arroyo-display text-2xl md:text-3xl leading-snug mt-3">{p.name}</h3>
+                  <PriceBlock pkg={p} className="mt-5" />
+                  <p className="mt-3 text-sm md:text-base text-[color:var(--arroyo-navy)]">{p.leadTime}</p>
+                </div>
 
-              <div className="mt-auto pt-6 border-t border-slate-200">
-                <PriceBlock pkg={p} />
-                <p className="mt-4 text-sm text-[color:var(--arroyo-navy)]">{p.leadTime}</p>
-                <button
-                  type="button"
-                  onClick={() => setActivePackage(p)}
-                  className="mt-4 text-sm font-semibold text-[color:var(--arroyo-accent)] hover:underline underline-offset-4 text-left"
-                >
-                  {t.detailsLink}
-                </button>
+                <div className="md:col-span-7 md:pl-10 md:border-l border-slate-200 flex flex-col">
+                  <p className="text-lg md:text-xl font-semibold leading-snug text-[color:var(--arroyo-navy)]">
+                    {p.tagline}
+                  </p>
+                  <p className="arroyo-body text-sm md:text-base mt-3 max-w-2xl">{p.description}</p>
+                  <button
+                    type="button"
+                    onClick={() => setActivePackage(p)}
+                    aria-label={t.viewDetailsAria(p.name)}
+                    className="mt-5 inline-flex items-center gap-1.5 self-start text-sm font-semibold text-[color:var(--arroyo-accent)] hover:underline underline-offset-4"
+                  >
+                    {t.detailsLink}
+                    <ArrowUpRight
+                      className="group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform"
+                      size={16}
+                    />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="mt-14 md:mt-16 pt-8 border-t border-slate-200 max-w-3xl space-y-2">
-          <p className="text-sm md:text-base text-[color:var(--arroyo-navy)]">{t.materials}</p>
-          <p className="text-sm arroyo-body">{t.outOfScope}</p>
+          <div className="thin-divider" />
         </div>
       </div>
 

@@ -13,14 +13,9 @@ export const ASSETS = {
 
 export const NAV_HREFS = {
   solutions: "/#products",
-  whyUs: "/#why-us",
   process: "/#process",
   partners: "/#partners",
 };
 
 export const LINKEDIN_URL = "https://www.linkedin.com/company/arroyo-systems-eng/";
 export const EMAIL = "contact@arroyo-systems.com";
-
-// Portrait of the owner for the "Why Us" section. Set to an image path once the photo is
-// provided; until then that section shows a visible placeholder.
-export const PERSON_PHOTO = null;

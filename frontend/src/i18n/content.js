@@ -263,27 +263,23 @@ export const content = {
   en: {
     lang: "en",
     nav: {
-      solutions: "Services",
-      whyUs: "Why Us",
+      solutions: "Products",
       process: "How We Work",
       partners: "Software & Partners",
       contact: "Contact",
     },
     hero: {
-      titleLine1: "We design, calculate",
-      titleLine2: "and manufacture your part.",
-      body1: "Machined and bent sheet-metal parts. A supplier you can trust.",
+      titleLines: ["We design.", "We calculate.", "We manufacture."],
+      body: ["Machined and bent sheet metal.", "A supplier you can trust."],
       ctaPrimary: "Tell us what you need",
       ctaSecondary: "See pricing",
       trust: ["One person accountable", "Closed price", "Design signed by an engineer"],
       viewerCaption: "Interactive 3D model · drag to rotate",
     },
     products: {
-      heading: "Services",
-      subtitle: "Four ways to hire the same process, from requirement to part.",
-      materials:
+      heading: "Products",
+      subtitle:
         "Machined and bent sheet-metal parts, in steel and aluminium, with bolted joints and spot welding.",
-      outOfScope: `What falls outside the written scope is billed at €${HOURLY_RATE}/h, with prior notice and your acceptance.`,
       includesLabel: "What's included",
       excludesLabel: "What's not included",
       detailsLink: "What's included and what's not",
@@ -292,9 +288,11 @@ export const content = {
       viewDetailsAria: (name) => `View what ${name} includes`,
       packages: packagesEn,
     },
-    whyUs: {
-      heading: "Why Us",
-      points: [
+    process: {
+      heading: "How We Work",
+      subtitle: "You talk to the engineer who calculates your part.",
+      figureCaption: "Result of a structural calculation (FEM)",
+      promises: [
         {
           title: "One supplier, one person accountable.",
           body: "We design, calculate and manufacture. We deliver all the corresponding documentation.",
@@ -310,27 +308,6 @@ export const content = {
           limit: `With a written scope. Anything outside it is billed at €${HOURLY_RATE}/h, with prior notice.`,
         },
       ],
-      contrast: {
-        before: "Fragmented process",
-        after: "Integrated process",
-        rows: [
-          { before: "One designs, another calculates, another manufactures.", after: "One team." },
-          { before: "Each one blames the other.", after: "One person accountable." },
-          { before: "Several quotes and invoices.", after: "One quote, one lead time, one invoice." },
-        ],
-      },
-      closing: "We are not a consultancy, a workshop or a platform. You talk to the engineer who calculates your part.",
-      person: {
-        name: "Marcos Arroyo Navarro",
-        role: "Arroyo Systems",
-        photoAlt: "Marcos Arroyo Navarro",
-        // Shown as a visible placeholder until the owner provides the photo and bio.
-        pending: "[PENDING: photo and short bio]",
-      },
-    },
-    process: {
-      heading: "How We Work",
-      figureCaption: "Result of a structural calculation (FEM)",
       steps: [
         { title: "You tell us", body: "Mechanical interfaces, loads, quantity and lead time." },
         { title: "Closed quote", body: "With the scope in writing: deliverables, revisions and exclusions." },
@@ -349,26 +326,18 @@ export const content = {
         { id: "fusion", name: "Autodesk Fusion", logo: "autodeskFusionLogo" },
         { id: "inventor-nastran", name: "Autodesk Inventor Nastran", logo: "autodeskNastranLogo" },
       ],
-      trademark:
-        "Autodesk, the Autodesk logo, Fusion and Inventor are registered trademarks or trademarks of Autodesk, Inc. Arroyo Systems is not affiliated with or endorsed by Autodesk.",
-      partnersLabel: "Partners",
-      visitWebsite: "Visit website",
-      items: [
-        {
-          id: "3dconnexion",
-          name: "3Dconnexion",
-          logo: "threeDConnexionLogo",
-          url: "https://3dconnexion.com",
-          description:
-            "3Dconnexion joins Arroyo Systems as a Technology Partner, bringing precision 3D navigation and control hardware into our engineering workflow.",
-        },
+      trademark: [
+        "Autodesk, the Autodesk logo, Fusion and Inventor are registered trademarks or trademarks of Autodesk, Inc.",
+        "Arroyo Systems is not affiliated with or endorsed by Autodesk.",
       ],
+      partnersLabel: "Partners",
+      items: [{ id: "3dconnexion", name: "3Dconnexion", logo: "threeDConnexionLogo" }],
     },
     contact: {
       heading1: "Tell us",
       heading2: "what you need.",
       subheading: "We reply with a closed-price quote, in writing.",
-      formEyebrow: "Describe your part",
+      formEyebrow: "Send us a message",
       locationLabel: "Madrid, Spain",
       linkedinLabel: "LinkedIn",
       privacyPolicy: "Privacy Policy",
@@ -380,31 +349,26 @@ export const content = {
       nameLabel: "Name *",
       emailLabel: "Email *",
       companyLabel: "Company",
-      messageLabel: "Describe the part *",
-      fileLabel: "STEP or PDF file",
-      fileHint: "Optional. STEP or PDF, up to 8 MB.",
-      fileChoose: "Choose file",
-      fileRemove: "Remove",
-      quantityLabel: "Quantity",
-      deadlineLabel: "Desired lead time",
-      materialLabel: "Preferred material (optional)",
-      hasDesignLabel: "Do you already have a design?",
-      yes: "Yes",
-      no: "No",
+      projectTypeLabel: "Project type",
+      messageLabel: "Message *",
       namePlaceholder: "Your full name",
       emailPlaceholder: "you@company.com",
       companyPlaceholder: "Company name",
-      messagePlaceholder: "What the part is, how it connects to other parts (mechanical interfaces) and the loads it carries.",
-      quantityPlaceholder: "e.g. 10",
-      deadlinePlaceholder: "e.g. 4 weeks",
-      materialPlaceholder: "Steel, aluminium...",
+      messagePlaceholder: "Tell us about your component, requirements, timeline...",
+      selectOption: "Select an option",
+      projectTypes: [
+        { value: "Product Design", label: "Product Design" },
+        { value: "Product Validation", label: "Product Validation" },
+        { value: "Product Development", label: "Product Development" },
+        { value: "Product Manufacturing", label: "Product Manufacturing" },
+        { value: "Other", label: "Other" },
+      ],
       privacyPrefix: "I have read and accept the",
       privacyLinkText: "Privacy Policy",
       submit: "Tell us what you need",
-      sending: "Sending...",
       successTitle: "Message received.",
       successBody:
-        "Thanks for contacting Arroyo Systems. We'll review your request and come back to you shortly.",
+        "Thanks for contacting Arroyo Systems. We'll review your enquiry and come back to you shortly.",
       sendAnother: "Send another message",
       errorToastTitle: "Message may not have been delivered",
       errorToastBody:
@@ -413,9 +377,6 @@ export const content = {
         required: "Required",
         invalidEmail: "Invalid email",
         messageTooShort: "Please provide at least 10 characters",
-        fileType: "Only STEP (.step, .stp) or PDF files are accepted",
-        fileSize: "The file is larger than 8 MB",
-        quantityInvalid: "Enter a whole number",
       },
     },
     seo: {
@@ -441,27 +402,23 @@ export const content = {
   es: {
     lang: "es",
     nav: {
-      solutions: "Servicios",
-      whyUs: "Por qué nosotros",
+      solutions: "Productos",
       process: "Cómo trabajamos",
       partners: "Software y colaboradores",
       contact: "Contacto",
     },
     hero: {
-      titleLine1: "Diseñamos, calculamos",
-      titleLine2: "y fabricamos tu pieza.",
-      body1: "Mecanizado y chapa doblada. Un proveedor en el que puedes confiar.",
+      titleLines: ["Diseñamos.", "Calculamos.", "Fabricamos."],
+      body: ["Mecanizado y chapa doblada.", "Un proveedor en el que puedes confiar."],
       ctaPrimary: "Cuéntanos qué necesitas",
       ctaSecondary: "Ver precios",
       trust: ["Un único responsable", "Precio cerrado", "Diseño firmado por ingeniero"],
       viewerCaption: "Modelo 3D interactivo · arrastra para girar",
     },
     products: {
-      heading: "Servicios",
-      subtitle: "Cuatro formas de contratar el mismo proceso, del requisito a la pieza.",
-      materials:
+      heading: "Productos",
+      subtitle:
         "Piezas mecanizadas y de chapa doblada, en acero y aluminio, con uniones atornilladas y soldadura puntual.",
-      outOfScope: `Lo que quede fuera del alcance escrito se factura a ${HOURLY_RATE} €/h, con aviso y aceptación previos.`,
       includesLabel: "Qué incluye",
       excludesLabel: "Qué no incluye",
       detailsLink: "Qué incluye y qué no",
@@ -470,9 +427,11 @@ export const content = {
       viewDetailsAria: (name) => `Ver qué incluye ${name}`,
       packages: packagesEs,
     },
-    whyUs: {
-      heading: "Por qué nosotros",
-      points: [
+    process: {
+      heading: "Cómo trabajamos",
+      subtitle: "Hablas con el ingeniero que calcula tu pieza.",
+      figureCaption: "Resultado de un cálculo estructural (FEM)",
+      promises: [
         {
           title: "Un solo proveedor, un solo responsable.",
           body: "Diseñamos, calculamos y fabricamos. Entregamos toda la documentación correspondiente.",
@@ -488,26 +447,6 @@ export const content = {
           limit: `Con alcance escrito. Lo que quede fuera se factura a ${HOURLY_RATE} €/h, con aviso previo.`,
         },
       ],
-      contrast: {
-        before: "Proceso fragmentado",
-        after: "Proceso integrado",
-        rows: [
-          { before: "Uno diseña, otro calcula, otro fabrica.", after: "Un solo equipo." },
-          { before: "Cada uno culpa al otro.", after: "Un único responsable." },
-          { before: "Varias ofertas y facturas.", after: "Una oferta, un plazo, una factura." },
-        ],
-      },
-      closing: "No somos una consultora, ni un taller, ni una plataforma. Hablas con el ingeniero que calcula tu pieza.",
-      person: {
-        name: "Marcos Arroyo Navarro",
-        role: "Arroyo Systems",
-        photoAlt: "Marcos Arroyo Navarro",
-        pending: "[PENDIENTE: foto y texto biográfico]",
-      },
-    },
-    process: {
-      heading: "Cómo trabajamos",
-      figureCaption: "Resultado de un cálculo estructural (FEM)",
       steps: [
         { title: "Nos cuentas", body: "Interfaces mecánicas, cargas, cantidad y plazo." },
         { title: "Presupuesto cerrado", body: "Con el alcance por escrito: entregables, revisiones y exclusiones." },
@@ -526,26 +465,18 @@ export const content = {
         { id: "fusion", name: "Autodesk Fusion", logo: "autodeskFusionLogo" },
         { id: "inventor-nastran", name: "Autodesk Inventor Nastran", logo: "autodeskNastranLogo" },
       ],
-      trademark:
-        "Autodesk, el logotipo de Autodesk, Fusion e Inventor son marcas comerciales o marcas registradas de Autodesk, Inc. Arroyo Systems no está afiliada ni respaldada por Autodesk.",
-      partnersLabel: "Colaboradores",
-      visitWebsite: "Visitar web",
-      items: [
-        {
-          id: "3dconnexion",
-          name: "3Dconnexion",
-          logo: "threeDConnexionLogo",
-          url: "https://3dconnexion.com",
-          description:
-            "3Dconnexion se une a Arroyo Systems como Technology Partner, aportando hardware de navegación y control 3D de precisión a nuestro flujo de trabajo de ingeniería.",
-        },
+      trademark: [
+        "Autodesk, el logotipo de Autodesk, Fusion e Inventor son marcas comerciales o marcas registradas de Autodesk, Inc.",
+        "Arroyo Systems no está afiliada ni respaldada por Autodesk.",
       ],
+      partnersLabel: "Colaboradores",
+      items: [{ id: "3dconnexion", name: "3Dconnexion", logo: "threeDConnexionLogo" }],
     },
     contact: {
       heading1: "Cuéntanos",
       heading2: "qué necesitas.",
       subheading: "Te respondemos con un presupuesto cerrado, por escrito.",
-      formEyebrow: "Describe tu pieza",
+      formEyebrow: "Envíanos un mensaje",
       locationLabel: "Madrid, España",
       linkedinLabel: "LinkedIn",
       privacyPolicy: "Política de Privacidad",
@@ -557,42 +488,33 @@ export const content = {
       nameLabel: "Nombre *",
       emailLabel: "Email *",
       companyLabel: "Empresa",
-      messageLabel: "Descripción de la pieza *",
-      fileLabel: "Archivo STEP o PDF",
-      fileHint: "Opcional. STEP o PDF, hasta 8 MB.",
-      fileChoose: "Elegir archivo",
-      fileRemove: "Quitar",
-      quantityLabel: "Cantidad",
-      deadlineLabel: "Plazo deseado",
-      materialLabel: "Material preferente (opcional)",
-      hasDesignLabel: "¿Tienes ya un diseño?",
-      yes: "Sí",
-      no: "No",
+      projectTypeLabel: "Tipo de proyecto",
+      messageLabel: "Mensaje *",
       namePlaceholder: "Tu nombre completo",
       emailPlaceholder: "tucorreo@empresa.com",
       companyPlaceholder: "Nombre de la empresa",
-      messagePlaceholder: "Qué pieza es, con qué otras piezas se une (interfaces mecánicas) y qué cargas soporta.",
-      quantityPlaceholder: "p. ej. 10",
-      deadlinePlaceholder: "p. ej. 4 semanas",
-      materialPlaceholder: "Acero, aluminio...",
+      messagePlaceholder: "Cuéntanos sobre tu componente, requisitos, plazos...",
+      selectOption: "Selecciona una opción",
+      projectTypes: [
+        { value: "Product Design", label: "Product Design" },
+        { value: "Product Validation", label: "Product Validation" },
+        { value: "Product Development", label: "Product Development" },
+        { value: "Product Manufacturing", label: "Product Manufacturing" },
+        { value: "Other", label: "Otro" },
+      ],
       privacyPrefix: "He leído y acepto la",
       privacyLinkText: "Política de Privacidad",
       submit: "Cuéntanos qué necesitas",
-      sending: "Enviando...",
       successTitle: "Mensaje recibido.",
-      successBody:
-        "Gracias por contactar con Arroyo Systems. Revisaremos tu solicitud y te responderemos en breve.",
+      successBody: "Gracias por contactar con Arroyo Systems. Revisaremos tu consulta y te responderemos en breve.",
       sendAnother: "Enviar otro mensaje",
-      errorToastTitle: "Puede que el mensaje no se haya entregado",
+      errorToastTitle: "Es posible que el mensaje no se haya enviado",
       errorToastBody:
-        "No hemos podido confirmar que tu mensaje se enviara. Escríbenos por email si no recibes respuesta.",
+        "No hemos podido confirmar el envío de tu mensaje. Escríbenos por email si no recibes respuesta.",
       validation: {
         required: "Obligatorio",
         invalidEmail: "Email no válido",
         messageTooShort: "Escribe al menos 10 caracteres",
-        fileType: "Solo se admiten archivos STEP (.step, .stp) o PDF",
-        fileSize: "El archivo supera los 8 MB",
-        quantityInvalid: "Indica un número entero",
       },
     },
     seo: {
