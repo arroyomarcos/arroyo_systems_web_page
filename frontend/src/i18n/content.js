@@ -297,7 +297,6 @@ export const content = {
         {
           title: "One supplier, one person accountable.",
           body: "We design, calculate and manufacture. We deliver all the corresponding documentation.",
-          limit: "We answer for the part meeting the drawing, with liability limited to the order price.",
         },
         {
           title: "Designed to be manufactured.",
@@ -306,7 +305,7 @@ export const content = {
         {
           title: "Closed price, in writing.",
           body: "You know what you pay before we start.",
-          limit: `With a written scope. Anything outside it is billed at €${HOURLY_RATE}/h, with prior notice.`,
+          limit: "The quote spells out what is delivered, how many revisions are included and what stays out of scope.",
         },
       ],
       steps: [
@@ -437,7 +436,6 @@ export const content = {
         {
           title: "Un solo proveedor, un solo responsable.",
           body: "Diseñamos, calculamos y fabricamos. Entregamos toda la documentación correspondiente.",
-          limit: "Respondemos de que la pieza cumple el plano, con responsabilidad limitada al precio del pedido.",
         },
         {
           title: "Diseñado para fabricarse.",
@@ -446,7 +444,7 @@ export const content = {
         {
           title: "Precio cerrado, por escrito.",
           body: "Sabes lo que pagas antes de empezar.",
-          limit: `Con alcance escrito. Lo que quede fuera se factura a ${HOURLY_RATE} €/h, con aviso previo.`,
+          limit: "El presupuesto detalla qué se entrega, cuántas revisiones incluye y qué queda fuera del alcance.",
         },
       ],
       steps: [

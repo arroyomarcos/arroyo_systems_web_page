@@ -394,8 +394,6 @@ html, body {
   justify-content: center;
   height: 7.5rem;
   padding: 1.5rem;
-  border-radius: 22px;
-  background: var(--arroyo-bg-soft);
 }
 .partner-tile__logo {
   width: 100%;

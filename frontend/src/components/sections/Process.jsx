@@ -47,19 +47,21 @@ const Process = () => {
           </figure>
         </div>
 
-        <div className="mt-16 md:mt-24 grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6 lg:gap-10">
+        <div className="mt-16 md:mt-24 grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-x-6 md:gap-y-0 lg:gap-x-10">
           {t.promises.map((promise) => (
-            <div key={promise.title} className="pt-6">
+            <div key={promise.title} className="pt-6 md:row-span-3 md:grid md:[grid-template-rows:subgrid]">
               <div className="thin-divider mb-6" />
               <h3 className="text-xl md:text-[1.5rem] font-semibold tracking-tight leading-snug text-[color:var(--arroyo-navy)]">
                 {promise.title}
               </h3>
-              <p className="mt-3 arroyo-body text-base md:text-[1.0625rem]">{promise.body}</p>
-              {promise.limit && (
-                <p className="mt-4 text-xs md:text-sm text-[color:var(--arroyo-muted)] leading-relaxed">
-                  {promise.limit}
-                </p>
-              )}
+              <div>
+                <p className="mt-3 arroyo-body text-base md:text-[1.0625rem]">{promise.body}</p>
+                {promise.limit && (
+                  <p className="mt-4 text-xs md:text-sm text-[color:var(--arroyo-muted)] leading-relaxed">
+                    {promise.limit}
+                  </p>
+                )}
+              </div>
             </div>
           ))}
         </div>
