@@ -433,32 +433,58 @@ html {
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 2;
-  overflow: hidden;
-  border-radius: 24px;
-  background: #2e3440;
 }
 @media (min-width: 768px) {
   .process-stage {
-    aspect-ratio: 1600 / 626;
+    aspect-ratio: 2.4 / 1;
     /* Leave room for the step row under the stage on short screens. */
     max-height: calc(100vh - 21rem);
     max-height: calc(100svh - 21rem);
     min-height: 12rem;
   }
 }
+/* A full-bleed band in the images' own background colour, fading out above and below, so the
+   pictures melt into the page instead of sitting in a box. */
+.process-stage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  background: linear-gradient(to bottom, transparent, #2e3440 20%, #2e3440 80%, transparent);
+  pointer-events: none;
+}
+/* Images are shown at their own pixel size (never enlarged), only ever scaled down, and
+   their edges dissolve into the page instead of ending in a hard frame. */
 .process-stage__img {
   position: absolute;
   inset: 0;
+  margin: auto;
   width: 100%;
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transform: scale(1.03);
-  transition: opacity 0.7s ease, transform 1.2s ease;
+  transition: opacity 0.8s ease;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent),
+    linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent),
+    linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
+  mask-composite: intersect;
+}
+@media (min-width: 768px) {
+  .process-stage__img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: initial;
+  }
 }
 .process-stage__img.is-active {
   opacity: 1;
-  transform: scale(1);
 }
 .process-steps {
   list-style: none;
