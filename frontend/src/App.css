@@ -381,7 +381,7 @@ html, body {
   height: 7.5rem;
   padding: 1.5rem;
   border-radius: 22px;
-  background: #fff;
+  background: var(--arroyo-bg-soft);
 }
 .partner-tile__logo {
   width: 100%;

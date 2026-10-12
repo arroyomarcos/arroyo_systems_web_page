@@ -18,6 +18,8 @@ const parseMesh = (buffer) => {
 };
 
 const IDLE_RESUME_MS = 2500;
+// The part always stays inside this fraction of the stage, from every viewing angle.
+const FIT_MARGIN = 0.96;
 
 const PartViewer = ({ onReady, onFail }) => {
   const mountRef = useRef(null);
@@ -62,8 +64,8 @@ const PartViewer = ({ onReady, onFail }) => {
     controls.dampingFactor = 0.07;
     controls.autoRotate = !reducedMotion;
     controls.autoRotateSpeed = 1.1;
-    controls.minPolarAngle = Math.PI * 0.18;
-    controls.maxPolarAngle = Math.PI * 0.62;
+    controls.minPolarAngle = Math.PI * 0.3;
+    controls.maxPolarAngle = Math.PI * 0.6;
     // OrbitControls claims every touch; give vertical swipes back to the page scroll.
     renderer.domElement.style.touchAction = "pan-y";
 
@@ -87,6 +89,7 @@ const PartViewer = ({ onReady, onFail }) => {
     let material = null;
     let edgeMaterial = null;
     let edges = null;
+    let fitCorners = null; // the part's bounding-box corners, in world space
 
     const render = () => {
       controls.update();
@@ -103,14 +106,57 @@ const PartViewer = ({ onReady, onFail }) => {
       if (rafId === null && !disposed) rafId = requestAnimationFrame(loop);
     };
 
+    // Camera distance that keeps the whole part on screen from every angle the visitor can
+    // reach (auto-rotation sweeps all azimuths; dragging changes the elevation within the
+    // polar limits). Measured on the real bounding box rather than guessed, so it holds for
+    // any stage shape: wide desktop, square, or a phone.
+    const probe = new THREE.PerspectiveCamera(camera.fov, 1, 0.1, 50);
+    const point = new THREE.Vector3();
+    const worstExtent = (distance) => {
+      probe.aspect = camera.aspect;
+      probe.updateProjectionMatrix();
+      const polars = [controls.minPolarAngle, (controls.minPolarAngle + controls.maxPolarAngle) / 2, controls.maxPolarAngle];
+      let worst = 0;
+      for (const polar of polars) {
+        for (let step = 0; step < 24; step++) {
+          const azimuth = (step / 24) * Math.PI * 2;
+          probe.position.set(
+            distance * Math.sin(polar) * Math.sin(azimuth),
+            distance * Math.cos(polar),
+            distance * Math.sin(polar) * Math.cos(azimuth)
+          );
+          probe.lookAt(0, 0, 0);
+          probe.updateMatrixWorld();
+          probe.matrixWorldInverse.copy(probe.matrixWorld).invert();
+          for (const corner of fitCorners) {
+            point.copy(corner).project(probe);
+            worst = Math.max(worst, Math.abs(point.x), Math.abs(point.y));
+          }
+        }
+      }
+      return worst;
+    };
+    const fitDistance = () => {
+      let near = 2;
+      let far = 16;
+      for (let i = 0; i < 14; i++) {
+        const mid = (near + far) / 2;
+        if (worstExtent(mid) > FIT_MARGIN) near = mid;
+        else far = mid;
+      }
+      return far;
+    };
+
     const resize = () => {
       const { clientWidth: w, clientHeight: h } = mount;
       if (!w || !h) return;
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
-      // Narrow stages (phones) pull the camera back so the part is never cropped.
-      camera.zoom = Math.min(1, camera.aspect / 1.55);
       camera.updateProjectionMatrix();
+      if (fitCorners) {
+        camera.position.setLength(fitDistance());
+        controls.update();
+      }
       if (reducedMotion || !visible) render();
     };
     const resizeObserver = new ResizeObserver(resize);
@@ -160,7 +206,15 @@ const PartViewer = ({ onReady, onFail }) => {
         group.rotation.set(0, -0.5, 0);
         scene.add(group);
 
+        geometry.computeBoundingBox();
+        group.updateMatrixWorld(true);
+        const { min, max } = geometry.boundingBox;
+        fitCorners = [min.x, max.x].flatMap((x) =>
+          [min.y, max.y].flatMap((y) => [min.z, max.z].map((z) => new THREE.Vector3(x, y, z).applyMatrix4(group.matrixWorld)))
+        );
+
         controls.target.set(0, 0, 0);
+        resize();
         render();
         onReady?.();
         start();

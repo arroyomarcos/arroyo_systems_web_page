@@ -20,7 +20,7 @@ const Partners = () => {
   const t = useContent().partners;
 
   return (
-    <section id="partners" className="py-20 md:py-28 relative bg-[color:var(--arroyo-bg-soft)]">
+    <section id="partners" className="py-20 md:py-28 relative bg-white">
       <div className="arroyo-container">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="section-heading">{t.heading}</h2>

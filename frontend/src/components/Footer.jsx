@@ -10,7 +10,7 @@ const Footer = () => {
   const t = useContent().contact;
 
   return (
-    <footer id="contact" className="relative py-20 md:py-28 bg-white">
+    <footer id="contact" className="relative py-20 md:py-28 bg-white border-t border-[color:var(--arroyo-line)]">
       <div className="arroyo-container">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-12 lg:gap-20 items-start">
           <div>
