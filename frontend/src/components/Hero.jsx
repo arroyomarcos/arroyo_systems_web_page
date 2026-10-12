@@ -30,7 +30,8 @@ const useAfterFirstPaint = () => {
 const Hero = () => {
   const t = useContent().hero;
   const canMountViewer = useAfterFirstPaint();
-  const [viewer, setViewer] = useState("loading"); // loading | ready | failed
+  const [inputs, setInputs] = useState("loading"); // loading | ready | failed
+  const [result, setResult] = useState("loading");
 
   return (
     <section id="top" className="relative pt-28 md:pt-36 pb-10 md:pb-16 overflow-hidden">
@@ -63,20 +64,41 @@ const Hero = () => {
           </ul>
         </div>
 
-        <figure className="viewer-frame mt-6 md:mt-10">
-          <div className={`viewer-frame__stage ${viewer !== "loading" ? "is-ready" : ""}`}>
-            {viewer === "failed" ? (
-              <img src={ASSETS.hero} alt="" className="viewer-frame__fallback" loading="eager" />
-            ) : (
-              canMountViewer && (
-                <Suspense fallback={null}>
-                  <PartViewer onReady={() => setViewer("ready")} onFail={() => setViewer("failed")} />
-                </Suspense>
-              )
-            )}
-          </div>
-          {viewer === "ready" && <figcaption className="viewer-frame__caption">{t.viewerCaption}</figcaption>}
-        </figure>
+        <div className="viewer-pair mt-6 md:mt-10">
+          {inputs !== "failed" && (
+            <figure className="viewer-frame">
+              <div className={`viewer-frame__stage ${inputs === "ready" && result !== "loading" ? "is-ready" : ""}`}>
+                {canMountViewer && (
+                  <Suspense fallback={null}>
+                    <PartViewer model="inputs" onReady={() => setInputs("ready")} onFail={() => setInputs("failed")} />
+                  </Suspense>
+                )}
+              </div>
+              <figcaption className="viewer-frame__caption">
+                <strong>{t.viewerInputs.label}</strong>
+                <span>{t.viewerInputs.note}</span>
+              </figcaption>
+            </figure>
+          )}
+          <figure className="viewer-frame">
+            <div className={`viewer-frame__stage ${result !== "loading" ? "is-ready" : ""}`}>
+              {result === "failed" ? (
+                <img src={ASSETS.hero} alt="" className="viewer-frame__fallback" loading="eager" />
+              ) : (
+                canMountViewer && (
+                  <Suspense fallback={null}>
+                    <PartViewer model="result" onReady={() => setResult("ready")} onFail={() => setResult("failed")} />
+                  </Suspense>
+                )
+              )}
+            </div>
+            <figcaption className="viewer-frame__caption">
+              <strong>{t.viewerResult.label}</strong>
+              <span>{t.viewerResult.note}</span>
+            </figcaption>
+          </figure>
+        </div>
+        {result === "ready" && <p className="viewer-hint">{t.viewerCaption}</p>}
       </div>
     </section>
   );

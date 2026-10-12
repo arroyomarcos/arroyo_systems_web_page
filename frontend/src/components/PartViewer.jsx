@@ -4,24 +4,38 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { toCreasedNormals } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
-const MODEL_URL = `${process.env.PUBLIC_URL || ""}/assets/models/showcase-part.bin`;
+const modelUrl = (name) => `${process.env.PUBLIC_URL || ""}/assets/models/${name}.bin`;
 
-// Binary layout written by the STEP export: uint32 nVerts, uint32 nTris,
-// float32[nVerts*3] positions, uint16[nTris*3] indices (part centred, longest side = 2).
-const parseMesh = (buffer) => {
-  const header = new DataView(buffer, 0, 8);
-  const nVerts = header.getUint32(0, true);
-  const nTris = header.getUint32(4, true);
-  const positions = new Float32Array(buffer, 8, nVerts * 3);
-  const indices = new Uint16Array(buffer, 8 + nVerts * 12, nTris * 3);
-  return { positions, indices };
+// Binary layout written by scripts/export_models.py: uint32 header length, a JSON header
+// listing the parts, then per part float32 positions and uint16 indices (4-byte aligned).
+// Every part of a file shares one frame (centred, longest side = 2).
+const parseScene = (buffer) => {
+  const headerLength = new DataView(buffer, 0, 4).getUint32(0, true);
+  const { parts } = JSON.parse(new TextDecoder().decode(new Uint8Array(buffer, 4, headerLength)));
+  let offset = 4 + headerLength;
+  return parts.map(({ kind, vertices, indices }) => {
+    const positions = new Float32Array(buffer, offset, vertices * 3);
+    offset += vertices * 12;
+    const index = new Uint16Array(buffer, offset, indices);
+    offset += Math.ceil((indices * 2) / 4) * 4;
+    return { kind, positions, index };
+  });
+};
+
+// How each kind of part is painted. "result" is the finished metal part; the others are the
+// client's inputs: a faint grey envelope, red keep-out blocks and solid blue slots/cylinders.
+const SURFACES = {
+  result: { color: 0xd5dde9, metalness: 0.55, roughness: 0.42, envMapIntensity: 1.5, edge: 0.28 },
+  bounds: { color: 0x8e8e93, metalness: 0, roughness: 0.9, opacity: 0.1, edge: 0.35 },
+  block: { color: 0xe5342b, metalness: 0.05, roughness: 0.6, opacity: 0.4, edge: 0.55 },
+  feature: { color: 0x0a6cf5, metalness: 0.2, roughness: 0.45, envMapIntensity: 1.2, edge: 0.4 },
 };
 
 const IDLE_RESUME_MS = 2500;
 // The part always stays inside this fraction of the stage, from every viewing angle.
 const FIT_MARGIN = 0.96;
 
-const PartViewer = ({ onReady, onFail }) => {
+const PartViewer = ({ model = "result", onReady, onFail }) => {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -85,10 +99,7 @@ const PartViewer = ({ onReady, onFail }) => {
     let disposed = false;
     let visible = true;
     let rafId = null;
-    let geometry = null;
-    let material = null;
-    let edgeMaterial = null;
-    let edges = null;
+    const disposables = [];
     let fitCorners = null; // the part's bounding-box corners, in world space
 
     const render = () => {
@@ -175,40 +186,58 @@ const PartViewer = ({ onReady, onFail }) => {
 
     if (reducedMotion) controls.addEventListener("change", render);
 
-    fetch(MODEL_URL)
+    fetch(modelUrl(model))
       .then((res) => {
         if (!res.ok) throw new Error(`Model request failed: ${res.status}`);
         return res.arrayBuffer();
       })
       .then((buffer) => {
         if (disposed) return;
-        const { positions, indices } = parseMesh(buffer);
-        const base = new THREE.BufferGeometry();
-        base.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-        base.setIndex(new THREE.BufferAttribute(indices, 1));
-        // Crease angle keeps machined edges crisp while fillets and bores stay smooth.
-        geometry = toCreasedNormals(base, THREE.MathUtils.degToRad(32));
-        base.dispose();
-
-        material = new THREE.MeshStandardMaterial({
-          color: 0xd5dde9,
-          metalness: 0.55,
-          roughness: 0.42,
-          envMapIntensity: 1.5,
-        });
-        const mesh = new THREE.Mesh(geometry, material);
-
-        edgeMaterial = new THREE.LineBasicMaterial({ color: 0x0a1a3a, transparent: true, opacity: 0.28 });
-        edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 38), edgeMaterial);
-
         const group = new THREE.Group();
-        group.add(mesh, edges);
+        const bounds = new THREE.Box3();
+        parseScene(buffer).forEach(({ kind, positions, index }) => {
+          const surface = SURFACES[kind] || SURFACES.result;
+          const base = new THREE.BufferGeometry();
+          base.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+          base.setIndex(new THREE.BufferAttribute(index, 1));
+          // Crease angle keeps machined edges crisp while fillets and bores stay smooth.
+          const geometry = toCreasedNormals(base, THREE.MathUtils.degToRad(32));
+          base.dispose();
+
+          const translucent = surface.opacity !== undefined;
+          const material = new THREE.MeshStandardMaterial({
+            color: surface.color,
+            metalness: surface.metalness,
+            roughness: surface.roughness,
+            envMapIntensity: surface.envMapIntensity ?? 1,
+            transparent: translucent,
+            opacity: translucent ? surface.opacity : 1,
+            depthWrite: !translucent,
+          });
+          const mesh = new THREE.Mesh(geometry, material);
+          // Translucent shells draw after the solid parts so those show through them.
+          if (translucent) mesh.renderOrder = kind === "bounds" ? 2 : 1;
+
+          const edgeMaterial = new THREE.LineBasicMaterial({
+            color: kind === "result" ? 0x0a1a3a : kind === "bounds" ? 0x6e6e73 : 0x1d1d1f,
+            transparent: true,
+            opacity: surface.edge,
+            depthWrite: false,
+          });
+          const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 38), edgeMaterial);
+          edges.renderOrder = mesh.renderOrder + 1;
+
+          group.add(mesh, edges);
+          disposables.push(geometry, material, edges.geometry, edgeMaterial);
+
+          geometry.computeBoundingBox();
+          bounds.union(geometry.boundingBox);
+        });
         group.rotation.set(0, -0.5, 0);
         scene.add(group);
 
-        geometry.computeBoundingBox();
         group.updateMatrixWorld(true);
-        const { min, max } = geometry.boundingBox;
+        const { min, max } = bounds;
         fitCorners = [min.x, max.x].flatMap((x) =>
           [min.y, max.y].flatMap((y) => [min.z, max.z].map((z) => new THREE.Vector3(x, y, z).applyMatrix4(group.matrixWorld)))
         );
@@ -231,17 +260,14 @@ const PartViewer = ({ onReady, onFail }) => {
       visibilityObserver.disconnect();
       resizeObserver.disconnect();
       controls.dispose();
-      geometry?.dispose();
-      edges?.geometry.dispose();
-      material?.dispose();
-      edgeMaterial?.dispose();
+      disposables.forEach((item) => item.dispose());
       envTexture.dispose();
       pmrem.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [model]);
 
   return <div ref={mountRef} className="part-viewer" aria-hidden="true" />;
 };
