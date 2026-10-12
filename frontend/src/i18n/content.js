@@ -304,8 +304,7 @@ export const content = {
         },
         {
           title: "Closed price, in writing.",
-          body: "You know what you pay before we start.",
-          limit: "The quote spells out what is delivered, how many revisions are included and what stays out of scope.",
+          body: "You know what you pay before we start. A quote with the objectives and the detailed scope.",
         },
       ],
       steps: [
@@ -443,8 +442,7 @@ export const content = {
         },
         {
           title: "Precio cerrado, por escrito.",
-          body: "Sabes lo que pagas antes de empezar.",
-          limit: "El presupuesto detalla qué se entrega, cuántas revisiones incluye y qué queda fuera del alcance.",
+          body: "Sabes lo que pagas antes de empezar. Presupuesto con los objetivos y el alcance detallado.",
         },
       ],
       steps: [
