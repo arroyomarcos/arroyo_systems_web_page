@@ -64,8 +64,8 @@ const PartViewer = ({ onReady, onFail }) => {
     controls.dampingFactor = 0.07;
     controls.autoRotate = !reducedMotion;
     controls.autoRotateSpeed = 1.1;
-    controls.minPolarAngle = Math.PI * 0.3;
-    controls.maxPolarAngle = Math.PI * 0.6;
+    controls.minPolarAngle = Math.PI * 0.36;
+    controls.maxPolarAngle = Math.PI * 0.5;
     // OrbitControls claims every touch; give vertical swipes back to the page scroll.
     renderer.domElement.style.touchAction = "pan-y";
 
