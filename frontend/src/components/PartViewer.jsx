@@ -53,7 +53,7 @@ const PartViewer = ({ onReady, onFail }) => {
     scene.add(key);
 
     const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
-    camera.position.set(2.55, 1.55, 2.95);
+    camera.position.set(2.45, 1.5, 2.8);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableZoom = false;

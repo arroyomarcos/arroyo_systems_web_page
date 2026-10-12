@@ -1,9 +1,12 @@
 """Product catalog and pricing rules for Arroyo Systems quotes.
 
-Pricing model (Brief_Rediseno_Web, 2026-10-12): every engineering package has a single
-closed price, equal to its budgeted hours x ENGINEERING_HOURS_RATE. Anything outside the
-written scope is billed at that same hourly rate, only with prior notice and acceptance.
-Manufacturing is not a fixed-price package: it is the workshop's cost plus Arroyo Systems'
+Pricing model (Brief_Rediseno_Web, 2026-10-12, with the price ranges kept from the catalog
+PDF's "Pricing Formula"): each engineering package starts at a minimum price that covers its
+budgeted hours (hours x ENGINEERING_HOURS_RATE) and may rise, hour by hour at that same rate,
+up to a published maximum that is never exceeded: base_price + max_extra_hours x rate. The
+quote fixes the final price inside that range, as a closed price for its written scope.
+Anything beyond the range is billed at the same hourly rate, only with prior notice and
+acceptance. Manufacturing has no catalog price: it is the workshop's cost plus Arroyo Systems'
 manufacturing-management fee, both entered per quote.
 """
 from typing import Literal, Optional, TypedDict
@@ -18,25 +21,33 @@ ItemType = Literal["package", "engineering_hours", "manufacturing"]
 class PackageSpec(TypedDict):
     name: str
     base_price: float
+    max_price: float
     base_hours: int
+    max_extra_hours: int
 
 
 PACKAGES: dict[PackageKey, PackageSpec] = {
     "product_design": {
         "name": "Product Design",
         "base_price": 1482.0,
+        "max_price": 1872.0,
         "base_hours": 19,
+        "max_extra_hours": 5,
     },
     "product_validation": {
         "name": "Product Validation",
         "base_price": 2028.0,
+        "max_price": 2418.0,
         "base_hours": 26,
+        "max_extra_hours": 5,
     },
     # Design (19h) + Validation (26h). No package discount any more.
     "product_development": {
         "name": "Product Development",
         "base_price": 3510.0,
+        "max_price": 4290.0,
         "base_hours": 45,
+        "max_extra_hours": 10,
     },
 }
 
@@ -46,10 +57,12 @@ class PricingError(ValueError):
 
 
 def price_package_item(product_key: PackageKey, extra_hours: float, override_confirmed: bool) -> float:
-    """Price a package line: the closed price plus any out-of-scope hours.
+    """Price a package line: the minimum price plus the extra hours the project's complexity
+    needs, never above the published maximum.
 
-    Out-of-scope hours are only billable once the client has been told and has accepted,
-    which the admin attests to with `override_confirmed`.
+    Extra hours beyond the package's `max_extra_hours` are outside the published range, so
+    they are only billable once the client has been told and has accepted, which the admin
+    attests to with `override_confirmed`.
     """
     if product_key not in PACKAGES:
         raise PricingError(f"Unknown package: {product_key}")
@@ -57,14 +70,19 @@ def price_package_item(product_key: PackageKey, extra_hours: float, override_con
     if extra_hours < 0:
         raise PricingError("extra_hours cannot be negative")
 
-    if extra_hours > 0 and not override_confirmed:
+    if extra_hours > spec["max_extra_hours"] and not override_confirmed:
         raise PricingError(
-            f"{spec['name']}: {extra_hours}h outside the written scope are billed at "
+            f"{spec['name']}: {extra_hours}h exceeds the package's max extra hours "
+            f"({spec['max_extra_hours']}h). Hours beyond the published range are billed at "
             f"{ENGINEERING_HOURS_RATE:g} EUR/h and need the client's prior acceptance. "
-            "Confirm it to proceed."
+            "Confirm the override to proceed."
         )
 
-    return round(spec["base_price"] + extra_hours * ENGINEERING_HOURS_RATE, 2)
+    price = spec["base_price"] + extra_hours * ENGINEERING_HOURS_RATE
+    if extra_hours <= spec["max_extra_hours"]:
+        # Within the published range: never exceed the published max price.
+        price = min(price, spec["max_price"])
+    return round(price, 2)
 
 
 def price_engineering_hours_item(quantity: float) -> float:

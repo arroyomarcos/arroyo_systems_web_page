@@ -39,7 +39,7 @@ const Hero = () => {
 
       <div className="arroyo-container relative">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-14 items-center md:min-h-[540px]">
-          <div className="reveal md:col-span-7">
+          <div className="reveal md:col-span-6">
             <h1 className="arroyo-display text-5xl sm:text-6xl md:text-[3.6rem] lg:text-[4.4rem] leading-[1.02]">
               {t.titleLines.map((line) => (
                 <span key={line} className="block">
@@ -47,7 +47,7 @@ const Hero = () => {
                 </span>
               ))}
             </h1>
-            <p className="mt-6 text-lg sm:text-xl md:text-2xl arroyo-body">
+            <p className="mt-6 text-lg sm:text-xl md:text-2xl arroyo-body" style={{ lineHeight: 1.2 }}>
               {t.body.map((line) => (
                 <span key={line} className="block">
                   {line}
@@ -71,7 +71,7 @@ const Hero = () => {
             </ul>
           </div>
 
-          <div className="md:col-span-5">
+          <div className="md:col-span-6">
             <figure className="viewer-frame">
               <span className="viewer-frame__tick viewer-frame__tick--tl" aria-hidden="true" />
               <span className="viewer-frame__tick viewer-frame__tick--tr" aria-hidden="true" />

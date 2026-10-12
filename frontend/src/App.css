@@ -224,8 +224,8 @@ body {
 }
 .viewer-frame__stage {
   position: relative;
-  aspect-ratio: 5 / 4;
-  min-height: 280px;
+  aspect-ratio: 1 / 1;
+  min-height: 300px;
   opacity: 0.001;
   transition: opacity 0.9s ease;
 }

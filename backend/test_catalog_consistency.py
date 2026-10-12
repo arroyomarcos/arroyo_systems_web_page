@@ -29,12 +29,12 @@ def content_js() -> str:
 
 @pytest.mark.parametrize("key", list(PACKAGES))
 def test_site_advertises_the_engine_price(content_js, key):
-    base = PACKAGES[key]["base_price"]
-    with_vat = round(base * (1 + VAT), 2)
-    assert f'price: "{_en_money(base)}"' in content_js
-    assert f'price: "{_es_money(base)}"' in content_js
-    assert f'priceInclVat: "{_en_money(with_vat, 2)} incl. 21% VAT"' in content_js
-    assert f'priceInclVat: "{_es_money(with_vat, 2)} con IVA del 21%"' in content_js
+    low, high = PACKAGES[key]["base_price"], PACKAGES[key]["max_price"]
+    low_vat, high_vat = round(low * (1 + VAT), 2), round(high * (1 + VAT), 2)
+    assert f'price: "{_en_money(low)} – {_en_money(high)}"' in content_js
+    assert f'price: "{_es_money(low)} – {_es_money(high)}"' in content_js
+    assert f'priceInclVat: "{_en_money(low_vat, 2)} – {_en_money(high_vat, 2)} incl. 21% VAT"' in content_js
+    assert f'priceInclVat: "{_es_money(low_vat, 2)} – {_es_money(high_vat, 2)} con IVA del 21%"' in content_js
 
 
 def test_site_advertises_the_engine_hourly_rate(content_js):

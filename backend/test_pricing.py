@@ -16,18 +16,22 @@ def test_hourly_rate_is_78():
 
 
 @pytest.mark.parametrize(
-    "key,expected_price,expected_hours",
+    "key,min_price,max_price,base_hours,max_extra_hours",
     [
-        ("product_design", 1482.0, 19),
-        ("product_validation", 2028.0, 26),
-        ("product_development", 3510.0, 45),
+        ("product_design", 1482.0, 1872.0, 19, 5),
+        ("product_validation", 2028.0, 2418.0, 26, 5),
+        ("product_development", 3510.0, 4290.0, 45, 10),
     ],
 )
-def test_package_closed_price_is_budgeted_hours_times_rate(key, expected_price, expected_hours):
+def test_package_price_range_follows_the_hourly_formula(key, min_price, max_price, base_hours, max_extra_hours):
     spec = PACKAGES[key]
-    assert spec["base_hours"] == expected_hours
-    assert spec["base_price"] == expected_price == expected_hours * ENGINEERING_HOURS_RATE
-    assert price_package_item(key, extra_hours=0, override_confirmed=False) == expected_price
+    assert spec["base_hours"] == base_hours
+    assert spec["max_extra_hours"] == max_extra_hours
+    # Minimum covers the budgeted hours; the maximum is that plus the allowed extra hours.
+    assert spec["base_price"] == min_price == base_hours * ENGINEERING_HOURS_RATE
+    assert spec["max_price"] == max_price == min_price + max_extra_hours * ENGINEERING_HOURS_RATE
+    assert price_package_item(key, extra_hours=0, override_confirmed=False) == min_price
+    assert price_package_item(key, extra_hours=max_extra_hours, override_confirmed=False) == max_price
 
 
 def test_development_is_design_plus_validation_without_discount():
@@ -37,13 +41,17 @@ def test_development_is_design_plus_validation_without_discount():
     )
 
 
-def test_out_of_scope_hours_need_prior_acceptance():
+def test_price_scales_linearly_with_extra_hours_inside_the_range():
+    assert price_package_item("product_design", extra_hours=3, override_confirmed=False) == 1482.0 + 3 * 78.0
+
+
+def test_hours_beyond_the_published_range_need_prior_acceptance():
     with pytest.raises(PricingError):
-        price_package_item("product_design", extra_hours=2, override_confirmed=False)
+        price_package_item("product_design", extra_hours=6, override_confirmed=False)
 
 
-def test_out_of_scope_hours_are_billed_at_the_hourly_rate_once_accepted():
-    assert price_package_item("product_design", extra_hours=2, override_confirmed=True) == 1482.0 + 2 * 78.0
+def test_hours_beyond_the_range_are_billed_at_the_hourly_rate_once_accepted():
+    assert price_package_item("product_design", extra_hours=6, override_confirmed=True) == 1482.0 + 6 * 78.0
 
 
 def test_package_negative_hours_rejected():

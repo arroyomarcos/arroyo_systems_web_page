@@ -21,9 +21,9 @@ import AdminTopBar from "./components/AdminTopBar";
 // Mirrors backend/pricing.py exactly - a live preview only. The server always recomputes
 // and is the authoritative source for what actually gets saved, PDF'd and charged.
 const PACKAGES_PREVIEW = {
-  product_design: { name: "Product Design", basePrice: 1482 },
-  product_validation: { name: "Product Validation", basePrice: 2028 },
-  product_development: { name: "Product Development", basePrice: 3510 },
+  product_design: { name: "Product Design", basePrice: 1482, maxPrice: 1872, maxExtraHours: 5 },
+  product_validation: { name: "Product Validation", basePrice: 2028, maxPrice: 2418, maxExtraHours: 5 },
+  product_development: { name: "Product Development", basePrice: 3510, maxPrice: 4290, maxExtraHours: 10 },
 };
 const ENGINEERING_RATE = 78;
 const EDITABLE_STATUSES = ["DRAFT", "SENT", "VIEWED"];
@@ -32,7 +32,10 @@ const previewItemTotal = (item) => {
   if (item.type === "package") {
     const spec = PACKAGES_PREVIEW[item.product_key];
     if (!spec) return 0;
-    return spec.basePrice + (Number(item.extra_hours) || 0) * ENGINEERING_RATE;
+    const extraHours = Number(item.extra_hours) || 0;
+    let price = spec.basePrice + extraHours * ENGINEERING_RATE;
+    if (extraHours <= spec.maxExtraHours) price = Math.min(price, spec.maxPrice);
+    return price;
   }
   if (item.type === "manufacturing") {
     return (Number(item.workshop_cost) || 0) + (Number(item.management_fee) || 0);
@@ -118,7 +121,7 @@ const AdminQuoteEditor = () => {
           extra_hours: it.extra_hours,
           workshop_cost: it.workshop_cost || 0,
           management_fee: it.management_fee || 0,
-          override_confirmed: (it.extra_hours || 0) > 0,
+          override_confirmed: (it.extra_hours || 0) > (PACKAGES_PREVIEW[it.product_key]?.maxExtraHours || 0),
         }))
       );
     } catch (err) {
@@ -465,7 +468,7 @@ const AdminQuoteEditor = () => {
                     {item.type === "package" ? (
                       <div>
                         <p className="text-xs font-medium text-[color:var(--arroyo-muted)] mb-1">
-                          Hours outside the written scope ({ENGINEERING_RATE} EUR/h)
+                          Extra hours for complexity (max {PACKAGES_PREVIEW[item.product_key]?.maxExtraHours}h, {ENGINEERING_RATE} EUR/h)
                         </p>
                         <Input
                           type="number"
@@ -474,7 +477,7 @@ const AdminQuoteEditor = () => {
                           disabled={!editable}
                           onChange={(e) => updateItem(index, { extra_hours: e.target.value })}
                         />
-                        {Number(item.extra_hours) > 0 && (
+                        {Number(item.extra_hours) > (PACKAGES_PREVIEW[item.product_key]?.maxExtraHours || 0) && (
                           <label className="flex items-center gap-2 mt-2 text-xs text-amber-700">
                             <input
                               type="checkbox"
@@ -482,7 +485,7 @@ const AdminQuoteEditor = () => {
                               disabled={!editable}
                               onChange={(e) => updateItem(index, { override_confirmed: e.target.checked })}
                             />
-                            The client was notified and accepted these hours
+                            Hours exceed the published range: the client was notified and accepted them
                           </label>
                         )}
                       </div>

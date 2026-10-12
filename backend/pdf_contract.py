@@ -162,7 +162,8 @@ def build_contract_pdf(
         "Development, Product Manufacturing), incluyendo lo que incluye y lo que queda expresamente excluido, es el publicado en "
         "el catálogo de servicios de ingeniería de Arroyo Systems vigente en la fecha del "
         "Presupuesto. El precio final dentro del rango indicado para cada servicio se fija en el "
-        "Presupuesto (Anexo I) como precio cerrado para el alcance escrito en él (entregables, "
+        "Presupuesto (Anexo I), dentro del rango publicado para cada servicio y en función de la "
+        "complejidad del proyecto, como precio cerrado para el alcance escrito en él (entregables, "
         "revisiones y exclusiones). Lo que quede fuera de ese alcance escrito se facturará conforme "
         "a la Cláusula 4, previo aviso y aceptación de EL CLIENTE."
     )
