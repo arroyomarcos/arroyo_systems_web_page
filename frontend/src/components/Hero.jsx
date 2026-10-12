@@ -64,7 +64,7 @@ const Hero = () => {
           </ul>
         </div>
 
-        <div className="viewer-pair mt-6 md:mt-10">
+        <div className="viewer-pair mt-2 md:mt-0">
           {inputs !== "failed" && (
             <figure className="viewer-frame">
               <div className={`viewer-frame__stage ${inputs === "ready" && result !== "loading" ? "is-ready" : ""}`}>

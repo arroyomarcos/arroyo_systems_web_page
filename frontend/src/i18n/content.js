@@ -274,8 +274,8 @@ export const content = {
       ctaPrimary: "Tell us what you need",
       ctaSecondary: "See pricing",
       trust: ["One person accountable", "Closed price", "Design signed by an engineer"],
-      viewerInputs: { label: "Your inputs", note: "Envelope, keep-out blocks and fixed features" },
-      viewerResult: { label: "The result", note: "Machined part, ready to manufacture" },
+      viewerInputs: { label: "Input data", note: "Envelope, mechanical interferences and constraints" },
+      viewerResult: { label: "Final result", note: "Machined part, validated and ready to manufacture" },
     },
     products: {
       heading: "Products",
@@ -414,8 +414,8 @@ export const content = {
       ctaPrimary: "Cuéntanos qué necesitas",
       ctaSecondary: "Ver precios",
       trust: ["Un único responsable", "Precio cerrado", "Diseño firmado por ingeniero"],
-      viewerInputs: { label: "Tus datos de entrada", note: "Envolvente, zonas prohibidas y elementos fijos" },
-      viewerResult: { label: "El resultado", note: "Pieza mecanizada, lista para fabricar" },
+      viewerInputs: { label: "Datos de entrada", note: "Envolvente, interferencias mecánicas y restricciones" },
+      viewerResult: { label: "Resultado final", note: "Pieza mecanizada, validada y lista para fabricar" },
     },
     products: {
       heading: "Productos",
