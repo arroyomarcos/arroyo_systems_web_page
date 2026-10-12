@@ -89,8 +89,16 @@ body {
 html {
   scroll-behavior: smooth;
 }
-html, body {
+html {
   overflow-x: hidden;
+}
+/* clip, unlike hidden, does not turn <body> into a scroll container, which would break the
+   pinned (position: sticky) process section. */
+@supports (overflow: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
 }
 
 .arroyo-container {
@@ -404,46 +412,142 @@ html, body {
 }
 
 /* ---------- Process ---------- */
-.process-steps {
+/* The track is tall; the pin inside it sticks to the viewport while the track scrolls past. */
+.process-track {
   position: relative;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  margin-top: 3.5rem;
+  height: calc(100vh + (var(--steps) - 1) * 60vh);
+  height: calc(100svh + (var(--steps) - 1) * 60svh);
 }
-.process-step {
-  position: relative;
-  display: grid;
-  grid-template-columns: 3rem 1fr;
-  gap: 1.25rem;
-  padding-bottom: 2.5rem;
-}
-.process-step:last-child {
-  padding-bottom: 0;
-}
-.process-step::before {
-  content: "";
-  position: absolute;
-  left: 1.5rem;
-  top: 3.25rem;
-  bottom: 0.25rem;
-  width: 1px;
-  background: var(--arroyo-line);
-}
-.process-step:last-child::before {
-  display: none;
-}
-.process-step__index {
+.process-pin {
+  position: sticky;
+  top: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  background: transparent;
-  border: 1px solid var(--arroyo-line);
-  color: var(--arroyo-navy);
-  font-size: 0.9rem;
+  height: 100vh;
+  height: 100svh;
+  padding: 5.5rem 0 2rem;
+  background: #000;
+}
+.process-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #2e3440;
+}
+@media (min-width: 768px) {
+  .process-stage {
+    aspect-ratio: 1600 / 626;
+    /* Leave room for the step row under the stage on short screens. */
+    max-height: calc(100vh - 21rem);
+    max-height: calc(100svh - 21rem);
+    min-height: 12rem;
+  }
+}
+.process-stage__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity 0.7s ease, transform 1.2s ease;
+}
+.process-stage__img.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+.process-steps {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+@media (min-width: 768px) {
+  .process-steps {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+}
+.process-step button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.38;
+  transition: opacity 0.4s ease;
+}
+.process-step.is-done button {
+  opacity: 0.6;
+}
+.process-step.is-active button {
+  opacity: 1;
+}
+.process-step__bar {
+  position: relative;
+  display: block;
+  height: 2px;
+  margin-bottom: 0.9rem;
+  background: var(--arroyo-line);
+}
+.process-step__bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--arroyo-navy);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s ease;
+}
+.process-step.is-active .process-step__bar::after,
+.process-step.is-done .process-step__bar::after {
+  transform: scaleX(1);
+}
+.process-step__index {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--arroyo-muted);
+}
+.process-step__title {
+  margin: 0.2rem 0 0;
+  font-size: 1.125rem;
   font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--arroyo-navy);
+}
+@media (min-width: 1024px) {
+  .process-step__title { font-size: 1.375rem; }
+}
+.process-step__body {
+  margin: 0.5rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--arroyo-muted);
+}
+/* On phones only the active step shows its text, so stage and steps fit one screen. */
+@media (max-width: 767px) {
+  /* Anchor to the top so the stage does not move when the active text expands. */
+  .process-pin { align-items: flex-start; padding-top: 6rem; }
+  .process-step__body { display: none; }
+  .process-step.is-active .process-step__body { display: block; }
+  .process-step__bar { margin-bottom: 0.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .process-stage__img,
+  .process-step button,
+  .process-step__bar::after { transition-duration: 0.01s; }
 }
 
 /* ---------- Contact form ---------- */
