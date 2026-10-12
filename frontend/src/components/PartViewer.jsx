@@ -23,12 +23,12 @@ const parseScene = (buffer) => {
 };
 
 // How each kind of part is painted. "result" is the finished metal part; the others are the
-// client's inputs: a faint grey envelope, red keep-out blocks and solid blue slots/cylinders.
+// client's inputs: a faint grey envelope, red keep-out blocks and blue slots/cylinders.
 const SURFACES = {
   result: { color: 0xd5dde9, metalness: 0.55, roughness: 0.42, envMapIntensity: 1.5, edge: 0.28 },
   bounds: { color: 0x8e8e93, metalness: 0, roughness: 0.9, opacity: 0.1, edge: 0.35 },
   block: { color: 0xe5342b, metalness: 0.05, roughness: 0.6, opacity: 0.4, edge: 0.55 },
-  feature: { color: 0x0a6cf5, metalness: 0.2, roughness: 0.45, envMapIntensity: 1.2, edge: 0.4 },
+  feature: { color: 0x0a6cf5, metalness: 0.2, roughness: 0.45, envMapIntensity: 1.2, opacity: 0.6, edge: 0.4 },
 };
 
 const IDLE_RESUME_MS = 2500;
@@ -216,7 +216,7 @@ const PartViewer = ({ model = "result", onReady, onFail }) => {
           });
           const mesh = new THREE.Mesh(geometry, material);
           // Translucent shells draw after the solid parts so those show through them.
-          if (translucent) mesh.renderOrder = kind === "bounds" ? 2 : 1;
+          if (translucent) mesh.renderOrder = kind === "bounds" ? 2 : kind === "block" ? 1 : 0;
 
           const edgeMaterial = new THREE.LineBasicMaterial({
             color: kind === "result" ? 0x0a1a3a : kind === "bounds" ? 0x6e6e73 : 0x1d1d1f,

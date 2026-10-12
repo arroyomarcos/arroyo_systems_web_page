@@ -98,7 +98,6 @@ const Hero = () => {
             </figcaption>
           </figure>
         </div>
-        {result === "ready" && <p className="viewer-hint">{t.viewerCaption}</p>}
       </div>
     </section>
   );

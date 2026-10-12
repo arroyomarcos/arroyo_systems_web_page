@@ -365,12 +365,6 @@ html, body {
   font-weight: 600;
   color: var(--arroyo-navy);
 }
-.viewer-hint {
-  margin-top: 0.75rem;
-  text-align: center;
-  font-size: 0.75rem;
-  color: var(--arroyo-muted);
-}
 .part-viewer {
   position: absolute;
   inset: 0;
