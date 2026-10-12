@@ -122,13 +122,13 @@ def test_create_quote_matches_prompt_example(admin_client):
     response = admin_client.post("/api/admin/quotes", json=quote_payload())
     assert response.status_code == 201
     body = response.json()
-    assert body["subtotal"] == 3250.0
-    assert body["vat_amount"] == 682.5
-    assert body["total"] == 3932.5
-    # Deposit is 50% of the package (Product Development) only, incl. VAT: 3000 * 1.21 / 2.
+    assert body["subtotal"] == 3900.0
+    assert body["vat_amount"] == 819.0
+    assert body["total"] == 4719.0
+    # Deposit is 50% of the package (Product Development) only, incl. VAT: 3510 * 1.21 / 2.
     # Engineering Hours always land in the remaining/second payment, never split.
-    assert body["deposit_amount"] == 1815.0
-    assert body["remaining_amount"] == 2117.5
+    assert body["deposit_amount"] == 2123.55
+    assert body["remaining_amount"] == 2595.45
     assert body["deposit_amount"] + body["remaining_amount"] == body["total"]
     assert body["status"] == "DRAFT"
     assert body["payment_status"] == "UNPAID"
@@ -173,7 +173,28 @@ def test_create_quote_allows_extra_hours_beyond_max_with_override(admin_client):
     )
     response = admin_client.post("/api/admin/quotes", json=payload)
     assert response.status_code == 201
-    assert response.json()["items"][0]["total"] == 1300.0 + 20 * 50.0
+    assert response.json()["items"][0]["total"] == 1482.0 + 20 * 78.0
+
+
+def test_create_quote_with_manufacturing_line(admin_client):
+    payload = quote_payload(items=[
+        {"type": "manufacturing", "workshop_cost": 800, "management_fee": 290, "description": "Bracket x5"},
+    ])
+    response = admin_client.post("/api/admin/quotes", json=payload)
+    assert response.status_code == 201
+    body = response.json()
+    assert body["items"][0]["type"] == "manufacturing"
+    assert body["items"][0]["total"] == 1090.0
+    assert body["total"] == 1318.9
+    # The workshop is paid up front (incl. VAT); the management fee goes with the final balance.
+    assert body["deposit_amount"] == 968.0
+    assert body["remaining_amount"] == 350.9
+
+
+def test_create_quote_rejects_manufacturing_without_workshop_cost(admin_client):
+    payload = quote_payload(items=[{"type": "manufacturing", "management_fee": 290}])
+    response = admin_client.post("/api/admin/quotes", json=payload)
+    assert response.status_code == 422
 
 
 def test_quote_requires_admin_auth(db):
@@ -259,7 +280,7 @@ def test_pdf_amount_matches_quote_total(admin_client, db, monkeypatch):
     quote = admin_client.post("/api/admin/quotes", json=quote_payload()).json()
     response = admin_client.get(f"/api/admin/quotes/{quote['id']}/pdf")
     assert response.status_code == 200
-    assert captured["quote_total"] == quote["total"] == 3932.5
+    assert captured["quote_total"] == quote["total"] == 4719.0
 
 
 def test_pay_deposit_stripe_amount_matches_quote(admin_client, db, monkeypatch):
@@ -336,8 +357,8 @@ def test_request_final_payment_can_add_engineering_hours_without_touching_deposi
     # Deposit already charged must never change - only Engineering Hours are addable here,
     # and deposit_amount depends solely on package items.
     assert body["deposit_amount"] == original_deposit
-    # 3h x EUR50 = EUR150 excl. VAT; quote_payload() defaults to 21% VAT.
-    assert body["remaining_amount"] == round(original_remaining + 3 * 50.0 * 1.21, 2)
+    # 3h x EUR78 = EUR234 excl. VAT; quote_payload() defaults to 21% VAT.
+    assert body["remaining_amount"] == round(original_remaining + 3 * 78.0 * 1.21, 2)
     assert len(body["items"]) == 2
     assert any(item["type"] == "engineering_hours" and item["quantity"] == 3 for item in body["items"])
 

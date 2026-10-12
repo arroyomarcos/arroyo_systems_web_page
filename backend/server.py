@@ -1,10 +1,11 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, Response, status
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, Response, status, File, Form, UploadFile
 from fastapi.security import OAuth2PasswordBearer
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+import base64
 import logging
 import io
 import csv
@@ -20,13 +21,14 @@ import urllib.parse
 import urllib.request
 from email.message import EmailMessage
 from pathlib import Path
-from pydantic import BaseModel, Field, EmailStr, ConfigDict, field_validator
+from pydantic import BaseModel, Field, EmailStr, ConfigDict, ValidationError, field_validator
 from typing import Optional, Literal
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
 from starlette.concurrency import run_in_threadpool
 import jwt
 import stripe
+from bson.binary import Binary
 
 import docusign_client
 
@@ -45,6 +47,10 @@ ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin')
 PRIVACY_POLICY_VERSION = os.environ.get('PRIVACY_POLICY_VERSION', 'v1.0')
 REQUIRE_PRIVACY_ACCEPTANCE = os.environ.get('REQUIRE_PRIVACY_ACCEPTANCE', 'true').lower() == 'true'
+# STEP/PDF a visitor can attach to the contact form. Kept small: it is stored in MongoDB
+# (Render's disk is ephemeral) and also forwarded by email.
+CONTACT_ATTACHMENT_MAX_BYTES = int(os.environ.get('CONTACT_ATTACHMENT_MAX_BYTES', str(8 * 1024 * 1024)))
+CONTACT_ATTACHMENT_TYPES = {'.step': 'model/step', '.stp': 'model/step', '.pdf': 'application/pdf'}
 TURNSTILE_SECRET_KEY = os.environ.get('TURNSTILE_SECRET_KEY', '').strip()
 RATE_LIMIT_CONTACT_MAX = int(os.environ.get('RATE_LIMIT_CONTACT_MAX', '5'))
 RATE_LIMIT_CONTACT_WINDOW_SECONDS = int(os.environ.get('RATE_LIMIT_CONTACT_WINDOW_SECONDS', '60'))
@@ -93,7 +99,9 @@ logger = logging.getLogger("arroyo")
 
 
 # ---------- Models ----------
-ProjectType = Literal["Product Design", "Product Validation", "Product Development", "Other"]
+ProjectType = Literal[
+    "Product Design", "Product Validation", "Product Development", "Product Manufacturing", "Other"
+]
 TAG_RE = re.compile(r"<[^>]*>")
 CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 URL_RE = re.compile(r"https?://|www\.", re.IGNORECASE)
@@ -117,8 +125,21 @@ class ContactCreate(BaseModel):
     company: Optional[str] = Field(default=None, max_length=120)
     project_type: Optional[ProjectType] = None
     message: str = Field(min_length=1, max_length=4000)
+    # Qualifying fields of the new contact form (all optional, none of them gate the request).
+    quantity: Optional[int] = Field(default=None, ge=1, le=1_000_000)
+    deadline: Optional[str] = Field(default=None, max_length=120)
+    material: Optional[str] = Field(default=None, max_length=120)
+    has_design: Optional[bool] = None
     privacyAccepted: Optional[bool] = None
     turnstileToken: Optional[str] = Field(default=None, max_length=2048)
+
+    @field_validator("deadline", "material")
+    @classmethod
+    def validate_short_text(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        value = sanitize_text(value)
+        return value or None
 
     @field_validator("name")
     @classmethod
@@ -155,6 +176,12 @@ class ContactMessage(BaseModel):
     company: Optional[str] = None
     project_type: Optional[str] = None
     message: str
+    quantity: Optional[int] = None
+    deadline: Optional[str] = None
+    material: Optional[str] = None
+    has_design: Optional[bool] = None
+    attachment_name: Optional[str] = None
+    attachment_size: Optional[int] = None
     read: bool = False
     privacyAccepted: bool = False
     privacyAcceptedAt: Optional[datetime] = None
@@ -303,7 +330,7 @@ def get_smtp_password() -> str:
     return SMTP_PASSWORD.replace(" ", "")
 
 
-def build_contact_notification(msg: ContactMessage) -> EmailMessage:
+def build_contact_notification(msg: ContactMessage, attachment: Optional[dict] = None) -> EmailMessage:
     email = EmailMessage()
     email["Subject"] = f"New Arroyo Systems contact request: {msg.name}"
     email["From"] = RESEND_FROM if RESEND_API_KEY else SMTP_FROM
@@ -317,6 +344,11 @@ def build_contact_notification(msg: ContactMessage) -> EmailMessage:
             f"Email: {msg.email}",
             f"Company: {msg.company or '-'}",
             f"Project type: {msg.project_type or '-'}",
+            f"Quantity: {msg.quantity if msg.quantity is not None else '-'}",
+            f"Desired deadline: {msg.deadline or '-'}",
+            f"Preferred material: {msg.material or '-'}",
+            f"Already has a design: {'-' if msg.has_design is None else ('yes' if msg.has_design else 'no')}",
+            f"Attachment: {msg.attachment_name or '-'}",
             f"Privacy accepted: {'yes' if msg.privacyAccepted else 'no'}",
             f"Privacy policy version: {msg.privacyPolicyVersion}",
             "",
@@ -327,6 +359,9 @@ def build_contact_notification(msg: ContactMessage) -> EmailMessage:
             "https://arroyo-systems.com/admin",
         ])
     )
+    if attachment:
+        maintype, subtype = attachment["content_type"].split("/", 1)
+        email.add_attachment(attachment["data"], maintype=maintype, subtype=subtype, filename=attachment["filename"])
     return email
 
 
@@ -352,8 +387,17 @@ def send_email_via_resend(email: EmailMessage) -> None:
         "from": RESEND_FROM,
         "to": [CONTACT_NOTIFICATION_TO],
         "subject": email["Subject"],
-        "text": email.get_content(),
+        "text": email.get_body(preferencelist=("plain",)).get_content(),
     }
+    attachments = [
+        {
+            "filename": part.get_filename(),
+            "content": base64.b64encode(part.get_payload(decode=True)).decode("ascii"),
+        }
+        for part in email.iter_attachments()
+    ]
+    if attachments:
+        payload["attachments"] = attachments
     try:
         post_resend_payload(payload)
         logger.info("Contact email notification accepted by Resend")
@@ -382,23 +426,56 @@ def send_email_message(email: EmailMessage) -> None:
         logger.info("Contact email notification sent via SMTP")
 
 
-def send_contact_notification(msg: ContactMessage) -> None:
+def send_contact_notification(msg: ContactMessage, attachment: Optional[dict] = None) -> None:
     if not is_email_notifications_enabled():
         logger.info("Contact email notification skipped because SMTP is not configured")
         return
 
-    send_email_message(build_contact_notification(msg))
+    send_email_message(build_contact_notification(msg, attachment))
 
 
-async def notify_contact_message(msg: ContactMessage) -> None:
+async def notify_contact_message(msg: ContactMessage, attachment: Optional[dict] = None) -> None:
     try:
-        await run_in_threadpool(send_contact_notification, msg)
+        await run_in_threadpool(send_contact_notification, msg, attachment)
     except Exception:
         logger.exception("Could not send contact notification email")
 
 
-def schedule_contact_notification(msg: ContactMessage) -> None:
-    asyncio.create_task(notify_contact_message(msg))
+def schedule_contact_notification(msg: ContactMessage, attachment: Optional[dict] = None) -> None:
+    asyncio.create_task(notify_contact_message(msg, attachment))
+
+
+def _safe_filename(name: str) -> str:
+    base = Path(name.replace("\\", "/")).name
+    base = re.sub(r"[^A-Za-z0-9._ -]", "_", base).strip(" .")
+    return (base or "attachment")[-120:]
+
+
+async def read_contact_attachment(upload: Optional[UploadFile]) -> Optional[dict]:
+    """Validates the optional STEP/PDF upload: extension, size, and that the content really
+    looks like that format (an extension alone proves nothing)."""
+    if upload is None or not upload.filename:
+        return None
+    filename = _safe_filename(upload.filename)
+    ext = Path(filename).suffix.lower()
+    if ext not in CONTACT_ATTACHMENT_TYPES:
+        raise HTTPException(status_code=400, detail="Only STEP (.step, .stp) or PDF files can be attached")
+    data = await upload.read(CONTACT_ATTACHMENT_MAX_BYTES + 1)
+    if len(data) > CONTACT_ATTACHMENT_MAX_BYTES:
+        limit_mb = CONTACT_ATTACHMENT_MAX_BYTES // (1024 * 1024)
+        raise HTTPException(status_code=413, detail=f"The file is too large (maximum {limit_mb} MB)")
+    if not data:
+        raise HTTPException(status_code=400, detail="The attached file is empty")
+    if ext == ".pdf" and not data.lstrip()[:5] == b"%PDF-":
+        raise HTTPException(status_code=400, detail="The attached file is not a valid PDF")
+    if ext in (".step", ".stp") and b"ISO-10303-21" not in data[:512]:
+        raise HTTPException(status_code=400, detail="The attached file is not a valid STEP file")
+    return {
+        "filename": filename,
+        "content_type": CONTACT_ATTACHMENT_TYPES[ext],
+        "size": len(data),
+        "data": data,
+    }
 
 
 async def get_current_admin(token: Optional[str] = Depends(oauth2_scheme)) -> str:
@@ -595,8 +672,9 @@ async def docusign_webhook(request: Request):
     return {"received": True}
 
 
-@api_router.post("/contact", response_model=ContactSubmitResponse, status_code=201)
-async def submit_contact(payload: ContactCreate, request: Request):
+async def process_contact_submission(
+    payload: ContactCreate, request: Request, attachment: Optional[dict] = None
+) -> ContactSubmitResponse:
     ip = get_client_ip(request)
     check_contact_rate_limit(ip)
     await verify_turnstile(payload.turnstileToken, ip)
@@ -610,6 +688,12 @@ async def submit_contact(payload: ContactCreate, request: Request):
         company=payload.company,
         project_type=payload.project_type,
         message=payload.message,
+        quantity=payload.quantity,
+        deadline=payload.deadline,
+        material=payload.material,
+        has_design=payload.has_design,
+        attachment_name=attachment["filename"] if attachment else None,
+        attachment_size=attachment["size"] if attachment else None,
         privacyAccepted=bool(payload.privacyAccepted),
         privacyAcceptedAt=privacy_accepted_at,
         privacyPolicyVersion=PRIVACY_POLICY_VERSION,
@@ -618,12 +702,66 @@ async def submit_contact(payload: ContactCreate, request: Request):
     )
     doc = msg.model_dump(by_alias=True)
     await db.contact_messages.insert_one(doc)
+    if attachment:
+        await db.contact_attachments.insert_one({
+            "_id": msg.id,
+            "filename": attachment["filename"],
+            "content_type": attachment["content_type"],
+            "size": attachment["size"],
+            "content": Binary(attachment["data"]),
+            "created_at": msg.created_at,
+        })
     try:
-        schedule_contact_notification(msg)
+        schedule_contact_notification(msg, attachment)
     except Exception:
         logger.exception("Could not schedule contact notification email")
     logger.info(f"New contact message from {msg.email}")
     return ContactSubmitResponse(id=msg.id, created_at=msg.created_at)
+
+
+@api_router.post("/contact", response_model=ContactSubmitResponse, status_code=201)
+async def submit_contact(payload: ContactCreate, request: Request):
+    return await process_contact_submission(payload, request)
+
+
+@api_router.post("/contact/form", response_model=ContactSubmitResponse, status_code=201)
+async def submit_contact_form(
+    request: Request,
+    name: str = Form(...),
+    email: str = Form(...),
+    message: str = Form(...),
+    company: Optional[str] = Form(None),
+    project_type: Optional[str] = Form(None),
+    quantity: Optional[str] = Form(None),
+    deadline: Optional[str] = Form(None),
+    material: Optional[str] = Form(None),
+    has_design: Optional[str] = Form(None),
+    privacyAccepted: Optional[str] = Form(None),
+    turnstileToken: Optional[str] = Form(None),
+    file: Optional[UploadFile] = File(None),
+):
+    """Multipart variant of /contact used by the website form, which can carry a STEP/PDF."""
+    def blank_to_none(value: Optional[str]) -> Optional[str]:
+        return value if value not in (None, "") else None
+
+    try:
+        payload = ContactCreate(
+            name=name,
+            email=email,
+            message=message,
+            company=blank_to_none(company),
+            project_type=blank_to_none(project_type),
+            quantity=blank_to_none(quantity),
+            deadline=blank_to_none(deadline),
+            material=blank_to_none(material),
+            has_design=None if has_design in (None, "") else has_design.lower() == "true",
+            privacyAccepted=None if privacyAccepted in (None, "") else privacyAccepted.lower() == "true",
+            turnstileToken=blank_to_none(turnstileToken),
+        )
+    except ValidationError as exc:
+        raise HTTPException(status_code=422, detail=exc.errors(include_url=False, include_context=False)) from exc
+    attachment = await read_contact_attachment(file)
+    return await process_contact_submission(payload, request, attachment)
 
 
 # ---------- Admin routes ----------
@@ -701,11 +839,24 @@ async def update_message(msg_id: str, patch: UpdateMessage, current: str = Depen
     return _serialize_message(doc)
 
 
+@api_router.get("/admin/messages/{msg_id}/attachment")
+async def download_message_attachment(msg_id: str, current: str = Depends(get_current_admin)):
+    doc = await db.contact_attachments.find_one({"_id": msg_id})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    return Response(
+        content=bytes(doc["content"]),
+        media_type=doc.get("content_type") or "application/octet-stream",
+        headers={"Content-Disposition": f'attachment; filename="{doc["filename"]}"'},
+    )
+
+
 @api_router.delete("/admin/messages/{msg_id}", status_code=204)
 async def delete_message(msg_id: str, current: str = Depends(get_current_admin)):
     result = await db.contact_messages.delete_one({"_id": msg_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Message not found")
+    await db.contact_attachments.delete_one({"_id": msg_id})
     return Response(status_code=204)
 
 
@@ -804,7 +955,8 @@ async def export_messages_csv(current: str = Depends(get_current_admin)):
     buf = io.StringIO()
     writer = csv.writer(buf)
     writer.writerow([
-        "id", "created_at", "name", "email", "company", "project_type", "read",
+        "id", "created_at", "name", "email", "company", "project_type", "quantity", "deadline",
+        "material", "has_design", "attachment", "read",
         "privacyAccepted", "privacyAcceptedAt", "privacyPolicyVersion", "message",
     ])
     async for d in cursor:
@@ -815,6 +967,11 @@ async def export_messages_csv(current: str = Depends(get_current_admin)):
             d.get("email", ""),
             d.get("company", "") or "",
             d.get("project_type", "") or "",
+            d.get("quantity", "") if d.get("quantity") is not None else "",
+            d.get("deadline", "") or "",
+            d.get("material", "") or "",
+            "" if d.get("has_design") is None else ("yes" if d.get("has_design") else "no"),
+            d.get("attachment_name", "") or "",
             "yes" if d.get("read") else "no",
             "yes" if d.get("privacyAccepted") else "no",
             d.get("privacyAcceptedAt").isoformat() if isinstance(d.get("privacyAcceptedAt"), datetime) else d.get("privacyAcceptedAt", ""),

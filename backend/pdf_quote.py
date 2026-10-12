@@ -109,7 +109,14 @@ def build_quote_pdf(quote: dict, customer: dict) -> bytes:
     for item in quote.get("items", []):
         if item["type"] == "package":
             name = item.get("description") or item.get("product_key", "")
-            desc = f"Includes {item['extra_hours']:g}h extra hours" if item.get("extra_hours") else ""
+            desc = f"Includes {item['extra_hours']:g}h outside the written scope" if item.get("extra_hours") else ""
+            qty = "-"
+        elif item["type"] == "manufacturing":
+            name = item.get("description") or "Product Manufacturing"
+            desc = (
+                f"Workshop cost {_fmt_money(item.get('workshop_cost', 0), currency)} + "
+                f"manufacturing management {_fmt_money(item.get('management_fee', 0), currency)}"
+            )
             qty = "-"
         else:
             name = "Engineering Hours"

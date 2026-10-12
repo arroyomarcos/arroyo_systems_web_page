@@ -33,6 +33,7 @@ PACKAGE_NAMES = {
     "product_validation": "Product Validation",
     "product_development": "Product Development",
 }
+MANUFACTURING_NAME = "Product Manufacturing"
 
 SIGNATURE_ANCHOR = "/firma_cliente/"
 DATE_SIGNED_ANCHOR = "/fecha_firma/"
@@ -66,6 +67,7 @@ def build_contract_pdf(
     currency = quote.get("currency", "EUR")
     generated_at = quote.get("contract_generated_at") or datetime.now()
     package_keys = {item["product_key"] for item in quote.get("items", []) if item.get("type") == "package"}
+    has_manufacturing = any(item.get("type") == "manufacturing" for item in quote.get("items", []))
 
     buf = BytesIO()
     doc = SimpleDocTemplate(
@@ -95,7 +97,8 @@ def build_contract_pdf(
     elements.append(Spacer(1, 6 * mm))
 
     package_line = "  ".join(
-        f"[{'X' if key in package_keys else ' '}] {name}" for key, name in PACKAGE_NAMES.items()
+        [f"[{'X' if key in package_keys else ' '}] {name}" for key, name in PACKAGE_NAMES.items()]
+        + [f"[{'X' if has_manufacturing else ' '}] {MANUFACTURING_NAME}"]
     )
 
     reunidos = (
@@ -156,12 +159,43 @@ def build_contract_pdf(
     clause(2, "Alcance del servicio")
     p(
         "El alcance de cada modalidad de servicio (Product Design, Product Validation, Product "
-        "Development), incluyendo lo que incluye y lo que queda expresamente excluido, es el publicado en "
+        "Development, Product Manufacturing), incluyendo lo que incluye y lo que queda expresamente excluido, es el publicado en "
         "el catálogo de servicios de ingeniería de Arroyo Systems vigente en la fecha del "
         "Presupuesto. El precio final dentro del rango indicado para cada servicio se fija en el "
-        "Presupuesto (Anexo I) en función de la complejidad específica del proyecto, y podrá "
-        "incluir horas adicionales tarifadas conforme a la Cláusula 4."
+        "Presupuesto (Anexo I) como precio cerrado para el alcance escrito en él (entregables, "
+        "revisiones y exclusiones). Lo que quede fuera de ese alcance escrito se facturará conforme "
+        "a la Cláusula 4, previo aviso y aceptación de EL CLIENTE."
     )
+
+    if has_manufacturing:
+        clause("2 bis", "Fabricación de piezas")
+        bullets([
+            "EL PRESTADOR gestiona la fabricación de las piezas objeto del Presupuesto a través de "
+            "talleres de fabricación seleccionados por él, conforme a la Cláusula 14. EL PRESTADOR "
+            "responde frente a EL CLIENTE de que la pieza recibida cumple el plano aprobado, con "
+            "los límites de esta cláusula y de la Cláusula 9.",
+            "EL PRESTADOR no realizará el pedido de fabricación hasta que EL CLIENTE haya aprobado "
+            "por escrito (incluido correo electrónico) el diseño y los resultados de su validación "
+            "estructural. La fabricación parte siempre de un diseño aprobado y validado.",
+            "El precio de la fabricación es el coste del taller, tal como figura en el Presupuesto, "
+            "más la gestión de fabricación, que incluye: la petición de ofertas al taller, una ronda "
+            "de cambios antes del lanzamiento del pedido, el seguimiento hasta la entrega y la gestión "
+            "de una incidencia.",
+            "EL CLIENTE abonará el coste del taller, con su IVA, antes de que EL PRESTADOR realice el "
+            "pedido al taller. La gestión de fabricación se abona con el saldo final conforme a la "
+            "Cláusula 4.",
+            "EL PRESTADOR solicitará al taller, en cada pedido, el informe dimensional y el "
+            "certificado de material de las piezas, y los entregará a EL CLIENTE junto con la pieza. "
+            "No se emite certificado de conformidad salvo que el Presupuesto lo indique expresamente.",
+            "Si la pieza recibida no cumple el plano aprobado, EL CLIENTE lo comunicará por escrito, "
+            "con la evidencia correspondiente, en el plazo de 5 días hábiles desde su recepción. EL "
+            "PRESTADOR gestionará con el taller la solución que proceda (reposición o abono). La "
+            "responsabilidad de EL PRESTADOR por la fabricación queda limitada al importe del pedido "
+            "de fabricación afectado y no cubre el uso de la pieza fuera de los requisitos facilitados "
+            "por EL CLIENTE.",
+            "El plazo de fabricación se confirma una vez recibida la cotización del taller y se rige "
+            "por la Cláusula 5.",
+        ])
 
     clause(3, "Entregables y formato de entrega")
     bullets([
@@ -183,11 +217,19 @@ def build_contract_pdf(
         "conforme al Presupuesto aceptado (Anexo I), y se abonará según el siguiente calendario:"
     )
     bullets([
-        "50% del importe del servicio contratado, en concepto de anticipo, a la firma del presente "
-        "Contrato y antes del inicio de los trabajos. Este anticipo se calcula exclusivamente sobre "
+        "50% del importe de los servicios de ingeniería contratados"
+        + (
+            ", más el coste del taller (con su IVA) de los servicios de fabricación,"
+            if has_manufacturing else ","
+        )
+        + " en concepto de anticipo, a la firma del presente "
+        "Contrato y antes del inicio de los trabajos (o, en el caso de la fabricación, antes de "
+        "realizar el pedido al taller). Este anticipo se calcula exclusivamente sobre "
         "el precio del servicio contratado (Cláusula 2) y no se ve alterado por las horas de "
         "ingeniería adicionales que, en su caso, se añadan conforme al párrafo siguiente.",
-        "50% restante del importe del servicio contratado, junto con el importe correspondiente a las "
+        "50% restante del importe de los servicios de ingeniería contratados"
+        + (", junto con la gestión de fabricación," if has_manufacturing else "")
+        + " y el importe correspondiente a las "
         "horas de ingeniería adicionales (Engineering Hours) que, en su caso, se hayan generado "
         "conforme al párrafo siguiente, a la entrega de los deliverables finales, en un plazo "
         "máximo de 7 días naturales desde la recepción de la factura correspondiente.",
@@ -199,9 +241,10 @@ def build_contract_pdf(
         "que le correspondan."
     )
     p(
-        "Las horas de trabajo adicionales derivadas de retrasos o de pequeñas modificaciones del "
-        "proyecto no previstas inicialmente, dentro del margen indicado en el Presupuesto, se "
-        "facturarán a razón de 50 €/hora (Engineering Hours) y se incorporarán íntegramente "
+        "Las horas de trabajo adicionales derivadas de retrasos o de modificaciones del "
+        "proyecto fuera del alcance escrito en el Presupuesto, previo aviso y aceptación de EL "
+        "CLIENTE, se "
+        "facturarán a razón de 78 €/hora (Engineering Hours) y se incorporarán íntegramente "
         "al segundo pago (saldo final) indicado en el párrafo anterior, sin alterar el importe del "
         "anticipo ya abonado. EL PRESTADOR comunicará dichas horas a EL CLIENTE antes de emitir la "
         "factura correspondiente al saldo final."
@@ -348,7 +391,7 @@ def build_contract_pdf(
         "EL CLIENTE podrá cancelar el proyecto en cualquier momento mediante comunicación por "
         "escrito, debiendo abonar el trabajo efectivamente realizado hasta la fecha de cancelación, "
         "calculado proporcionalmente sobre el precio total pactado o, en su caso, sobre las horas "
-        "efectivamente empleadas a razón de 50 €/hora.",
+        "efectivamente empleadas a razón de 78 €/hora.",
         "EL PRESTADOR podrá resolver el Contrato en caso de impago por parte de EL CLIENTE en los "
         "plazos pactados, o de incumplimiento grave de cualquier otra obligación contractual, "
         "previo requerimiento por escrito con 10 días naturales de antelación para su "

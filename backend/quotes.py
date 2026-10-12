@@ -23,6 +23,7 @@ from pricing import (
     PricingError,
     compute_quote_totals,
     price_engineering_hours_item,
+    price_manufacturing_item,
     price_package_item,
 )
 
@@ -52,12 +53,17 @@ class CustomerIn(BaseModel):
 
 
 class QuoteItemInput(BaseModel):
-    type: Literal["package", "engineering_hours"]
+    type: Literal["package", "engineering_hours", "manufacturing"]
     product_key: Optional[PackageKey] = None
     description: Optional[str] = Field(default=None, max_length=500)
     quantity: float = Field(default=1, ge=0)
+    # Out-of-scope hours on a package, billed at the hourly rate (needs override_confirmed).
     extra_hours: float = Field(default=0, ge=0)
     override_confirmed: bool = False
+    # Manufacturing only: the workshop's quoted cost and Arroyo Systems' management fee,
+    # both excl. VAT.
+    workshop_cost: float = Field(default=0, ge=0)
+    management_fee: float = Field(default=0, ge=0)
 
     @model_validator(mode="after")
     def check_type_requirements(self):
@@ -65,6 +71,8 @@ class QuoteItemInput(BaseModel):
             raise ValueError("product_key is required for package items")
         if self.type == "engineering_hours" and self.quantity <= 0:
             raise ValueError("Engineering Hours quantity must be greater than 0")
+        if self.type == "manufacturing" and self.workshop_cost <= 0:
+            raise ValueError("Manufacturing needs the workshop cost (greater than 0)")
         return self
 
 
@@ -115,6 +123,25 @@ def _process_items(items: list[QuoteItemInput]) -> list[dict]:
                 "quantity": 1,
                 "unit_price": total,
                 "extra_hours": item.extra_hours,
+                "workshop_cost": 0,
+                "management_fee": 0,
+                "total": total,
+            })
+        elif item.type == "manufacturing":
+            try:
+                total = price_manufacturing_item(item.workshop_cost, item.management_fee)
+            except PricingError as exc:
+                raise HTTPException(status_code=422, detail=str(exc)) from exc
+            processed.append({
+                "id": str(uuid.uuid4()),
+                "type": "manufacturing",
+                "product_key": None,
+                "description": server.sanitize_text(item.description) if item.description else "Product Manufacturing",
+                "quantity": 1,
+                "unit_price": total,
+                "extra_hours": 0,
+                "workshop_cost": item.workshop_cost,
+                "management_fee": item.management_fee,
                 "total": total,
             })
         else:
@@ -130,6 +157,8 @@ def _process_items(items: list[QuoteItemInput]) -> list[dict]:
                 "quantity": item.quantity,
                 "unit_price": ENGINEERING_HOURS_RATE,
                 "extra_hours": 0,
+                "workshop_cost": 0,
+                "management_fee": 0,
                 "total": total,
             })
     return processed

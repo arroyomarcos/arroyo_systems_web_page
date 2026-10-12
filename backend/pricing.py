@@ -1,59 +1,55 @@
 """Product catalog and pricing rules for Arroyo Systems quotes.
 
-Source of truth for prices: Arroyo_Systems_Engineering_Solutions_Catalog.pdf
-(base_price + max_extra_hours * ENGINEERING_HOURS_RATE == max_price for every package).
+Pricing model (Brief_Rediseno_Web, 2026-10-12): every engineering package has a single
+closed price, equal to its budgeted hours x ENGINEERING_HOURS_RATE. Anything outside the
+written scope is billed at that same hourly rate, only with prior notice and acceptance.
+Manufacturing is not a fixed-price package: it is the workshop's cost plus Arroyo Systems'
+manufacturing-management fee, both entered per quote.
 """
 from typing import Literal, Optional, TypedDict
 
 
-ENGINEERING_HOURS_RATE = 50.0
+ENGINEERING_HOURS_RATE = 78.0
 
 PackageKey = Literal["product_design", "product_validation", "product_development"]
-ItemType = Literal["package", "engineering_hours"]
+ItemType = Literal["package", "engineering_hours", "manufacturing"]
 
 
 class PackageSpec(TypedDict):
     name: str
     base_price: float
-    max_price: float
     base_hours: int
-    max_extra_hours: int
 
 
 PACKAGES: dict[PackageKey, PackageSpec] = {
     "product_design": {
         "name": "Product Design",
-        "base_price": 1300.0,
-        "max_price": 1550.0,
-        "base_hours": 15,
-        "max_extra_hours": 5,
+        "base_price": 1482.0,
+        "base_hours": 19,
     },
     "product_validation": {
         "name": "Product Validation",
-        "base_price": 1850.0,
-        "max_price": 2100.0,
-        "base_hours": 20,
-        "max_extra_hours": 5,
+        "base_price": 2028.0,
+        "base_hours": 26,
     },
+    # Design (19h) + Validation (26h). No package discount any more.
     "product_development": {
         "name": "Product Development",
-        "base_price": 3000.0,
-        "max_price": 3500.0,
-        "base_hours": 35,
-        "max_extra_hours": 10,
+        "base_price": 3510.0,
+        "base_hours": 45,
     },
 }
 
 
 class PricingError(ValueError):
-    """Raised when a quote item violates a pricing rule and needs admin confirmation."""
+    """Raised when a quote item violates a pricing rule."""
 
 
 def price_package_item(product_key: PackageKey, extra_hours: float, override_confirmed: bool) -> float:
-    """Price a package line item, including its own extra-hours allowance.
+    """Price a package line: the closed price plus any out-of-scope hours.
 
-    Extra hours beyond the package's max_extra_hours are only allowed if the admin has
-    explicitly confirmed the override (manual/special case per catalog rules).
+    Out-of-scope hours are only billable once the client has been told and has accepted,
+    which the admin attests to with `override_confirmed`.
     """
     if product_key not in PACKAGES:
         raise PricingError(f"Unknown package: {product_key}")
@@ -61,23 +57,30 @@ def price_package_item(product_key: PackageKey, extra_hours: float, override_con
     if extra_hours < 0:
         raise PricingError("extra_hours cannot be negative")
 
-    if extra_hours > spec["max_extra_hours"] and not override_confirmed:
+    if extra_hours > 0 and not override_confirmed:
         raise PricingError(
-            f"{spec['name']}: {extra_hours}h exceeds the package's max extra hours "
-            f"({spec['max_extra_hours']}h). Confirm the override to proceed."
+            f"{spec['name']}: {extra_hours}h outside the written scope are billed at "
+            f"{ENGINEERING_HOURS_RATE:g} EUR/h and need the client's prior acceptance. "
+            "Confirm it to proceed."
         )
 
-    price = spec["base_price"] + extra_hours * ENGINEERING_HOURS_RATE
-    if extra_hours <= spec["max_extra_hours"]:
-        # Within the catalog range: never exceed the published max price.
-        price = min(price, spec["max_price"])
-    return round(price, 2)
+    return round(spec["base_price"] + extra_hours * ENGINEERING_HOURS_RATE, 2)
 
 
 def price_engineering_hours_item(quantity: float) -> float:
     if quantity < 0:
         raise PricingError("Engineering Hours quantity cannot be negative")
     return round(quantity * ENGINEERING_HOURS_RATE, 2)
+
+
+def price_manufacturing_item(workshop_cost: float, management_fee: float) -> float:
+    """Manufacturing line: workshop cost (as quoted by the workshop, excl. VAT) plus the
+    manufacturing-management fee. Both are entered per quote - there is no catalog price."""
+    if workshop_cost <= 0:
+        raise PricingError("Manufacturing needs the workshop cost (greater than 0)")
+    if management_fee < 0:
+        raise PricingError("Manufacturing management fee cannot be negative")
+    return round(workshop_cost + management_fee, 2)
 
 
 class ComputedItem(TypedDict):
@@ -88,6 +91,8 @@ class ComputedItem(TypedDict):
     quantity: float
     unit_price: float
     extra_hours: float
+    workshop_cost: float
+    management_fee: float
     total: float
 
 
@@ -104,11 +109,12 @@ def compute_quote_totals(items: list[dict], vat_rate: float) -> QuoteTotals:
     """Single source of truth for quote totals - used by the create/edit endpoint, the PDF,
     and the Stripe checkout amount, so the three can never disagree.
 
-    The 50% deposit is calculated from package items only. Engineering Hours (and any other
-    non-package addition, whenever added - at quote creation or later when requesting the
-    final payment) always fall entirely into the remaining/second payment. This matches
-    Arroyo Systems' billing policy: the deposit secures the contracted package; extra hours
-    for delays or scope changes are settled at delivery, not split in half.
+    The advance paid up front is made of:
+      * 50% of every package item (incl. VAT) - secures the engineering work, and
+      * 100% of the workshop cost of every manufacturing item (incl. VAT) - the workshop
+        is paid before the order is placed. The management fee is NOT advanced.
+    Engineering Hours (and anything else added later, e.g. when requesting the final
+    payment) always fall entirely into the remaining/second payment.
     """
     if vat_rate < 0 or vat_rate > 1:
         raise PricingError("vat_rate must be between 0 and 1 (e.g. 0.21 for 21%)")
@@ -118,7 +124,10 @@ def compute_quote_totals(items: list[dict], vat_rate: float) -> QuoteTotals:
     total = round(subtotal + vat_amount, 2)
 
     package_subtotal = round(sum(item["total"] for item in items if item.get("type") == "package"), 2)
-    deposit_amount = round(package_subtotal * (1 + vat_rate) / 2, 2)
+    workshop_subtotal = round(
+        sum(item.get("workshop_cost", 0) for item in items if item.get("type") == "manufacturing"), 2
+    )
+    deposit_amount = round(package_subtotal * (1 + vat_rate) / 2 + workshop_subtotal * (1 + vat_rate), 2)
     remaining_amount = round(total - deposit_amount, 2)
     return {
         "subtotal": subtotal,
