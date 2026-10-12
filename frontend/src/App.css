@@ -244,19 +244,26 @@ html, body {
   font-family: var(--apple-font);
   font-weight: 600;
   letter-spacing: -0.035em;
-  line-height: 1.07;
+  line-height: 1.04;
   color: var(--arroyo-navy);
-  /* Same size as the section headings ("Productos"...). */
-  font-size: 2.25rem;
+  font-size: clamp(2.5rem, 4.6vw, 4rem);
 }
 @media (min-width: 768px) {
-  .hero-title { font-size: 3rem; }
-}
-@media (min-width: 1024px) {
-  .hero-title { font-size: 3.5rem; }
+  .hero-title { white-space: nowrap; }
 }
 .hero-title span {
-  display: block;
+  display: inline-block;
+}
+.hero-title span + span {
+  margin-left: 0.28em;
+}
+@media (max-width: 767px) {
+  .hero-title span {
+    display: block;
+  }
+  .hero-title span + span {
+    margin-left: 0;
+  }
 }
 .hero-sub {
   font-size: clamp(1.25rem, 2.4vw, 1.75rem);
@@ -276,7 +283,7 @@ html, body {
 .hero-trust {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 0.35rem 0;
   font-size: 0.8125rem;
   letter-spacing: -0.005em;
@@ -299,18 +306,19 @@ html, body {
 @media (max-width: 639px) {
   .hero-trust {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
   }
 }
 
 /* Stage for the interactive 3D part: wide, no frame, grounded by a soft shadow. */
 .viewer-frame {
   position: relative;
-  margin: 0;
+  margin: 0 auto;
+  max-width: 980px;
 }
 .viewer-frame__stage {
   position: relative;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 16 / 9;
   min-height: 260px;
   opacity: 0.001;
   transition: opacity 0.9s ease;

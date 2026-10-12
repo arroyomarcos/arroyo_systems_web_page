@@ -269,7 +269,7 @@ export const content = {
       contact: "Contact",
     },
     hero: {
-      titleLines: ["We design", "We calculate", "We manufacture"],
+      titleLines: ["We design.", "We calculate.", "We manufacture"],
       body: ["Machined and bent sheet metal.", "A supplier you can trust."],
       ctaPrimary: "Tell us what you need",
       ctaSecondary: "See pricing",
@@ -408,7 +408,7 @@ export const content = {
       contact: "Contacto",
     },
     hero: {
-      titleLines: ["Diseñamos", "Calculamos", "Fabricamos"],
+      titleLines: ["Diseñamos.", "Calculamos.", "Fabricamos"],
       body: ["Mecanizado y chapa doblada.", "Un proveedor en el que puedes confiar."],
       ctaPrimary: "Cuéntanos qué necesitas",
       ctaSecondary: "Ver precios",
