@@ -60,16 +60,18 @@ const Process = () => {
         <div className="process-pin">
           <div className="arroyo-container w-full">
             <div className="process-stage" aria-hidden="true">
-              {t.steps.map((step, idx) => (
-                <img
-                  key={step.title}
-                  src={STEP_IMAGES[idx]}
-                  alt=""
-                  className={`process-stage__img ${idx === active ? "is-active" : ""}`}
-                  loading={idx === 0 ? "eager" : "lazy"}
-                  decoding="async"
-                />
-              ))}
+              <div className="process-stage__frame">
+                {t.steps.map((step, idx) => (
+                  <img
+                    key={step.title}
+                    src={STEP_IMAGES[idx]}
+                    alt=""
+                    className={`process-stage__img ${idx === active ? "is-active" : ""}`}
+                    loading={idx === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                  />
+                ))}
+              </div>
             </div>
 
             <ol className="process-steps">

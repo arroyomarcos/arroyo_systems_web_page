@@ -429,50 +429,53 @@ html {
   padding: 5.5rem 0 2rem;
   background: #000;
 }
+/* The stage is a full-bleed slab in the renders' own background colour. Its top and bottom
+   edges dissolve into the page with an eased (slightly blurred) fade, and because the fade is
+   on the slab itself it is identical for all four images. */
 .process-stage {
+  --pad: 1.5rem;
+  --w: calc(min(100vw, 1280px) - 2 * var(--pad));
   position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: calc(var(--w) * 0.75);
+  background: #2e3440;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.03) 3%, rgba(0, 0, 0, 0.12) 6.5%, rgba(0, 0, 0, 0.3) 10.5%, rgba(0, 0, 0, 0.58) 14.5%, rgba(0, 0, 0, 0.84) 18.5%, rgba(0, 0, 0, 0.97) 22%, #000 25%,
+    #000 75%, rgba(0, 0, 0, 0.97) 78%, rgba(0, 0, 0, 0.84) 81.5%, rgba(0, 0, 0, 0.58) 85.5%, rgba(0, 0, 0, 0.3) 89.5%, rgba(0, 0, 0, 0.12) 93.5%, rgba(0, 0, 0, 0.03) 97%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.03) 3%, rgba(0, 0, 0, 0.12) 6.5%, rgba(0, 0, 0, 0.3) 10.5%, rgba(0, 0, 0, 0.58) 14.5%, rgba(0, 0, 0, 0.84) 18.5%, rgba(0, 0, 0, 0.97) 22%, #000 25%,
+    #000 75%, rgba(0, 0, 0, 0.97) 78%, rgba(0, 0, 0, 0.84) 81.5%, rgba(0, 0, 0, 0.58) 85.5%, rgba(0, 0, 0, 0.3) 89.5%, rgba(0, 0, 0, 0.12) 93.5%, rgba(0, 0, 0, 0.03) 97%, transparent 100%);
 }
 @media (min-width: 768px) {
   .process-stage {
-    aspect-ratio: 2.4 / 1;
+    --pad: 3rem;
+    height: calc(var(--w) / 2.4);
     /* Leave room for the step row under the stage on short screens. */
     max-height: calc(100vh - 21rem);
     max-height: calc(100svh - 21rem);
     min-height: 12rem;
   }
 }
-/* A full-bleed band in the images' own background colour, fading out above and below, so the
-   pictures melt into the page instead of sitting in a box. */
-.process-stage::before {
-  content: "";
+@media (min-width: 1024px) {
+  .process-stage { --pad: 4rem; }
+}
+/* Same width as the page's content column, centred on the slab. */
+.process-stage__frame {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 50%;
-  width: 100vw;
-  margin-left: -50vw;
-  background: linear-gradient(to bottom, transparent, #2e3440 20%, #2e3440 80%, transparent);
-  pointer-events: none;
+  width: var(--w);
+  transform: translateX(-50%);
 }
-/* All four images share one canvas size, so the fade is identical for each. They are only
-   ever scaled down, never zoomed, and their edges dissolve into the band behind them. */
+/* Images are never zoomed or enlarged beyond the file's pixels, only scaled down. */
 .process-stage__img {
   position: absolute;
   inset: 0;
-  margin: auto;
   width: 100%;
   height: 100%;
   object-fit: cover;
   opacity: 0;
   transition: opacity 0.8s ease;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent),
-    linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent),
-    linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
-  mask-composite: intersect;
 }
 @media (min-width: 768px) {
   .process-stage__img { object-fit: contain; }
