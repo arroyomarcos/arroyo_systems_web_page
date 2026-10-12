@@ -37,7 +37,7 @@ const PartViewer = ({ onReady, onFail }) => {
     }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 0.9;
     renderer.setClearColor(0x000000, 0);
     renderer.domElement.style.cssText = "display:block;width:100%;height:100%;touch-action:pan-y;";
     mount.appendChild(renderer.domElement);
@@ -53,7 +53,7 @@ const PartViewer = ({ onReady, onFail }) => {
     scene.add(key);
 
     const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
-    camera.position.set(2.45, 1.5, 2.8);
+    camera.position.set(2.1, 1.15, 2.4);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableZoom = false;
@@ -108,6 +108,8 @@ const PartViewer = ({ onReady, onFail }) => {
       if (!w || !h) return;
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
+      // Narrow stages (phones) pull the camera back so the part is never cropped.
+      camera.zoom = Math.min(1, camera.aspect / 1.55);
       camera.updateProjectionMatrix();
       if (reducedMotion || !visible) render();
     };

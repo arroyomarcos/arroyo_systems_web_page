@@ -12,10 +12,7 @@ const LogoTile = ({ src, alt }) => (
 
 const GroupLabel = ({ children }) => (
   <>
-    <div className="thin-divider mb-6" />
-    <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[color:var(--arroyo-muted)] mb-5">
-      {children}
-    </p>
+    <p className="eyebrow mb-4">{children}</p>
   </>
 );
 
@@ -23,11 +20,11 @@ const Partners = () => {
   const t = useContent().partners;
 
   return (
-    <section id="partners" className="py-20 md:py-28 relative bg-white">
+    <section id="partners" className="py-20 md:py-28 relative bg-[color:var(--arroyo-bg-soft)]">
       <div className="arroyo-container">
-        <div className="max-w-3xl">
+        <div className="max-w-3xl mx-auto text-center">
           <h2 className="section-heading">{t.heading}</h2>
-          <p className="arroyo-body mt-4 text-base md:text-lg max-w-xl">{t.subtitle}</p>
+          <p className="section-lead mt-5">{t.subtitle}</p>
         </div>
 
         <div className="mt-14 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-12 lg:gap-x-10">
@@ -48,7 +45,7 @@ const Partners = () => {
           </div>
         </div>
 
-        <p className="mt-12 text-[11px] leading-relaxed text-[color:var(--arroyo-muted)] max-w-3xl">
+        <p className="mt-12 text-center text-xs leading-relaxed text-[color:var(--arroyo-muted)]">
           {t.trademark.map((line) => (
             <span key={line} className="block">
               {line}

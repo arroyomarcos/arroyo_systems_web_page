@@ -10,7 +10,7 @@ const Footer = () => {
   const t = useContent().contact;
 
   return (
-    <footer id="contact" className="relative py-20 md:py-28 bg-white border-t border-slate-100">
+    <footer id="contact" className="relative py-20 md:py-28 bg-white">
       <div className="arroyo-container">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-12 lg:gap-20 items-start">
           <div>
@@ -19,7 +19,7 @@ const Footer = () => {
               <br />
               {t.heading2}
             </h2>
-            <p className="arroyo-body text-lg md:text-xl mt-6 max-w-md">{t.subheading}</p>
+            <p className="section-lead mt-6 max-w-md">{t.subheading}</p>
 
             <ul className="mt-8 space-y-5">
               <li className="flex items-center gap-3">
@@ -53,7 +53,7 @@ const Footer = () => {
 
           {/* Contact form */}
           <div>
-            <p className="text-xs font-semibold tracking-[0.25em] uppercase text-[color:var(--arroyo-accent)] mb-4">
+            <p className="eyebrow mb-4">
               {t.formEyebrow}
             </p>
             <ContactForm />

@@ -71,7 +71,7 @@ const Header = () => {
   );
 
   const LangSwitch = ({ className = "" }) => (
-    <div className={`flex items-center gap-1 text-sm font-semibold ${className}`}>
+    <div className={`flex items-center gap-1 text-xs ${className}`}>
       <Link
         to={lang === "en" ? location.pathname + location.hash : otherLangPath}
         onClick={switchLang("en")}
@@ -94,26 +94,24 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/95 backdrop-blur-md shadow-[0_1px_0_0_rgba(10,26,58,0.06)]"
-          : "bg-white/80 backdrop-blur-sm"
+      className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 backdrop-blur-[20px] backdrop-saturate-[1.8] border-b ${
+        scrolled ? "bg-[#fbfbfd]/80 border-black/10" : "bg-[#fbfbfd]/70 border-transparent"
       }`}
     >
-      <div className="arroyo-container flex items-center justify-between h-20 md:h-24">
+      <div className="arroyo-container flex items-center justify-between h-14">
         {/* Logo */}
         <Link to={homePath} className="shrink-0" onClick={closeMenu}>
           <span className="logo-badge">
             <img
               src={ASSETS.logo}
               alt="Arroyo Systems"
-              className="logo-img h-8 md:h-11 w-auto object-contain"
+              className="logo-img h-7 md:h-8 w-auto object-contain"
             />
           </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-7 xl:gap-10">
+        <nav className="hidden lg:flex items-center gap-8 xl:gap-11">
           {navItems.map((l) => (
             <Link key={l.key} to={l.href} className="nav-link" onClick={(e) => handleHashNavigation(e, l.href)}>
               {l.label}
@@ -121,9 +119,9 @@ const Header = () => {
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-6">
+        <div className="hidden lg:flex items-center gap-5">
           <LangSwitch />
-          <a href={`${base}/#contact`} onClick={scrollToContact} className="contact-pill">
+          <a href={`${base}/#contact`} onClick={scrollToContact} className="contact-pill contact-pill--solid contact-pill--sm">
             {t.nav.contact}
           </a>
         </div>
@@ -134,31 +132,31 @@ const Header = () => {
           onClick={() => setOpen(!open)}
           aria-label="Menu"
         >
-          {open ? <X size={26} /> : <Menu size={26} />}
+          {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
       {/* Mobile menu */}
       <div
-        className={`lg:hidden overflow-hidden transition-all duration-300 bg-white border-t border-slate-100 ${
-          open ? "max-h-[500px]" : "max-h-0"
+        className={`lg:hidden overflow-hidden transition-all duration-300 bg-[#fbfbfd]/95 backdrop-blur-[20px] ${
+          open ? "max-h-[560px]" : "max-h-0"
         }`}
       >
-        <div className="arroyo-container py-4 flex flex-col gap-4">
+        <div className="arroyo-container py-3 flex flex-col gap-1">
           {navItems.map((l) => (
             <Link
               key={l.key}
               to={l.href}
-              className="nav-link py-1 text-base"
+              className="nav-link nav-link--mobile"
               onClick={(e) => handleHashNavigation(e, l.href)}
             >
               {l.label}
             </Link>
           ))}
-          <LangSwitch className="py-1" />
+          <LangSwitch className="py-3 text-sm" />
           <a
             href={`${base}/#contact`}
-            className="contact-pill self-start mt-2"
+            className="contact-pill contact-pill--solid self-start mt-2 mb-3"
             onClick={scrollToContact}
           >
             {t.nav.contact}
