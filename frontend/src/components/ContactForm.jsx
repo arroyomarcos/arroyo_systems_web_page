@@ -1,16 +1,22 @@
-import React, { useCallback, useState } from "react";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { submitContact } from "../lib/api";
+import React, { useCallback, useRef, useState } from "react";
+import { ArrowRight, CheckCircle2, FileUp, X } from "lucide-react";
+import { submitContactForm } from "../lib/api";
 import { useToast } from "../hooks/use-toast";
-import { INITIAL_FORM, buildContactPayload, validateContactForm } from "../lib/contactFormValidation";
+import {
+  ACCEPT_ATTRIBUTE,
+  INITIAL_FORM,
+  buildContactFormData,
+  validateContactForm,
+} from "../lib/contactFormValidation";
 import { useLang, useContent } from "../i18n/useLang";
 
 // ---------- Sub-components (kept small & memoisable) ----------
 
-const TextField = ({ label, error, children }) => (
+const TextField = ({ label, error, hint, children }) => (
   <label className="cf-field">
     <span className="cf-label">{label}</span>
     {children}
+    {hint && !error && <span className="cf-hint">{hint}</span>}
     {error && <span className="cf-error-text">{error}</span>}
   </label>
 );
@@ -26,6 +32,8 @@ const SuccessCard = ({ onReset, t }) => (
   </div>
 );
 
+const formatSize = (bytes) => (bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.ceil(bytes / 1024)} KB`);
+
 // ---------- Main component ----------
 
 const ContactForm = () => {
@@ -34,49 +42,86 @@ const ContactForm = () => {
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const fileInput = useRef(null);
   const { toast } = useToast();
 
+  const setField = useCallback((field, value) => {
+    setForm((f) => ({ ...f, [field]: value }));
+    setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
+  }, []);
+
   const onChange = useCallback(
-    (field) => (ev) => {
-      const value = ev.target.type === "checkbox" ? ev.target.checked : ev.target.value;
-      setForm((f) => ({ ...f, [field]: value }));
-      setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
-    },
-    []
+    (field) => (ev) => setField(field, ev.target.type === "checkbox" ? ev.target.checked : ev.target.value),
+    [setField]
   );
+
+  const onFileChange = useCallback(
+    (ev) => {
+      setField("file", ev.target.files?.[0] || null);
+    },
+    [setField]
+  );
+
+  const removeFile = useCallback(() => {
+    setField("file", null);
+    if (fileInput.current) fileInput.current.value = "";
+  }, [setField]);
 
   const resetForm = useCallback(() => {
     setForm(INITIAL_FORM);
     setErrors({});
     setSubmitted(false);
+    setSending(false);
   }, []);
+
+  const notifyFailure = useCallback(
+    (err) => {
+      const detail = err?.response?.data?.detail;
+      toast({
+        title: t.errorToastTitle,
+        description: typeof detail === "string" ? detail : t.errorToastBody,
+        variant: "destructive",
+      });
+    },
+    [toast, t]
+  );
 
   const onSubmit = useCallback(
     (ev) => {
       ev.preventDefault();
+      if (sending) return;
       const validationErrors = validateContactForm(form);
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
         return;
       }
 
-      // Show the confirmation immediately — the request keeps sending in the
+      const body = buildContactFormData(form);
+
+      if (form.file) {
+        // A file can fail for reasons the visitor needs to see (size, format, a slow
+        // upload), so wait for the real answer instead of confirming optimistically.
+        setSending(true);
+        submitContactForm(body)
+          .then(() => {
+            setSubmitted(true);
+            setForm(INITIAL_FORM);
+            setErrors({});
+          })
+          .catch(notifyFailure)
+          .finally(() => setSending(false));
+        return;
+      }
+
+      // No file: show the confirmation immediately — the request keeps sending in the
       // background so a slow/cold backend doesn't stall the user's feedback.
-      const payload = buildContactPayload(form);
       setSubmitted(true);
       setForm(INITIAL_FORM);
       setErrors({});
-
-      submitContact(payload).catch((err) => {
-        const detail = err?.response?.data?.detail;
-        toast({
-          title: t.errorToastTitle,
-          description: typeof detail === "string" ? detail : t.errorToastBody,
-          variant: "destructive",
-        });
-      });
+      submitContactForm(body).catch(notifyFailure);
     },
-    [form, toast, t]
+    [form, sending, notifyFailure]
   );
 
   if (submitted) return <SuccessCard onReset={resetForm} t={t} />;
@@ -107,32 +152,16 @@ const ContactForm = () => {
         </TextField>
       </div>
 
-      <div className="cf-row">
-        <TextField label={t.companyLabel}>
-          <input
-            type="text"
-            value={form.company}
-            onChange={onChange("company")}
-            className="cf-input"
-            placeholder={t.companyPlaceholder}
-            autoComplete="organization"
-          />
-        </TextField>
-        <TextField label={t.projectTypeLabel}>
-          <select
-            value={form.project_type}
-            onChange={onChange("project_type")}
-            className="cf-input cf-select"
-          >
-            <option value="">{t.selectOption}</option>
-            {t.projectTypes.map((pt) => (
-              <option key={pt.value} value={pt.value}>
-                {pt.label}
-              </option>
-            ))}
-          </select>
-        </TextField>
-      </div>
+      <TextField label={t.companyLabel}>
+        <input
+          type="text"
+          value={form.company}
+          onChange={onChange("company")}
+          className="cf-input"
+          placeholder={t.companyPlaceholder}
+          autoComplete="organization"
+        />
+      </TextField>
 
       <TextField label={t.messageLabel} error={errors.message && t.validation[errors.message]}>
         <textarea
@@ -144,12 +173,94 @@ const ContactForm = () => {
         />
       </TextField>
 
-      <label className="cf-checkbox">
+      <div className="cf-field">
+        <span className="cf-label">{t.fileLabel}</span>
         <input
-          type="checkbox"
-          checked={form.privacyAccepted}
-          onChange={onChange("privacyAccepted")}
+          ref={fileInput}
+          type="file"
+          accept={ACCEPT_ATTRIBUTE}
+          onChange={onFileChange}
+          className="sr-only"
+          id="contact-file"
         />
+        {form.file ? (
+          <div className={`cf-file ${errors.file ? "cf-error" : ""}`}>
+            <FileUp size={16} className="shrink-0 text-[color:var(--arroyo-accent)]" />
+            <span className="truncate">{form.file.name}</span>
+            <span className="text-[color:var(--arroyo-muted)] shrink-0">{formatSize(form.file.size)}</span>
+            <button type="button" onClick={removeFile} className="cf-file__remove" aria-label={t.fileRemove}>
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <label htmlFor="contact-file" className="cf-file cf-file--empty">
+            <FileUp size={16} className="shrink-0 text-[color:var(--arroyo-accent)]" />
+            <span>{t.fileChoose}</span>
+          </label>
+        )}
+        {errors.file ? (
+          <span className="cf-error-text">{t.validation[errors.file]}</span>
+        ) : (
+          <span className="cf-hint">{t.fileHint}</span>
+        )}
+      </div>
+
+      <div className="cf-row">
+        <TextField label={t.quantityLabel} error={errors.quantity && t.validation[errors.quantity]}>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={form.quantity}
+            onChange={onChange("quantity")}
+            className={`cf-input ${errors.quantity ? "cf-error" : ""}`}
+            placeholder={t.quantityPlaceholder}
+          />
+        </TextField>
+        <TextField label={t.deadlineLabel}>
+          <input
+            type="text"
+            value={form.deadline}
+            onChange={onChange("deadline")}
+            className="cf-input"
+            placeholder={t.deadlinePlaceholder}
+          />
+        </TextField>
+      </div>
+
+      <div className="cf-row">
+        <TextField label={t.materialLabel}>
+          <input
+            type="text"
+            value={form.material}
+            onChange={onChange("material")}
+            className="cf-input"
+            placeholder={t.materialPlaceholder}
+          />
+        </TextField>
+        <div className="cf-field" role="radiogroup" aria-label={t.hasDesignLabel}>
+          <span className="cf-label">{t.hasDesignLabel}</span>
+          <div className="cf-segmented">
+            {[
+              { value: "true", label: t.yes },
+              { value: "false", label: t.no },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                role="radio"
+                aria-checked={form.hasDesign === option.value}
+                className={form.hasDesign === option.value ? "is-active" : ""}
+                onClick={() => setField("hasDesign", form.hasDesign === option.value ? "" : option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <label className="cf-checkbox">
+        <input type="checkbox" checked={form.privacyAccepted} onChange={onChange("privacyAccepted")} />
         <span>
           {t.privacyPrefix}{" "}
           <a className="link-underline" href={lang === "es" ? "/es/privacy-policy" : "/privacy-policy"}>
@@ -158,13 +269,11 @@ const ContactForm = () => {
           .
         </span>
       </label>
-      {errors.privacyAccepted && (
-        <span className="cf-error-text">{t.validation[errors.privacyAccepted]}</span>
-      )}
+      {errors.privacyAccepted && <span className="cf-error-text">{t.validation[errors.privacyAccepted]}</span>}
 
       <div className="mt-2">
-        <button type="submit" className="contact-pill">
-          {t.submit} <ArrowRight size={16} />
+        <button type="submit" className="contact-pill contact-pill--solid" disabled={sending}>
+          {sending ? t.sending : t.submit} {!sending && <ArrowRight size={16} />}
         </button>
       </div>
     </form>

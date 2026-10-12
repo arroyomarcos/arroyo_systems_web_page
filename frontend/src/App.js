@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Products from "./components/sections/Products";
 import WhyUs from "./components/sections/WhyUs";
+import Process from "./components/sections/Process";
 import Partners from "./components/sections/Partners";
 import Footer from "./components/Footer";
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -183,6 +184,7 @@ const Home = () => {
         <Hero />
         <Products />
         <WhyUs />
+        <Process />
         <Partners />
       </main>
       <Footer />

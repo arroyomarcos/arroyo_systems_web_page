@@ -24,8 +24,14 @@ const ItemRow = ({ item, currency }) => (
   <div className="flex justify-between py-3 border-b border-slate-100 last:border-0">
     <div>
       <p className="font-medium text-[color:var(--arroyo-navy)]">
-        {item.type === "package" ? item.description : "Engineering Hours"}
+        {item.type === "engineering_hours" ? "Engineering Hours" : item.description}
       </p>
+      {item.type === "manufacturing" && (
+        <p className="text-sm text-[color:var(--arroyo-muted)]">
+          Workshop cost {formatAmount(item.workshop_cost, currency)} + manufacturing management{" "}
+          {formatAmount(item.management_fee, currency)}
+        </p>
+      )}
       {item.type === "engineering_hours" && (
         <p className="text-sm text-[color:var(--arroyo-muted)]">
           {item.quantity}h × {formatAmount(item.unit_price, currency)}
@@ -33,7 +39,7 @@ const ItemRow = ({ item, currency }) => (
         </p>
       )}
       {item.type === "package" && item.extra_hours > 0 && (
-        <p className="text-sm text-[color:var(--arroyo-muted)]">Includes {item.extra_hours}h extra hours</p>
+        <p className="text-sm text-[color:var(--arroyo-muted)]">Includes {item.extra_hours}h outside the written scope</p>
       )}
     </div>
     <p className="font-medium">{formatAmount(item.total, currency)}</p>

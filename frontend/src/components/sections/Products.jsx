@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Check, Minus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -9,14 +9,32 @@ import {
 } from "../ui/dialog";
 import { useContent } from "../../i18n/useLang";
 
-const MetaField = ({ label, value, valueClassName = "" }) => (
+const MetaField = ({ label, value }) => (
   <div>
     <p className="text-xs font-semibold tracking-[0.1em] uppercase text-[color:var(--arroyo-muted)] mb-1">
       {label}
     </p>
-    <p className={`text-sm md:text-base text-[color:var(--arroyo-navy)] ${valueClassName}`}>{value}</p>
+    <p className="text-sm md:text-base text-[color:var(--arroyo-navy)]">{value}</p>
   </div>
 );
+
+const PriceBlock = ({ pkg, className = "" }) => {
+  const isQuoted = pkg.priceInclVat === null;
+  return (
+    <div className={className}>
+      <p
+        className={
+          isQuoted
+            ? "text-lg font-bold leading-snug text-[color:var(--arroyo-navy)]"
+            : "text-2xl md:text-3xl font-bold text-[color:var(--arroyo-navy)]"
+        }
+      >
+        {pkg.price}
+      </p>
+      <p className="text-xs md:text-sm text-[color:var(--arroyo-muted)] mt-1">{pkg.priceNote}</p>
+    </div>
+  );
+};
 
 const PackageDialog = ({ pkg, onOpenChange, t }) => (
   <Dialog open={!!pkg} onOpenChange={onOpenChange}>
@@ -39,21 +57,40 @@ const PackageDialog = ({ pkg, onOpenChange, t }) => (
           </DialogHeader>
 
           <div className="mt-6 rounded-lg border border-slate-200 bg-[color:var(--arroyo-bg-soft)] px-5 py-4">
-            <p className="text-xl md:text-2xl font-bold text-[color:var(--arroyo-navy)]">{pkg.priceRange}</p>
-            <p className="text-sm text-[color:var(--arroyo-muted)] mt-1">{pkg.priceInclVat}</p>
+            <PriceBlock pkg={pkg} />
+            {pkg.priceInclVat && (
+              <p className="text-sm text-[color:var(--arroyo-muted)] mt-1">{pkg.priceInclVat}</p>
+            )}
           </div>
 
           <p className="arroyo-body text-sm md:text-base mt-6">{pkg.description}</p>
 
           <div className="mt-8">
             <p className="text-xs font-semibold tracking-[0.15em] uppercase text-[color:var(--arroyo-accent)] mb-4">
-              {t.deliverablesLabel}
+              {t.includesLabel}
             </p>
             <ul className="space-y-4">
-              {pkg.deliverables.map((d) => (
-                <li key={d.title} className="border-t border-slate-200 pt-4">
-                  <p className="font-semibold text-[color:var(--arroyo-navy)]">{d.title}</p>
-                  <p className="arroyo-body text-sm mt-1">{d.description}</p>
+              {pkg.includes.map((d) => (
+                <li key={d.title} className="flex gap-3 border-t border-slate-200 pt-4">
+                  <Check size={16} className="mt-1 shrink-0 text-[color:var(--arroyo-accent)]" />
+                  <div>
+                    <p className="font-semibold text-[color:var(--arroyo-navy)]">{d.title}</p>
+                    <p className="arroyo-body text-sm mt-1">{d.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-8">
+            <p className="text-xs font-semibold tracking-[0.15em] uppercase text-[color:var(--arroyo-muted)] mb-4">
+              {t.excludesLabel}
+            </p>
+            <ul className="space-y-3">
+              {pkg.excludes.map((line) => (
+                <li key={line} className="flex gap-3 text-sm arroyo-body">
+                  <Minus size={16} className="mt-0.5 shrink-0" />
+                  <span>{line}</span>
                 </li>
               ))}
             </ul>
@@ -87,7 +124,7 @@ const Products = () => {
           <p className="arroyo-body mt-4 text-base md:text-lg max-w-xl">{t.subtitle}</p>
         </div>
 
-        <div className="mt-14 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-10">
+        <div className="mt-14 md:mt-20 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-x-8 gap-y-12 xl:gap-x-6">
           {t.packages.map((p, idx) => (
             <div key={p.id} className="group relative pt-6 flex flex-col">
               <div className="thin-divider mb-6" />
@@ -110,14 +147,24 @@ const Products = () => {
               <h3 className="arroyo-display text-xl md:text-2xl leading-snug mb-3">{p.name}</h3>
               <p className="arroyo-body text-sm md:text-base mb-6">{p.tagline}</p>
 
-              <div className="mt-auto pt-6 border-t border-slate-200 text-center">
-                <p className="text-lg md:text-xl font-bold text-[color:var(--arroyo-navy)]">
-                  {p.priceRange}
-                </p>
-                <p className="mt-2 text-sm md:text-base text-[color:var(--arroyo-navy)]">{p.leadTime}</p>
+              <div className="mt-auto pt-6 border-t border-slate-200">
+                <PriceBlock pkg={p} />
+                <p className="mt-4 text-sm text-[color:var(--arroyo-navy)]">{p.leadTime}</p>
+                <button
+                  type="button"
+                  onClick={() => setActivePackage(p)}
+                  className="mt-4 text-sm font-semibold text-[color:var(--arroyo-accent)] hover:underline underline-offset-4 text-left"
+                >
+                  {t.detailsLink}
+                </button>
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-14 md:mt-16 pt-8 border-t border-slate-200 max-w-3xl space-y-2">
+          <p className="text-sm md:text-base text-[color:var(--arroyo-navy)]">{t.materials}</p>
+          <p className="text-sm arroyo-body">{t.outOfScope}</p>
         </div>
       </div>
 

@@ -1,20 +1,8 @@
 import React from "react";
 import { LINKEDIN_URL, EMAIL, ASSETS } from "../mock";
-import { Linkedin, Mail, MapPin, ArrowRight } from "lucide-react";
+import { Linkedin, Mail, MapPin } from "lucide-react";
 import ContactForm from "./ContactForm";
 import { useLang, useContent } from "../i18n/useLang";
-
-// Lands on the top of the contact section, exactly like the hero's "Start a
-// project" link and the header's contact button. Scrolling the name input into
-// view instead leaves the section cropped mid-form, so the cursor is placed
-// with preventScroll to keep the landing position identical.
-const focusContactForm = (e) => {
-  e.preventDefault();
-  const section = document.getElementById("contact");
-  if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
-  const nameInput = document.getElementById("contact-name");
-  if (nameInput) nameInput.focus({ preventScroll: true });
-};
 
 const Footer = () => {
   const lang = useLang();
@@ -32,11 +20,8 @@ const Footer = () => {
               {t.heading2}
             </h2>
             <p className="arroyo-body text-lg md:text-xl mt-6 max-w-md">{t.subheading}</p>
-            <a href="#contact" onClick={focusContactForm} className="contact-pill mt-8">
-              {t.cta} <ArrowRight size={16} />
-            </a>
 
-            <ul className="mt-10 space-y-5">
+            <ul className="mt-8 space-y-5">
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-[color:var(--arroyo-accent)]" />
                 <a

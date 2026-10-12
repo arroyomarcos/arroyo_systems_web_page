@@ -25,6 +25,24 @@ export const submitContact = async (payload) => {
   return data;
 };
 
+// Multipart variant used by the website form (it can carry a STEP/PDF).
+export const submitContactForm = async (formData) => {
+  const { data } = await api.post("/contact/form", formData, { timeout: 120000 });
+  return data;
+};
+
+export const downloadMessageAttachment = async (id, filename) => {
+  const { data } = await api.get(`/admin/messages/${id}/attachment`, { responseType: "blob" });
+  const url = URL.createObjectURL(data);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename || "attachment";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+};
+
 export const adminLogin = async (username, password) => {
   const { data } = await api.post("/admin/login", { username, password });
   return data;

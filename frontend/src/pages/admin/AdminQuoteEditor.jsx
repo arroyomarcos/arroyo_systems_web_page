@@ -21,21 +21,21 @@ import AdminTopBar from "./components/AdminTopBar";
 // Mirrors backend/pricing.py exactly - a live preview only. The server always recomputes
 // and is the authoritative source for what actually gets saved, PDF'd and charged.
 const PACKAGES_PREVIEW = {
-  product_design: { name: "Product Design", basePrice: 1300, maxPrice: 1550, maxExtraHours: 5 },
-  product_validation: { name: "Product Validation", basePrice: 1850, maxPrice: 2100, maxExtraHours: 5 },
-  product_development: { name: "Product Development", basePrice: 3000, maxPrice: 3500, maxExtraHours: 10 },
+  product_design: { name: "Product Design", basePrice: 1482 },
+  product_validation: { name: "Product Validation", basePrice: 2028 },
+  product_development: { name: "Product Development", basePrice: 3510 },
 };
-const ENGINEERING_RATE = 50;
+const ENGINEERING_RATE = 78;
 const EDITABLE_STATUSES = ["DRAFT", "SENT", "VIEWED"];
 
 const previewItemTotal = (item) => {
   if (item.type === "package") {
     const spec = PACKAGES_PREVIEW[item.product_key];
     if (!spec) return 0;
-    const extraHours = Number(item.extra_hours) || 0;
-    let price = spec.basePrice + extraHours * ENGINEERING_RATE;
-    if (extraHours <= spec.maxExtraHours) price = Math.min(price, spec.maxPrice);
-    return price;
+    return spec.basePrice + (Number(item.extra_hours) || 0) * ENGINEERING_RATE;
+  }
+  if (item.type === "manufacturing") {
+    return (Number(item.workshop_cost) || 0) + (Number(item.management_fee) || 0);
   }
   return (Number(item.quantity) || 0) * ENGINEERING_RATE;
 };
@@ -116,7 +116,9 @@ const AdminQuoteEditor = () => {
           description: it.description,
           quantity: it.quantity,
           extra_hours: it.extra_hours,
-          override_confirmed: false,
+          workshop_cost: it.workshop_cost || 0,
+          management_fee: it.management_fee || 0,
+          override_confirmed: (it.extra_hours || 0) > 0,
         }))
       );
     } catch (err) {
@@ -142,6 +144,13 @@ const AdminQuoteEditor = () => {
     ]);
   };
 
+  const addManufacturingItem = () => {
+    setItems((prev) => [
+      ...prev,
+      { type: "manufacturing", description: "", workshop_cost: "", management_fee: "" },
+    ]);
+  };
+
   const addEngineeringHoursItem = () => {
     setItems((prev) => [...prev, { type: "engineering_hours", quantity: 1, description: "" }]);
   };
@@ -157,12 +166,17 @@ const AdminQuoteEditor = () => {
   const subtotal = items.reduce((sum, it) => sum + previewItemTotal(it), 0);
   const vatAmount = subtotal * (vatPercent / 100);
   const total = subtotal + vatAmount;
-  // Deposit is 50% of package items only (incl. VAT) - Engineering Hours always fall
-  // entirely into the remaining/second payment. Mirrors backend/pricing.py.
+  // Advance = 50% of package items + 100% of the workshop cost of manufacturing items (all
+  // incl. VAT). Engineering Hours and the management fee fall entirely into the remaining
+  // payment. Mirrors backend/pricing.py.
   const packageSubtotal = items
     .filter((it) => it.type === "package")
     .reduce((sum, it) => sum + previewItemTotal(it), 0);
-  const deposit = (packageSubtotal * (1 + vatPercent / 100)) / 2;
+  const workshopSubtotal = items
+    .filter((it) => it.type === "manufacturing")
+    .reduce((sum, it) => sum + (Number(it.workshop_cost) || 0), 0);
+  const vatFactor = 1 + vatPercent / 100;
+  const deposit = (packageSubtotal * vatFactor) / 2 + workshopSubtotal * vatFactor;
 
   const buildPayload = () => ({
     customer,
@@ -171,21 +185,30 @@ const AdminQuoteEditor = () => {
     valid_days: Number(validDays) || 30,
     vat_rate: (Number(vatPercent) || 0) / 100,
     currency,
-    items: items.map((it) =>
-      it.type === "package"
-        ? {
-            type: "package",
-            product_key: it.product_key,
-            description: it.description || undefined,
-            extra_hours: Number(it.extra_hours) || 0,
-            override_confirmed: !!it.override_confirmed,
-          }
-        : {
-            type: "engineering_hours",
-            quantity: Number(it.quantity) || 0,
-            description: it.description || undefined,
-          }
-    ),
+    items: items.map((it) => {
+      if (it.type === "package") {
+        return {
+          type: "package",
+          product_key: it.product_key,
+          description: it.description || undefined,
+          extra_hours: Number(it.extra_hours) || 0,
+          override_confirmed: !!it.override_confirmed,
+        };
+      }
+      if (it.type === "manufacturing") {
+        return {
+          type: "manufacturing",
+          description: it.description || undefined,
+          workshop_cost: Number(it.workshop_cost) || 0,
+          management_fee: Number(it.management_fee) || 0,
+        };
+      }
+      return {
+        type: "engineering_hours",
+        quantity: Number(it.quantity) || 0,
+        description: it.description || undefined,
+      };
+    }),
   });
 
   const onSave = async () => {
@@ -407,6 +430,9 @@ const AdminQuoteEditor = () => {
                     <Plus size={14} /> {spec.name}
                   </Button>
                 ))}
+                <Button type="button" variant="outline" size="sm" onClick={addManufacturingItem}>
+                  <Plus size={14} /> Product Manufacturing
+                </Button>
                 <Button type="button" variant="outline" size="sm" onClick={addEngineeringHoursItem}>
                   <Plus size={14} /> Engineering Hours
                 </Button>
@@ -423,7 +449,11 @@ const AdminQuoteEditor = () => {
                   <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div>
                       <p className="text-xs font-medium text-[color:var(--arroyo-muted)] mb-1">
-                        {item.type === "package" ? PACKAGES_PREVIEW[item.product_key]?.name : "Engineering Hours"}
+                        {item.type === "package"
+                          ? PACKAGES_PREVIEW[item.product_key]?.name
+                          : item.type === "manufacturing"
+                            ? "Product Manufacturing"
+                            : "Engineering Hours"}
                       </p>
                       <Input
                         placeholder="Description (optional)"
@@ -435,7 +465,7 @@ const AdminQuoteEditor = () => {
                     {item.type === "package" ? (
                       <div>
                         <p className="text-xs font-medium text-[color:var(--arroyo-muted)] mb-1">
-                          Extra hours (max {PACKAGES_PREVIEW[item.product_key]?.maxExtraHours}h)
+                          Hours outside the written scope ({ENGINEERING_RATE} EUR/h)
                         </p>
                         <Input
                           type="number"
@@ -444,7 +474,7 @@ const AdminQuoteEditor = () => {
                           disabled={!editable}
                           onChange={(e) => updateItem(index, { extra_hours: e.target.value })}
                         />
-                        {Number(item.extra_hours) > (PACKAGES_PREVIEW[item.product_key]?.maxExtraHours || 0) && (
+                        {Number(item.extra_hours) > 0 && (
                           <label className="flex items-center gap-2 mt-2 text-xs text-amber-700">
                             <input
                               type="checkbox"
@@ -452,9 +482,34 @@ const AdminQuoteEditor = () => {
                               disabled={!editable}
                               onChange={(e) => updateItem(index, { override_confirmed: e.target.checked })}
                             />
-                            Confirm hours exceed the standard package range
+                            The client was notified and accepted these hours
                           </label>
                         )}
+                      </div>
+                    ) : item.type === "manufacturing" ? (
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <p className="text-xs font-medium text-[color:var(--arroyo-muted)] mb-1">Workshop cost</p>
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={item.workshop_cost}
+                            disabled={!editable}
+                            onChange={(e) => updateItem(index, { workshop_cost: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-[color:var(--arroyo-muted)] mb-1">Management fee</p>
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={item.management_fee}
+                            disabled={!editable}
+                            onChange={(e) => updateItem(index, { management_fee: e.target.value })}
+                          />
+                        </div>
                       </div>
                     ) : (
                       <div>

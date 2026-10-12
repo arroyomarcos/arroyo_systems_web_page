@@ -1,20 +1,25 @@
 // Bilingual copy for the site. Everything user-visible lives here, keyed by
 // language, so components stay language-agnostic and just read `t.<section>`.
+//
+// Content rules (Brief_Rediseno_Web, section 5): nothing is promised that the contract or
+// the quote can't back up, and internal data (cost structure, margin, budgeted hours,
+// manufacturing-fee scale) never appears here.
+
+const HOURLY_RATE = "78";
 
 const packagesEn = [
   {
     id: "product-design",
     name: "Product Design",
-    tagline: "Turn your idea into a part you can manufacture. Fast.",
-    priceRange: "€1,300 – €1,550",
-    priceInclVat: "€1,573 – €1,876 (incl. 21% VAT)",
+    tagline: "A part designed to be manufactured.",
+    price: "€1,482",
+    priceNote: "Closed price, excl. VAT",
+    priceInclVat: "€1,793.22 incl. 21% VAT",
     leadTime: "7–10 business days",
     revisions: "1 revision cycle included",
-    hours: "Base: 15h · Up to +5h if complexity increases",
-    bestFor: "Hardware companies, MVP prototyping, simple to medium complexity parts.",
     description:
       "Stop wasting weeks fixing CAD files or guessing how a part should be manufactured. We design it properly from the start so you can request quotes, build prototypes and move to production with confidence.",
-    deliverables: [
+    includes: [
       { title: "CAD Model", description: "Clean, fully parametric CAD model ready for manufacturing." },
       {
         title: "Technical Drawings",
@@ -29,25 +34,26 @@ const packagesEn = [
         description: "The right material and manufacturing process for your application.",
       },
     ],
+    excludes: [
+      "Structural calculation. That is the scope of Product Validation.",
+      "Manufacturing the part. That is the scope of Product Manufacturing.",
+      `Anything outside the written scope is billed at €${HOURLY_RATE}/h, with prior notice and your acceptance.`,
+    ],
   },
   {
     id: "product-validation",
     name: "Product Validation",
-    tagline: "Already have a design? Prove it holds up before you manufacture it.",
-    priceRange: "€1,850 – €2,100",
-    priceInclVat: "€2,239 – €2,541 (incl. 21% VAT)",
+    tagline: "Check it holds up before you manufacture it.",
+    price: "€2,028",
+    priceNote: "Closed price, excl. VAT",
+    priceInclVat: "€2,453.88 incl. 21% VAT",
     leadTime: "8–11 business days",
     revisions: "1 revision cycle included",
-    hours: "Base: 20h · Up to +5h if complexity increases",
-    bestFor: "Teams with an existing design, in-house or third-party, needing structural certainty before production.",
     description:
-      "You already have a CAD model, designed in-house or by another provider. We check that it will survive real operating loads before you commit to tooling or production, and tell you exactly what to change if it won't.",
-    deliverables: [
+      "You already have a CAD model, designed in-house or by another provider. We calculate that it holds up under the loads you give us, before you commit to tooling or production, and tell you exactly what to change if it doesn't.",
+    includes: [
       { title: "Structural Simulation", description: "Stress, deformation and safety factor calculated using FEM." },
-      {
-        title: "Fatigue Analysis",
-        description: "S-N based fatigue check on the critical load cases identified.",
-      },
+      { title: "Fatigue Analysis", description: "S-N based fatigue check on the critical load cases identified." },
       {
         title: "Design Optimization Recommendations",
         description: "Where material can be safely removed, and where it must be reinforced.",
@@ -61,33 +67,63 @@ const packagesEn = [
         description: "Clear evidence that your design meets its intended requirements.",
       },
     ],
-    note: "Requires the client to provide the CAD model in a compatible format (STEP, IGES, SolidWorks, or another format agreed in advance). Arroyo Systems is not responsible for design flaws originating in a model it did not produce.",
+    excludes: [
+      "Designing the part from scratch. That is the scope of Product Design or Product Development.",
+      "Physical testing. The simulation runs on the load and material assumptions agreed with you.",
+      `Anything outside the written scope is billed at €${HOURLY_RATE}/h, with prior notice and your acceptance.`,
+    ],
+    note: "Requires you to provide the CAD model in a compatible format (STEP, IGES, SolidWorks, or another format agreed in advance). Arroyo Systems is not responsible for design flaws originating in a model it did not produce.",
   },
   {
     id: "product-development",
     name: "Product Development",
-    tagline: "Know your design will work before you spend money manufacturing it.",
-    priceRange: "€3,000 – €3,500",
-    priceInclVat: "€3,630 – €4,235 (incl. 21% VAT) · vs. €3,150 – €3,650 booked separately",
+    tagline: "Design and calculation, defined together.",
+    price: "€3,510",
+    priceNote: "Closed price, excl. VAT",
+    priceInclVat: "€4,247.10 incl. 21% VAT",
     leadTime: "10–14 business days",
     revisions: "2 revision cycles included",
-    hours: "Base: 35h (15h design + 20h validation) · Up to +10h if complexity increases",
-    bestFor: "PyMEs and industrial manufacturers that need a design built and validated together, from scratch.",
     description:
-      "Anyone can design a part that looks good. We prove it will survive the real loads before the first prototype is built, designed and validated together in one engagement, at a discount versus booking Product Design and Product Validation as two separate projects.",
-    deliverables: [
+      "One pair of hands defines the design and the calculation together, so the part is born already validated. It is Product Design and Product Validation in a single engagement, with no handover between them.",
+    includes: [
       { title: "Optimized CAD Model", description: "Design refined after engineering analysis." },
       { title: "Structural Simulation", description: "Stress, deformation and safety factor calculated using FEM." },
-      {
-        title: "Design Optimization",
-        description: "Material removed where possible and reinforced where necessary.",
-      },
+      { title: "Design Optimization", description: "Material removed where possible and reinforced where necessary." },
       { title: "Technical Drawings", description: "Manufacturing documentation ready to send to suppliers." },
+      { title: "Engineering Report", description: "Clear evidence that your design meets its intended requirements." },
+    ],
+    excludes: [
+      "Manufacturing the part. That is the scope of Product Manufacturing.",
+      "Physical testing. The simulation runs on the load and material assumptions agreed with you.",
+      `Anything outside the written scope is billed at €${HOURLY_RATE}/h, with prior notice and your acceptance.`,
+    ],
+  },
+  {
+    id: "product-manufacturing",
+    name: "Product Manufacturing",
+    tagline: "Receive the part manufactured and documented.",
+    price: "Workshop cost + management",
+    priceNote: "Shown as separate lines in your quote, before anything is ordered",
+    priceInclVat: null,
+    leadTime: "Depends on the workshop's process",
+    revisions: "One round of changes before launch",
+    description:
+      "We take a validated design through manufacturing so you don't have to chase workshops or compare quotes. You get one quote, one point of contact and one invoice, and the part arrives with its quality documentation.",
+    includes: [
+      { title: "Workshop quotes", description: "We request and manage the quotes from the workshop." },
+      { title: "One round of changes", description: "Before the order is launched." },
+      { title: "Follow-up until delivery", description: "We track the order until the part is in your hands." },
+      { title: "One incident handled", description: "If something goes wrong, we manage it with the workshop." },
       {
-        title: "Engineering Report",
-        description: "Clear evidence that your design meets its intended requirements.",
+        title: "Quality documentation",
+        description: "Dimensional report and material certificate, requested from the workshop on every order.",
       },
     ],
+    excludes: [
+      "Conformity certificate (CoC), unless your quote states it expressly.",
+      `Anything outside the written scope is billed at €${HOURLY_RATE}/h, with prior notice and your acceptance.`,
+    ],
+    note: "It starts from an approved, validated design: we don't manufacture what we haven't calculated. Lead time is confirmed once the workshop has quoted.",
   },
 ];
 
@@ -95,16 +131,15 @@ const packagesEs = [
   {
     id: "product-design",
     name: "Product Design",
-    tagline: "Convierte tu idea en una pieza lista para fabricar. Rápido.",
-    priceRange: "1.300 € – 1.550 €",
-    priceInclVat: "1.573 € – 1.876 € (IVA del 21% incluido)",
-    leadTime: "7–10 días laborables",
+    tagline: "Una pieza pensada para fabricarse.",
+    price: "1.482 €",
+    priceNote: "Precio cerrado, sin IVA",
+    priceInclVat: "1.793,22 € con IVA del 21%",
+    leadTime: "7–10 días hábiles",
     revisions: "1 ciclo de revisión incluido",
-    hours: "Base: 15 h · Hasta +5 h si aumenta la complejidad",
-    bestFor: "Empresas de hardware, prototipado de MVP, piezas de complejidad simple a media.",
     description:
       "Deja de perder semanas arreglando archivos CAD o adivinando cómo se debe fabricar una pieza. La diseñamos bien desde el principio para que puedas pedir presupuestos, construir prototipos y pasar a producción con confianza.",
-    deliverables: [
+    includes: [
       { title: "Modelo CAD", description: "Modelo CAD limpio y totalmente paramétrico, listo para fabricación." },
       {
         title: "Planos técnicos",
@@ -119,20 +154,24 @@ const packagesEs = [
         description: "El material y proceso de fabricación adecuados para tu aplicación.",
       },
     ],
+    excludes: [
+      "Cálculo estructural. Es el alcance de Product Validation.",
+      "Fabricación de la pieza. Es el alcance de Product Manufacturing.",
+      `Lo que quede fuera del alcance escrito se factura a ${HOURLY_RATE} €/h, con aviso y aceptación previos.`,
+    ],
   },
   {
     id: "product-validation",
     name: "Product Validation",
-    tagline: "¿Ya tienes un diseño? Demuestra que aguanta antes de fabricarlo.",
-    priceRange: "1.850 € – 2.100 €",
-    priceInclVat: "2.239 € – 2.541 € (IVA del 21% incluido)",
-    leadTime: "8–11 días laborables",
+    tagline: "Comprueba que aguanta antes de fabricar.",
+    price: "2.028 €",
+    priceNote: "Precio cerrado, sin IVA",
+    priceInclVat: "2.453,88 € con IVA del 21%",
+    leadTime: "8–11 días hábiles",
     revisions: "1 ciclo de revisión incluido",
-    hours: "Base: 20 h · Hasta +5 h si aumenta la complejidad",
-    bestFor: "Equipos con un diseño ya existente, propio o de un tercero, que necesitan certeza estructural antes de producción.",
     description:
-      "Ya tienes un modelo CAD, diseñado internamente o por otro proveedor. Comprobamos que soportará las cargas reales de operación antes de que te comprometas con utillaje o producción, y te decimos exactamente qué cambiar si no lo hace.",
-    deliverables: [
+      "Ya tienes un modelo CAD, diseñado internamente o por otro proveedor. Calculamos que aguanta las cargas que nos indicas antes de que te comprometas con utillaje o producción, y te decimos exactamente qué cambiar si no lo hace.",
+    includes: [
       {
         title: "Simulación estructural",
         description: "Tensión, deformación y factor de seguridad calculados mediante FEM.",
@@ -154,21 +193,25 @@ const packagesEs = [
         description: "Evidencia clara de que tu diseño cumple los requisitos previstos.",
       },
     ],
-    note: "Requiere que el cliente aporte el modelo CAD en un formato compatible (STEP, IGES, SolidWorks u otro formato acordado previamente). Arroyo Systems no se responsabiliza de fallos de diseño originados en un modelo que no ha producido.",
+    excludes: [
+      "Diseñar la pieza desde cero. Es el alcance de Product Design o Product Development.",
+      "Ensayo físico. La simulación se hace sobre las hipótesis de carga y material acordadas contigo.",
+      `Lo que quede fuera del alcance escrito se factura a ${HOURLY_RATE} €/h, con aviso y aceptación previos.`,
+    ],
+    note: "Requiere que aportes el modelo CAD en un formato compatible (STEP, IGES, SolidWorks u otro formato acordado previamente). Arroyo Systems no se responsabiliza de fallos de diseño originados en un modelo que no ha producido.",
   },
   {
     id: "product-development",
     name: "Product Development",
-    tagline: "Sabe que tu diseño funcionará antes de gastar dinero en fabricarlo.",
-    priceRange: "3.000 € – 3.500 €",
-    priceInclVat: "3.630 € – 4.235 € (IVA del 21% incluido) · frente a 3.150 € – 3.650 € contratados por separado",
-    leadTime: "10–14 días laborables",
+    tagline: "Diseño y cálculo definidos juntos.",
+    price: "3.510 €",
+    priceNote: "Precio cerrado, sin IVA",
+    priceInclVat: "4.247,10 € con IVA del 21%",
+    leadTime: "10–14 días hábiles",
     revisions: "2 ciclos de revisión incluidos",
-    hours: "Base: 35 h (15 h de diseño + 20 h de validación) · Hasta +10 h si aumenta la complejidad",
-    bestFor: "PyMEs y fabricantes industriales que necesitan un diseño construido y validado a la vez, desde cero.",
     description:
-      "Cualquiera puede diseñar una pieza que tenga buen aspecto. Nosotros demostramos que soportará las cargas reales antes de construir el primer prototipo, diseñado y validado en un mismo proyecto, con descuento frente a contratar Product Design y Product Validation por separado.",
-    deliverables: [
+      "Una sola mano define el diseño y el cálculo a la vez, para que la pieza nazca ya validada. Es Product Design y Product Validation en un único encargo, sin traspasos entre ellos.",
+    includes: [
       { title: "Modelo CAD optimizado", description: "Diseño refinado tras el análisis de ingeniería." },
       {
         title: "Simulación estructural",
@@ -178,55 +221,137 @@ const packagesEs = [
         title: "Optimización del diseño",
         description: "Material eliminado donde es posible y reforzado donde es necesario.",
       },
+      { title: "Planos técnicos", description: "Documentación de fabricación lista para enviar a proveedores." },
+      { title: "Informe de ingeniería", description: "Evidencia clara de que tu diseño cumple los requisitos previstos." },
+    ],
+    excludes: [
+      "Fabricación de la pieza. Es el alcance de Product Manufacturing.",
+      "Ensayo físico. La simulación se hace sobre las hipótesis de carga y material acordadas contigo.",
+      `Lo que quede fuera del alcance escrito se factura a ${HOURLY_RATE} €/h, con aviso y aceptación previos.`,
+    ],
+  },
+  {
+    id: "product-manufacturing",
+    name: "Product Manufacturing",
+    tagline: "Recibe la pieza fabricada y documentada.",
+    price: "Coste del taller + gestión",
+    priceNote: "En líneas separadas de tu presupuesto, antes de pedir nada",
+    priceInclVat: null,
+    leadTime: "Según el proceso del taller",
+    revisions: "Una ronda de cambios antes del lanzamiento",
+    description:
+      "Llevamos un diseño validado hasta la fabricación para que no tengas que perseguir talleres ni comparar ofertas. Una oferta, un interlocutor y una factura, y la pieza llega con su documentación de calidad.",
+    includes: [
+      { title: "Ofertas del taller", description: "Pedimos y gestionamos las ofertas del taller." },
+      { title: "Una ronda de cambios", description: "Antes de lanzar el pedido." },
+      { title: "Seguimiento hasta la entrega", description: "Seguimos el pedido hasta que la pieza está en tus manos." },
+      { title: "Una incidencia gestionada", description: "Si algo falla, lo gestionamos con el taller." },
       {
-        title: "Planos técnicos",
-        description: "Documentación de fabricación lista para enviar a proveedores.",
-      },
-      {
-        title: "Informe de ingeniería",
-        description: "Evidencia clara de que tu diseño cumple los requisitos previstos.",
+        title: "Documentación de calidad",
+        description: "Informe dimensional y certificado de material, que pedimos al taller en cada pedido.",
       },
     ],
+    excludes: [
+      "Certificado de conformidad (CoC), salvo que tu presupuesto lo indique expresamente.",
+      `Lo que quede fuera del alcance escrito se factura a ${HOURLY_RATE} €/h, con aviso y aceptación previos.`,
+    ],
+    note: "Parte de un diseño aprobado y validado: no fabricamos lo que no hemos calculado. El plazo se confirma cuando el taller ha cotizado.",
   },
 ];
 
 export const content = {
   en: {
     lang: "en",
-    nav: { solutions: "Solutions", whyUs: "Why Us", partners: "Partners", contact: "Contact Us" },
+    nav: {
+      solutions: "Services",
+      whyUs: "Why Us",
+      process: "How We Work",
+      partners: "Software & Partners",
+      contact: "Contact",
+    },
     hero: {
-      titleLine1: "Engineering,",
-      titleLine2: "on demand.",
-      body1: "No retainers. No six-week discovery phase. No “we’ll circle back.”",
-      body2:
-        "You send the part. We design it, prove it works, and get it manufacturing-ready. In days, not months.",
-      ctaPrimary: "See pricing",
-      ctaSecondary: "Start a project",
+      titleLine1: "We design, calculate",
+      titleLine2: "and manufacture your part.",
+      body1: "Machined and bent sheet-metal parts. A supplier you can trust.",
+      ctaPrimary: "Tell us what you need",
+      ctaSecondary: "See pricing",
+      trust: ["One person accountable", "Closed price", "Design signed by an engineer"],
+      viewerCaption: "Interactive 3D model · drag to rotate",
     },
     products: {
-      heading: "Solutions",
-      subtitle:
-        "Three complementary services for machined parts and bent sheet metal, reducing risk, cost and uncertainty across the full design-to-manufacture lifecycle.",
-      deliverablesLabel: "Deliverables",
+      heading: "Services",
+      subtitle: "Four ways to hire the same process, from requirement to part.",
+      materials:
+        "Machined and bent sheet-metal parts, in steel and aluminium, with bolted joints and spot welding.",
+      outOfScope: `What falls outside the written scope is billed at €${HOURLY_RATE}/h, with prior notice and your acceptance.`,
+      includesLabel: "What's included",
+      excludesLabel: "What's not included",
+      detailsLink: "What's included and what's not",
       leadTimeLabel: "Lead time",
       revisionsLabel: "Revisions",
-      viewDetailsAria: (name) => `View full details for ${name}`,
+      viewDetailsAria: (name) => `View what ${name} includes`,
       packages: packagesEn,
     },
     whyUs: {
-      heading:
-        "We're not a consultancy. We're the engineer you'd hire in-house if you could afford to wait for one.",
-      body: "AI-accelerated design workflow. Manufacturing coordination built in. From finished design to a part in your hands, without you chasing suppliers. No account managers between you and the person doing the work.",
-      bullets: [
-        "Pricing is public. You see the range before you talk to us.",
-        "Turnaround is measured in business days. Most projects ship in one to three weeks, start to finish.",
-        "Every design ships with structural validation. Not just a part that looks right. One that's proven to hold.",
+      heading: "Why Us",
+      points: [
+        {
+          title: "One supplier, one person accountable.",
+          body: "We design, calculate and manufacture. We deliver all the corresponding documentation.",
+          limit: "We answer for the part meeting the drawing, with liability limited to the order price.",
+        },
+        {
+          title: "Designed to be manufactured.",
+          body: "The design is born thinking about how it will be made, with no back and forth over tolerances or material.",
+        },
+        {
+          title: "Closed price, in writing.",
+          body: "You know what you pay before we start.",
+          limit: `With a written scope. Anything outside it is billed at €${HOURLY_RATE}/h, with prior notice.`,
+        },
+      ],
+      contrast: {
+        before: "Fragmented process",
+        after: "Integrated process",
+        rows: [
+          { before: "One designs, another calculates, another manufactures.", after: "One team." },
+          { before: "Each one blames the other.", after: "One person accountable." },
+          { before: "Several quotes and invoices.", after: "One quote, one lead time, one invoice." },
+        ],
+      },
+      closing: "We are not a consultancy, a workshop or a platform. You talk to the engineer who calculates your part.",
+      person: {
+        name: "Marcos Arroyo Navarro",
+        role: "Arroyo Systems",
+        photoAlt: "Marcos Arroyo Navarro",
+        // Shown as a visible placeholder until the owner provides the photo and bio.
+        pending: "[PENDING: photo and short bio]",
+      },
+    },
+    process: {
+      heading: "How We Work",
+      figureCaption: "Result of a structural calculation (FEM)",
+      steps: [
+        { title: "You tell us", body: "Mechanical interfaces, loads, quantity and lead time." },
+        { title: "Closed quote", body: "With the scope in writing: deliverables, revisions and exclusions." },
+        { title: "We design and calculate", body: "The part, designed for manufacturing and structurally validated." },
+        {
+          title: "We manufacture and deliver",
+          body: "The part with its quality documentation: verified measurements and material certificate.",
+        },
       ],
     },
     partners: {
-      heading: "Partners",
-      subtitle:
-        "We collaborate with hardware and software providers that strengthen how we design, validate and review mechanical components.",
+      heading: "Software & Partners",
+      subtitle: "We design and calculate with industry-reference tools.",
+      softwareLabel: "Software",
+      softwareItems: [
+        { id: "fusion", name: "Autodesk Fusion", logo: "autodeskFusionLogo" },
+        { id: "inventor-nastran", name: "Autodesk Inventor Nastran", logo: "autodeskNastranLogo" },
+      ],
+      trademark:
+        "Autodesk, the Autodesk logo, Fusion and Inventor are registered trademarks or trademarks of Autodesk, Inc. Arroyo Systems is not affiliated with or endorsed by Autodesk.",
+      partnersLabel: "Partners",
       visitWebsite: "Visit website",
       items: [
         {
@@ -240,11 +365,10 @@ export const content = {
       ],
     },
     contact: {
-      heading1: "Got a part to design",
-      heading2: "and not much time to lose?",
-      subheading: "Neither do we. That's the point.",
-      cta: "Tell us about your project",
-      formEyebrow: "Send us a message",
+      heading1: "Tell us",
+      heading2: "what you need.",
+      subheading: "We reply with a closed-price quote, in writing.",
+      formEyebrow: "Describe your part",
       locationLabel: "Madrid, Spain",
       linkedinLabel: "LinkedIn",
       privacyPolicy: "Privacy Policy",
@@ -256,25 +380,31 @@ export const content = {
       nameLabel: "Name *",
       emailLabel: "Email *",
       companyLabel: "Company",
-      projectTypeLabel: "Project type",
-      messageLabel: "Message *",
+      messageLabel: "Describe the part *",
+      fileLabel: "STEP or PDF file",
+      fileHint: "Optional. STEP or PDF, up to 8 MB.",
+      fileChoose: "Choose file",
+      fileRemove: "Remove",
+      quantityLabel: "Quantity",
+      deadlineLabel: "Desired lead time",
+      materialLabel: "Preferred material (optional)",
+      hasDesignLabel: "Do you already have a design?",
+      yes: "Yes",
+      no: "No",
       namePlaceholder: "Your full name",
       emailPlaceholder: "you@company.com",
       companyPlaceholder: "Company name",
-      messagePlaceholder: "Tell us about your component, requirements, timeline...",
-      selectOption: "Select an option",
-      projectTypes: [
-        { value: "Product Design", label: "Product Design" },
-        { value: "Product Validation", label: "Product Validation" },
-        { value: "Product Development", label: "Product Development" },
-        { value: "Other", label: "Other" },
-      ],
+      messagePlaceholder: "What the part is, how it connects to other parts (mechanical interfaces) and the loads it carries.",
+      quantityPlaceholder: "e.g. 10",
+      deadlinePlaceholder: "e.g. 4 weeks",
+      materialPlaceholder: "Steel, aluminium...",
       privacyPrefix: "I have read and accept the",
       privacyLinkText: "Privacy Policy",
-      submit: "Send message",
+      submit: "Tell us what you need",
+      sending: "Sending...",
       successTitle: "Message received.",
       successBody:
-        "Thanks for contacting Arroyo Systems. We'll review your enquiry and come back to you shortly.",
+        "Thanks for contacting Arroyo Systems. We'll review your request and come back to you shortly.",
       sendAnother: "Send another message",
       errorToastTitle: "Message may not have been delivered",
       errorToastBody:
@@ -283,13 +413,16 @@ export const content = {
         required: "Required",
         invalidEmail: "Invalid email",
         messageTooShort: "Please provide at least 10 characters",
+        fileType: "Only STEP (.step, .stp) or PDF files are accepted",
+        fileSize: "The file is larger than 8 MB",
+        quantityInvalid: "Enter a whole number",
       },
     },
     seo: {
       home: {
-        title: "Arroyo Systems | Engineering, on demand.",
+        title: "Arroyo Systems | We design, calculate and manufacture your part.",
         description:
-          "Engineering, on demand. We design machined and sheet-metal parts, validate them structurally, and get them manufacturing-ready. In days, not months.",
+          "Machined and bent sheet-metal parts in steel and aluminium. Design, structural calculation and manufacturing with one person accountable and a closed price.",
       },
       privacyPolicy: {
         title: "Privacy Policy | Arroyo Systems",
@@ -307,40 +440,95 @@ export const content = {
   },
   es: {
     lang: "es",
-    nav: { solutions: "Soluciones", whyUs: "Por qué nosotros", partners: "Colaboradores", contact: "Contáctanos" },
+    nav: {
+      solutions: "Servicios",
+      whyUs: "Por qué nosotros",
+      process: "Cómo trabajamos",
+      partners: "Software y colaboradores",
+      contact: "Contacto",
+    },
     hero: {
-      titleLine1: "Ingeniería,",
-      titleLine2: "bajo demanda.",
-      body1: "Sin contratos de permanencia. Sin fases de descubrimiento de seis semanas. Sin “ya te llamaremos”.",
-      body2:
-        "Nos envías la pieza. La diseñamos, demostramos que funciona y la dejamos lista para fabricar. En días, no meses.",
-      ctaPrimary: "Ver precios",
-      ctaSecondary: "Empezar un proyecto",
+      titleLine1: "Diseñamos, calculamos",
+      titleLine2: "y fabricamos tu pieza.",
+      body1: "Mecanizado y chapa doblada. Un proveedor en el que puedes confiar.",
+      ctaPrimary: "Cuéntanos qué necesitas",
+      ctaSecondary: "Ver precios",
+      trust: ["Un único responsable", "Precio cerrado", "Diseño firmado por ingeniero"],
+      viewerCaption: "Modelo 3D interactivo · arrastra para girar",
     },
     products: {
-      heading: "Soluciones",
-      subtitle:
-        "Tres servicios complementarios para piezas mecanizadas y de chapa doblada, que reducen riesgo, coste e incertidumbre en todo el ciclo de diseño a fabricación.",
-      deliverablesLabel: "Entregables",
+      heading: "Servicios",
+      subtitle: "Cuatro formas de contratar el mismo proceso, del requisito a la pieza.",
+      materials:
+        "Piezas mecanizadas y de chapa doblada, en acero y aluminio, con uniones atornilladas y soldadura puntual.",
+      outOfScope: `Lo que quede fuera del alcance escrito se factura a ${HOURLY_RATE} €/h, con aviso y aceptación previos.`,
+      includesLabel: "Qué incluye",
+      excludesLabel: "Qué no incluye",
+      detailsLink: "Qué incluye y qué no",
       leadTimeLabel: "Plazo",
       revisionsLabel: "Revisiones",
-      viewDetailsAria: (name) => `Ver el detalle completo de ${name}`,
+      viewDetailsAria: (name) => `Ver qué incluye ${name}`,
       packages: packagesEs,
     },
     whyUs: {
-      heading:
-        "No somos una consultora. Somos el ingeniero que contratarías internamente si pudieras permitirte esperar a encontrarlo.",
-      body: "Flujo de diseño acelerado con IA. Coordinación de fabricación incluida. Del diseño terminado a la pieza en tus manos, sin que tengas que perseguir proveedores. Sin gestores de cuenta entre tú y quien hace el trabajo.",
-      bullets: [
-        "Los precios son públicos. Ves el rango antes de hablar con nosotros.",
-        "Los plazos se miden en días laborables. La mayoría de proyectos se entregan en una a tres semanas, de principio a fin.",
-        "Todo diseño se entrega con validación estructural. No solo una pieza que parece correcta, sino una que está demostrado que aguanta.",
+      heading: "Por qué nosotros",
+      points: [
+        {
+          title: "Un solo proveedor, un solo responsable.",
+          body: "Diseñamos, calculamos y fabricamos. Entregamos toda la documentación correspondiente.",
+          limit: "Respondemos de que la pieza cumple el plano, con responsabilidad limitada al precio del pedido.",
+        },
+        {
+          title: "Diseñado para fabricarse.",
+          body: "El diseño nace pensando en cómo se fabrica, sin idas y venidas por tolerancias o material.",
+        },
+        {
+          title: "Precio cerrado, por escrito.",
+          body: "Sabes lo que pagas antes de empezar.",
+          limit: `Con alcance escrito. Lo que quede fuera se factura a ${HOURLY_RATE} €/h, con aviso previo.`,
+        },
+      ],
+      contrast: {
+        before: "Proceso fragmentado",
+        after: "Proceso integrado",
+        rows: [
+          { before: "Uno diseña, otro calcula, otro fabrica.", after: "Un solo equipo." },
+          { before: "Cada uno culpa al otro.", after: "Un único responsable." },
+          { before: "Varias ofertas y facturas.", after: "Una oferta, un plazo, una factura." },
+        ],
+      },
+      closing: "No somos una consultora, ni un taller, ni una plataforma. Hablas con el ingeniero que calcula tu pieza.",
+      person: {
+        name: "Marcos Arroyo Navarro",
+        role: "Arroyo Systems",
+        photoAlt: "Marcos Arroyo Navarro",
+        pending: "[PENDIENTE: foto y texto biográfico]",
+      },
+    },
+    process: {
+      heading: "Cómo trabajamos",
+      figureCaption: "Resultado de un cálculo estructural (FEM)",
+      steps: [
+        { title: "Nos cuentas", body: "Interfaces mecánicas, cargas, cantidad y plazo." },
+        { title: "Presupuesto cerrado", body: "Con el alcance por escrito: entregables, revisiones y exclusiones." },
+        { title: "Diseñamos y calculamos", body: "La pieza, pensada para fabricación y validada estructuralmente." },
+        {
+          title: "Fabricamos y entregamos",
+          body: "La pieza con su documentación de calidad: medidas verificadas y certificado de material.",
+        },
       ],
     },
     partners: {
-      heading: "Colaboradores",
-      subtitle:
-        "Colaboramos con proveedores de hardware y software que refuerzan cómo diseñamos, validamos y revisamos componentes mecánicos.",
+      heading: "Software y colaboradores",
+      subtitle: "Diseñamos y calculamos con herramientas de referencia en la industria.",
+      softwareLabel: "Software",
+      softwareItems: [
+        { id: "fusion", name: "Autodesk Fusion", logo: "autodeskFusionLogo" },
+        { id: "inventor-nastran", name: "Autodesk Inventor Nastran", logo: "autodeskNastranLogo" },
+      ],
+      trademark:
+        "Autodesk, el logotipo de Autodesk, Fusion e Inventor son marcas comerciales o marcas registradas de Autodesk, Inc. Arroyo Systems no está afiliada ni respaldada por Autodesk.",
+      partnersLabel: "Colaboradores",
       visitWebsite: "Visitar web",
       items: [
         {
@@ -354,11 +542,10 @@ export const content = {
       ],
     },
     contact: {
-      heading1: "¿Tienes una pieza que diseñar",
-      heading2: "y poco tiempo que perder?",
-      subheading: "Nosotros tampoco. Esa es la idea.",
-      cta: "Cuéntanos tu proyecto",
-      formEyebrow: "Envíanos un mensaje",
+      heading1: "Cuéntanos",
+      heading2: "qué necesitas.",
+      subheading: "Te respondemos con un presupuesto cerrado, por escrito.",
+      formEyebrow: "Describe tu pieza",
       locationLabel: "Madrid, España",
       linkedinLabel: "LinkedIn",
       privacyPolicy: "Política de Privacidad",
@@ -370,39 +557,49 @@ export const content = {
       nameLabel: "Nombre *",
       emailLabel: "Email *",
       companyLabel: "Empresa",
-      projectTypeLabel: "Tipo de proyecto",
-      messageLabel: "Mensaje *",
+      messageLabel: "Descripción de la pieza *",
+      fileLabel: "Archivo STEP o PDF",
+      fileHint: "Opcional. STEP o PDF, hasta 8 MB.",
+      fileChoose: "Elegir archivo",
+      fileRemove: "Quitar",
+      quantityLabel: "Cantidad",
+      deadlineLabel: "Plazo deseado",
+      materialLabel: "Material preferente (opcional)",
+      hasDesignLabel: "¿Tienes ya un diseño?",
+      yes: "Sí",
+      no: "No",
       namePlaceholder: "Tu nombre completo",
       emailPlaceholder: "tucorreo@empresa.com",
       companyPlaceholder: "Nombre de la empresa",
-      messagePlaceholder: "Cuéntanos sobre tu componente, requisitos, plazos...",
-      selectOption: "Selecciona una opción",
-      projectTypes: [
-        { value: "Product Design", label: "Product Design" },
-        { value: "Product Validation", label: "Product Validation" },
-        { value: "Product Development", label: "Product Development" },
-        { value: "Other", label: "Otro" },
-      ],
+      messagePlaceholder: "Qué pieza es, con qué otras piezas se une (interfaces mecánicas) y qué cargas soporta.",
+      quantityPlaceholder: "p. ej. 10",
+      deadlinePlaceholder: "p. ej. 4 semanas",
+      materialPlaceholder: "Acero, aluminio...",
       privacyPrefix: "He leído y acepto la",
       privacyLinkText: "Política de Privacidad",
-      submit: "Enviar mensaje",
+      submit: "Cuéntanos qué necesitas",
+      sending: "Enviando...",
       successTitle: "Mensaje recibido.",
-      successBody: "Gracias por contactar con Arroyo Systems. Revisaremos tu consulta y te responderemos en breve.",
+      successBody:
+        "Gracias por contactar con Arroyo Systems. Revisaremos tu solicitud y te responderemos en breve.",
       sendAnother: "Enviar otro mensaje",
-      errorToastTitle: "Es posible que el mensaje no se haya enviado",
+      errorToastTitle: "Puede que el mensaje no se haya entregado",
       errorToastBody:
-        "No hemos podido confirmar el envío de tu mensaje. Escríbenos por email si no recibes respuesta.",
+        "No hemos podido confirmar que tu mensaje se enviara. Escríbenos por email si no recibes respuesta.",
       validation: {
         required: "Obligatorio",
         invalidEmail: "Email no válido",
         messageTooShort: "Escribe al menos 10 caracteres",
+        fileType: "Solo se admiten archivos STEP (.step, .stp) o PDF",
+        fileSize: "El archivo supera los 8 MB",
+        quantityInvalid: "Indica un número entero",
       },
     },
     seo: {
       home: {
-        title: "Arroyo Systems | Ingeniería, bajo demanda.",
+        title: "Arroyo Systems | Diseñamos, calculamos y fabricamos tu pieza.",
         description:
-          "Ingeniería, bajo demanda. Diseñamos piezas mecanizadas y de chapa, las validamos estructuralmente, y las dejamos listas para fabricar. En días, no meses.",
+          "Piezas mecanizadas y de chapa doblada, en acero y aluminio. Diseño, cálculo estructural y fabricación con un único responsable y precio cerrado.",
       },
       privacyPolicy: {
         title: "Política de Privacidad | Arroyo Systems",

@@ -26,6 +26,7 @@ const Header = () => {
   const navItems = [
     { key: "solutions", label: t.nav.solutions, href: `${base}${NAV_HREFS.solutions}` },
     { key: "whyUs", label: t.nav.whyUs, href: `${base}${NAV_HREFS.whyUs}` },
+    { key: "process", label: t.nav.process, href: `${base}${NAV_HREFS.process}` },
     { key: "partners", label: t.nav.partners, href: `${base}${NAV_HREFS.partners}` },
   ];
 
@@ -113,7 +114,7 @@ const Header = () => {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-5 lg:gap-10">
+        <nav className="hidden lg:flex items-center gap-5 xl:gap-9">
           {navItems.map((l) => (
             <Link key={l.key} to={l.href} className="nav-link" onClick={(e) => handleHashNavigation(e, l.href)}>
               {l.label}
@@ -121,7 +122,7 @@ const Header = () => {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-5 lg:gap-6">
+        <div className="hidden lg:flex items-center gap-6">
           <LangSwitch />
           <a href={`${base}/#contact`} onClick={scrollToContact} className="contact-pill">
             {t.nav.contact}
@@ -130,7 +131,7 @@ const Header = () => {
 
         {/* Mobile toggle */}
         <button
-          className="md:hidden p-2 -mr-2 text-[color:var(--arroyo-navy)]"
+          className="lg:hidden p-2 -mr-2 text-[color:var(--arroyo-navy)]"
           onClick={() => setOpen(!open)}
           aria-label="Menu"
         >
@@ -140,7 +141,7 @@ const Header = () => {
 
       {/* Mobile menu */}
       <div
-        className={`md:hidden overflow-hidden transition-all duration-300 bg-white border-t border-slate-100 ${
+        className={`lg:hidden overflow-hidden transition-all duration-300 bg-white border-t border-slate-100 ${
           open ? "max-h-[500px]" : "max-h-0"
         }`}
       >

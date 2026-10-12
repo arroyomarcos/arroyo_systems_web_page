@@ -57,12 +57,14 @@
     "swr": "2.3.8",
     "tailwind-merge": "3.2.0",
     "tailwindcss-animate": "1.0.7",
+    "three": "0.160.0",
     "vaul": "1.1.2",
     "zod": "3.24.4"
   },
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "build:pages": "craco build && node scripts/generate-route-html.js build",
     "test": "craco test"
   },
   "browserslist": {

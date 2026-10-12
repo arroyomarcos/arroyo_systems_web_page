@@ -38,7 +38,7 @@ const ContactEmailLink = () => (
 // ---------- Privacy Policy ----------
 
 const PrivacyPolicyEN = () => (
-  <LegalLayout title="Privacy Policy" updated="Last updated: July 5, 2026">
+  <LegalLayout title="Privacy Policy" updated="Last updated: October 12, 2026">
     <Section title="Data controller">
       <p>
         The controller for this website is Marcos Arroyo Navarro, operating under the commercial
@@ -53,8 +53,11 @@ const PrivacyPolicyEN = () => (
 
     <Section title="Data collected">
       <p>
-        The contact form may collect name, email address, company, project type, message, privacy
-        policy acceptance, date of acceptance, and privacy policy version. Technical data strictly
+        The contact form may collect name, email address, company, message, quantity, desired lead
+        time, preferred material, whether a design already exists, an optional attached file (STEP
+        or PDF, up to 8 MB), privacy policy acceptance, date of acceptance, and privacy policy
+        version. Attached files are stored with the request and forwarded to Arroyo Systems by
+        email, and are used only to assess the enquiry. Technical data strictly
         necessary for security, service operation, diagnostics, and abuse prevention may also be
         processed, such as IP address, user agent, request metadata, and server logs.
       </p>
@@ -102,7 +105,7 @@ const PrivacyPolicyEN = () => (
 );
 
 const PrivacyPolicyES = () => (
-  <LegalLayout title="Política de Privacidad" updated="Última actualización: 5 de julio de 2026">
+  <LegalLayout title="Política de Privacidad" updated="Última actualización: 12 de octubre de 2026">
     <Section title="Responsable del tratamiento">
       <p>
         El responsable de esta web es Marcos Arroyo Navarro, operando bajo el nombre comercial
@@ -117,9 +120,12 @@ const PrivacyPolicyES = () => (
 
     <Section title="Datos recopilados">
       <p>
-        El formulario de contacto puede recopilar nombre, email, empresa, tipo de proyecto,
-        mensaje, aceptación de la política de privacidad, fecha de aceptación y versión de la
-        política de privacidad. También pueden tratarse datos técnicos estrictamente necesarios
+        El formulario de contacto puede recopilar nombre, email, empresa, mensaje, cantidad, plazo
+        deseado, material preferente, si ya existe un diseño, un archivo adjunto opcional (STEP o
+        PDF, hasta 8 MB), aceptación de la política de privacidad, fecha de aceptación y versión de
+        la política de privacidad. Los archivos adjuntos se almacenan junto con la solicitud y se
+        reenvían a Arroyo Systems por email, y se usan únicamente para evaluar la consulta.
+        También pueden tratarse datos técnicos estrictamente necesarios
         para la seguridad, el funcionamiento del servicio, el diagnóstico y la prevención de
         abusos, como la dirección IP, el user agent, metadatos de la petición y logs del servidor.
       </p>
@@ -174,7 +180,7 @@ export const PrivacyPolicy = () => (useLang() === "es" ? <PrivacyPolicyES /> : <
 // ---------- Legal Notice ----------
 
 const LegalNoticeEN = () => (
-  <LegalLayout title="Legal Notice" updated="Last updated: September 11, 2026">
+  <LegalLayout title="Legal Notice" updated="Last updated: October 12, 2026">
     <Section title="Website owner">
       <p>Owner: Marcos Arroyo Navarro</p>
       <p>Commercial name: Arroyo Systems</p>
@@ -188,9 +194,9 @@ const LegalNoticeEN = () => (
 
     <Section title="Activity">
       <p>
-        Arroyo Systems provides engineering services, design for manufacturing (DFM), structural
-        validation, manufacturability assessment, technical project assessment, and engineering
-        consulting.
+        Arroyo Systems provides mechanical engineering services: design, structural validation and
+        manufacturing coordination of machined and bent sheet-metal components. Manufacturing is
+        carried out by third-party workshops, and Arroyo Systems manages it on the client's behalf.
       </p>
       <p>
         This website does not sell products or services directly. It is intended to provide
@@ -260,7 +266,7 @@ const LegalNoticeEN = () => (
 );
 
 const LegalNoticeES = () => (
-  <LegalLayout title="Aviso Legal" updated="Última actualización: 11 de septiembre de 2026">
+  <LegalLayout title="Aviso Legal" updated="Última actualización: 12 de octubre de 2026">
     <Section title="Titular de la web">
       <p>Titular: Marcos Arroyo Navarro</p>
       <p>Nombre comercial: Arroyo Systems</p>
@@ -274,9 +280,10 @@ const LegalNoticeES = () => (
 
     <Section title="Actividad">
       <p>
-        Arroyo Systems presta servicios de ingeniería, diseño para fabricación (DFM), validación
-        estructural, evaluación de fabricabilidad, evaluación técnica de proyectos y consultoría de
-        ingeniería.
+        Arroyo Systems presta servicios de ingeniería mecánica: diseño, validación estructural y
+        coordinación de fabricación de componentes mecanizados y de chapa metálica doblada. La
+        fabricación la realizan talleres de terceros y Arroyo Systems la gestiona por cuenta del
+        cliente.
       </p>
       <p>
         Esta web no vende productos ni servicios de forma directa. Su finalidad es proporcionar
