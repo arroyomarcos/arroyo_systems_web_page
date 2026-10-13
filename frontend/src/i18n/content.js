@@ -5,7 +5,6 @@
 // the quote can't back up, and internal data (cost structure, margin, budgeted hours,
 // manufacturing-fee scale) never appears here.
 
-const HOURLY_RATE = "78";
 
 const packagesEn = [
   {
@@ -37,7 +36,6 @@ const packagesEn = [
     excludes: [
       "Structural calculation. That is the scope of Product Validation.",
       "Manufacturing the part. That is the scope of Product Manufacturing.",
-      `Anything outside the written scope is billed at €${HOURLY_RATE}/h, with prior notice and your acceptance.`,
     ],
   },
   {
@@ -70,7 +68,6 @@ const packagesEn = [
     excludes: [
       "Designing the part from scratch. That is the scope of Product Design or Product Development.",
       "Physical testing. The simulation runs on the load and material assumptions agreed with you.",
-      `Anything outside the written scope is billed at €${HOURLY_RATE}/h, with prior notice and your acceptance.`,
     ],
     note: "Requires you to provide the CAD model in a compatible format (STEP, IGES, SolidWorks, or another format agreed in advance). Arroyo Systems is not responsible for design flaws originating in a model it did not produce.",
   },
@@ -95,7 +92,6 @@ const packagesEn = [
     excludes: [
       "Manufacturing the part. That is the scope of Product Manufacturing.",
       "Physical testing. The simulation runs on the load and material assumptions agreed with you.",
-      `Anything outside the written scope is billed at €${HOURLY_RATE}/h, with prior notice and your acceptance.`,
     ],
   },
   {
@@ -121,7 +117,6 @@ const packagesEn = [
     ],
     excludes: [
       "Conformity certificate (CoC), unless your quote states it expressly.",
-      `Anything outside the written scope is billed at €${HOURLY_RATE}/h, with prior notice and your acceptance.`,
     ],
     note: "It starts from an approved, validated design: we don't manufacture what we haven't calculated. Lead time is confirmed once the workshop has quoted.",
   },
@@ -157,7 +152,6 @@ const packagesEs = [
     excludes: [
       "Cálculo estructural. Es el alcance de Product Validation.",
       "Fabricación de la pieza. Es el alcance de Product Manufacturing.",
-      `Lo que quede fuera del alcance escrito se factura a ${HOURLY_RATE} €/h, con aviso y aceptación previos.`,
     ],
   },
   {
@@ -196,7 +190,6 @@ const packagesEs = [
     excludes: [
       "Diseñar la pieza desde cero. Es el alcance de Product Design o Product Development.",
       "Ensayo físico. La simulación se hace sobre las hipótesis de carga y material acordadas contigo.",
-      `Lo que quede fuera del alcance escrito se factura a ${HOURLY_RATE} €/h, con aviso y aceptación previos.`,
     ],
     note: "Requiere que aportes el modelo CAD en un formato compatible (STEP, IGES, SolidWorks u otro formato acordado previamente). Arroyo Systems no se responsabiliza de fallos de diseño originados en un modelo que no ha producido.",
   },
@@ -227,7 +220,6 @@ const packagesEs = [
     excludes: [
       "Fabricación de la pieza. Es el alcance de Product Manufacturing.",
       "Ensayo físico. La simulación se hace sobre las hipótesis de carga y material acordadas contigo.",
-      `Lo que quede fuera del alcance escrito se factura a ${HOURLY_RATE} €/h, con aviso y aceptación previos.`,
     ],
   },
   {
@@ -253,7 +245,6 @@ const packagesEs = [
     ],
     excludes: [
       "Certificado de conformidad (CoC), salvo que tu presupuesto lo indique expresamente.",
-      `Lo que quede fuera del alcance escrito se factura a ${HOURLY_RATE} €/h, con aviso y aceptación previos.`,
     ],
     note: "Parte de un diseño aprobado y validado: no fabricamos lo que no hemos calculado. El plazo se confirma cuando el taller ha cotizado.",
   },

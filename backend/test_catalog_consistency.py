@@ -37,8 +37,11 @@ def test_site_advertises_the_engine_price(content_js, key):
     assert f'priceInclVat: "{_es_money(low_vat, 2)} – {_es_money(high_vat, 2)} con IVA del 21%"' in content_js
 
 
-def test_site_advertises_the_engine_hourly_rate(content_js):
-    assert f'const HOURLY_RATE = "{ENGINEERING_HOURS_RATE:g}";' in content_js
+def test_site_does_not_publish_the_hourly_rate(content_js):
+    # The hourly rate lives in the quote and contract, not in the product detail panels.
+    rate = f"{ENGINEERING_HOURS_RATE:g}"
+    for forbidden in (f"€{rate}/h", f"{rate} €/h", "HOURLY_RATE"):
+        assert forbidden not in content_js, forbidden
 
 
 def test_site_does_not_leak_internal_numbers(content_js):

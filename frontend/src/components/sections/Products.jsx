@@ -9,13 +9,6 @@ import {
 } from "../ui/dialog";
 import { useContent } from "../../i18n/useLang";
 
-const MetaField = ({ label, value }) => (
-  <div>
-    <p className="eyebrow mb-1">{label}</p>
-    <p className="text-base text-[color:var(--arroyo-navy)]">{value}</p>
-  </div>
-);
-
 const PriceBlock = ({ pkg, className = "" }) => {
   const isQuoted = pkg.priceInclVat === null;
   return (
@@ -34,70 +27,82 @@ const PriceBlock = ({ pkg, className = "" }) => {
   );
 };
 
+const MARK_URL = `${process.env.PUBLIC_URL || ""}/assets/brand/logo-mark.svg`;
+
+// The detail panel stays short on purpose: the price and what you get come first, the fine
+// print last. The tile it opens from already carries the description, so it is not repeated
+// here, and the includes are listed by title only.
 const PackageDialog = ({ pkg, onOpenChange, t }) => (
   <Dialog open={!!pkg} onOpenChange={onOpenChange}>
     <DialogContent
       overlayClassName="bg-black/30 backdrop-blur-sm"
-      className="max-w-2xl max-h-[88vh] overflow-y-auto bg-white border-0 rounded-[28px] p-8 md:p-12"
+      className="max-w-2xl max-h-[88vh] overflow-y-auto bg-white border-0 rounded-[28px] p-6 md:p-9"
       style={{ boxShadow: "0 30px 90px -20px rgba(0,0,0,0.35)" }}
     >
       {pkg && (
         <>
-          <DialogHeader className="space-y-2 text-left">
-            <DialogTitle className="text-3xl md:text-[2.5rem] font-semibold tracking-tight leading-tight text-[color:var(--arroyo-navy)]">
+          <DialogHeader className="space-y-1.5 text-left">
+            <img src={MARK_URL} alt="" aria-hidden="true" className="block h-8 w-auto mb-3 self-start" />
+            <DialogTitle className="text-2xl md:text-[2rem] font-semibold tracking-tight leading-tight text-[color:var(--arroyo-navy)]">
               {pkg.name}
             </DialogTitle>
-            <DialogDescription className="sr-only">{pkg.tagline}</DialogDescription>
-            <p className="text-xl md:text-2xl font-semibold tracking-tight text-[color:var(--arroyo-muted)] leading-snug">
-              {pkg.tagline}
-            </p>
+            <DialogDescription className="sr-only">{pkg.description}</DialogDescription>
+            <p className="text-base md:text-lg text-[color:var(--arroyo-muted)] leading-snug">{pkg.tagline}</p>
           </DialogHeader>
 
-          <div className="mt-8 rounded-2xl bg-[color:var(--arroyo-bg-soft)] px-6 py-5">
-            <PriceBlock pkg={pkg} />
-            {pkg.priceInclVat && (
-              <p className="text-sm text-[color:var(--arroyo-muted)] mt-3">{pkg.priceInclVat}</p>
-            )}
+          <div className="mt-6 rounded-2xl bg-[color:var(--arroyo-bg-soft)] px-5 py-4 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-x-8 gap-y-4 items-center">
+            <div>
+              <p
+                className={
+                  pkg.priceInclVat === null
+                    ? "text-lg md:text-xl font-semibold tracking-tight leading-snug text-[color:var(--arroyo-navy)]"
+                    : "text-[1.5rem] md:text-[1.75rem] font-semibold tracking-tight leading-none text-[color:var(--arroyo-navy)]"
+                }
+              >
+                {pkg.price}
+              </p>
+              <p className="text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-1.5">
+                {pkg.priceInclVat ?? pkg.priceNote}
+              </p>
+            </div>
+            <dl className="text-[0.8125rem] leading-snug space-y-1.5">
+              <div className="flex gap-2">
+                <dt className="text-[color:var(--arroyo-muted)]">{t.leadTimeLabel}</dt>
+                <dd className="font-medium text-[color:var(--arroyo-navy)]">{pkg.leadTime}</dd>
+              </div>
+              <div className="flex gap-2">
+                <dt className="text-[color:var(--arroyo-muted)]">{t.revisionsLabel}</dt>
+                <dd className="font-medium text-[color:var(--arroyo-navy)]">{pkg.revisions}</dd>
+              </div>
+            </dl>
           </div>
 
-          <p className="arroyo-body text-base md:text-lg mt-8 leading-relaxed">{pkg.description}</p>
-
-          <div className="mt-10">
-            <p className="eyebrow mb-4">{t.includesLabel}</p>
-            <ul className="space-y-4">
+          <div className="mt-7">
+            <p className="eyebrow mb-3">{t.includesLabel}</p>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5">
               {pkg.includes.map((d) => (
-                <li key={d.title} className="flex gap-3 border-t border-[color:var(--arroyo-line)] pt-4">
-                  <Check size={18} className="mt-0.5 shrink-0 text-[color:var(--arroyo-accent)]" />
-                  <div>
-                    <p className="font-semibold text-[color:var(--arroyo-navy)]">{d.title}</p>
-                    <p className="arroyo-body text-[0.9375rem] mt-1">{d.description}</p>
-                  </div>
+                <li key={d.title} className="flex gap-2.5">
+                  <Check size={16} className="mt-[3px] shrink-0 text-[color:var(--arroyo-accent)]" />
+                  <p className="text-[0.9375rem] font-medium leading-snug text-[color:var(--arroyo-navy)]">{d.title}</p>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="mt-10">
-            <p className="eyebrow mb-4">{t.excludesLabel}</p>
-            <ul className="space-y-3">
+          <div className="mt-6 pt-5 border-t border-[color:var(--arroyo-line)]">
+            <p className="eyebrow mb-2.5">{t.excludesLabel}</p>
+            <ul className="space-y-1.5">
               {pkg.excludes.map((line) => (
-                <li key={line} className="flex gap-3 text-[0.9375rem] arroyo-body">
-                  <Minus size={18} className="mt-0.5 shrink-0" />
+                <li key={line} className="flex gap-2.5 text-[0.8125rem] leading-snug arroyo-body">
+                  <Minus size={14} className="mt-[3px] shrink-0" />
                   <span>{line}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="mt-10 pt-6 border-t border-[color:var(--arroyo-line)] grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
-            <MetaField label={t.leadTimeLabel} value={pkg.leadTime} />
-            <MetaField label={t.revisionsLabel} value={pkg.revisions} />
-          </div>
-
           {pkg.note && (
-            <p className="mt-6 pt-6 border-t border-[color:var(--arroyo-line)] text-xs text-[color:var(--arroyo-muted)] leading-relaxed">
-              {pkg.note}
-            </p>
+            <p className="mt-5 text-xs text-[color:var(--arroyo-muted)] leading-relaxed">{pkg.note}</p>
           )}
         </>
       )}
