@@ -328,6 +328,9 @@ html {
   line-height: 1.15;
   color: var(--arroyo-navy);
 }
+@media (max-width: 767px) {
+  .viewer-lead { margin-top: 2.75rem; }
+}
 .viewer-pair {
   display: grid;
   grid-template-columns: 1fr;
@@ -344,36 +347,6 @@ html {
     gap: 0 1rem;
   }
 }
-/* Phones: a hairline with a small arrowhead between the two stacked viewers. */
-.viewer-connector {
-  position: relative;
-  height: 3rem;
-}
-.viewer-connector::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0.2rem;
-  left: 50%;
-  width: 1px;
-  background: linear-gradient(to bottom, transparent, #8e8e93 40%, #1d1d1f);
-}
-.viewer-connector::after {
-  content: "";
-  position: absolute;
-  bottom: 0.2rem;
-  left: 50%;
-  width: 0.5rem;
-  height: 0.5rem;
-  border-right: 1.5px solid #1d1d1f;
-  border-bottom: 1.5px solid #1d1d1f;
-  transform: translate(-50%, 0) rotate(45deg);
-  transform-origin: center;
-}
-@media (min-width: 768px) {
-  .viewer-connector { display: none; }
-}
-
 /* Timeline under the viewers: a hairline that runs most of the page's width and ends in an
    arrowhead, with a node under each viewer (01 inputs, 02 result). It draws itself, left to
    right, the first time it scrolls into view. */

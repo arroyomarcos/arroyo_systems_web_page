@@ -52,7 +52,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-16 md:mt-24 pt-6 border-t border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+        <div className="mt-16 md:mt-24 pt-6 border-t border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 md:gap-3">
           <div className="flex items-center gap-2">
             <span className="logo-badge">
               <img

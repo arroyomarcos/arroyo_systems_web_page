@@ -114,9 +114,6 @@ const Hero = () => {
                   <span>{t.viewerInputs.note}</span>
                 </figcaption>
               </figure>
-
-              {/* Phones stack the two viewers, so a short connector carries the eye downwards. */}
-              <div className="viewer-connector" aria-hidden="true" />
             </>
           )}
           <figure className="viewer-frame">
