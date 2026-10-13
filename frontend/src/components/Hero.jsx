@@ -66,7 +66,10 @@ const Hero = () => {
         <div className="reveal text-center">
           <h1 className="hero-title">
             {t.titleLines.map((line) => (
-              <span key={line}>{line}</span>
+              <span key={line}>
+                {line.replace(/\.$/, "")}
+                {line.endsWith(".") && <span className="hero-title__dot">.</span>}
+              </span>
             ))}
           </h1>
           <p className="hero-sub mt-5 md:mt-7">
