@@ -105,7 +105,7 @@ const Header = () => {
             <img
               src={ASSETS.logo}
               alt="Arroyo Systems"
-              className="logo-img h-8 md:h-9 w-auto object-contain"
+              className="logo-img h-9 md:h-11 w-auto object-contain"
             />
           </span>
         </Link>

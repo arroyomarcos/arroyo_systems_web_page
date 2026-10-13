@@ -14,7 +14,7 @@ from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Tabl
 
 ASSETS_DIR = Path(__file__).parent / "assets"
 LOGO_PATH = ASSETS_DIR / "logo-arroyo-systems.png"
-LOGO_ASPECT_RATIO = 1668 / 434  # width / height of the source PNG
+LOGO_ASPECT_RATIO = 1600 / 440  # width / height of the source PNG
 
 COMPANY_NAME = "Arroyo Systems"
 COMPANY_ADDRESS = "Avenida del Planetario, 6, 28045 Madrid, Spain"

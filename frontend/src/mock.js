@@ -2,7 +2,7 @@
 // src/i18n/content.js instead.
 
 export const ASSETS = {
-  logo: "/assets/brand/logo-arroyo-systems-transparent.png",
+  logo: "/assets/brand/logo-arroyo-systems.svg",
   hero: "https://arroyo-systems.com/assets/engineering/machined-component-hero.png",
   safetyFactor: "https://arroyo-systems.com/assets/engineering/safety-factor-component.png",
   safetyFactorLegend: "https://arroyo-systems.com/assets/engineering/safety-factor-legend.png",
