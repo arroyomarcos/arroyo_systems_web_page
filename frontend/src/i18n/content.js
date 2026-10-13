@@ -335,7 +335,7 @@ export const content = {
     contact: {
       heading1: "Tell us",
       heading2: "what you need.",
-      subheading: "Mechanical interfaces, loads and lead time. That is all we need to start.",
+      subheading: "Describe your part and what you need it for. We take care of the rest.",
       emailLabel: "Email",
       locationTitle: "Location",
       formEyebrow: "Send us a message",
@@ -475,7 +475,7 @@ export const content = {
     contact: {
       heading1: "Cuéntanos",
       heading2: "qué necesitas.",
-      subheading: "Interfaces mecánicas, cargas y plazo. Con eso empezamos.",
+      subheading: "Describe tu pieza y para qué la necesitas. Nosotros nos ocupamos del resto.",
       emailLabel: "Correo",
       locationTitle: "Ubicación",
       formEyebrow: "Envíanos un mensaje",
