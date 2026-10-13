@@ -4,9 +4,9 @@ import { useContent } from "../../i18n/useLang";
 
 // Every logo sits in an identical tile, on one shared row, so the different logo
 // typefaces never decide the layout: same box, same height, same alignment.
-const LogoTile = ({ src, alt }) => (
+const LogoTile = ({ src, alt, className = "" }) => (
   <div className="partner-tile">
-    <img src={src} alt={alt} className="partner-tile__logo" loading="lazy" />
+    <img src={src} alt={alt} className={`partner-tile__logo ${className}`} loading="lazy" />
   </div>
 );
 
@@ -32,7 +32,7 @@ const Partners = () => {
             <GroupLabel>{t.softwareLabel}</GroupLabel>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-10">
               {t.softwareItems.map((item) => (
-                <LogoTile key={item.id} src={ASSETS[item.logo]} alt={item.name} />
+                <LogoTile key={item.id} src={ASSETS[item.logo]} alt={item.name} className={`partner-tile__logo--${item.id}`} />
               ))}
             </div>
           </div>

@@ -102,10 +102,10 @@ const packagesEn = [
     id: "product-manufacturing",
     name: "Product Manufacturing",
     tagline: "Receive the part manufactured and documented.",
-    price: "Workshop cost + management",
-    priceNote: "Shown as separate lines in your quote, before anything is ordered",
+    price: "Workshop cost + Management",
+    priceNote: "Shown as separate lines in your quote, before anything is ordered.",
     priceInclVat: null,
-    leadTime: "Depends on the workshop's process",
+    leadTime: "Time to be estimated by the workshop",
     revisions: "One round of changes before launch",
     description:
       "We take a validated design through manufacturing so you don't have to chase workshops or compare quotes. You get one quote, one point of contact and one invoice, and the part arrives with its quality documentation.",
@@ -234,10 +234,10 @@ const packagesEs = [
     id: "product-manufacturing",
     name: "Product Manufacturing",
     tagline: "Recibe la pieza fabricada y documentada.",
-    price: "Coste del taller + gestión",
-    priceNote: "En líneas separadas de tu presupuesto, antes de pedir nada",
+    price: "Coste del taller + Gestión",
+    priceNote: "En líneas separadas de tu presupuesto, antes de pedir nada.",
     priceInclVat: null,
-    leadTime: "Según el proceso del taller",
+    leadTime: "Tiempo a estimar por taller",
     revisions: "Una ronda de cambios antes del lanzamiento",
     description:
       "Llevamos un diseño validado hasta la fabricación para que no tengas que perseguir talleres ni comparar ofertas. Una oferta, un interlocutor y una factura, y la pieza llega con su documentación de calidad.",
@@ -274,7 +274,7 @@ export const content = {
       ctaPrimary: "Tell us what you need",
       ctaSecondary: "See pricing",
       trust: ["One person accountable", "Closed price", "Design signed by an engineer"],
-      viewerInputs: { label: "Input data", note: "Envelope, mechanical interferences and constraints" },
+      viewerInputs: { label: "Input data", note: "Envelope, mechanical interfaces and constraints" },
       viewerResult: { label: "Final result", note: "Machined part, validated and ready to manufacture" },
     },
     products: {
@@ -283,7 +283,7 @@ export const content = {
         "Machined and bent sheet-metal parts, in steel and aluminium, with bolted joints and spot welding.",
       includesLabel: "What's included",
       excludesLabel: "What's not included",
-      detailsLink: "What's included and what's not",
+      detailsLink: "What's included",
       leadTimeLabel: "Lead time",
       revisionsLabel: "Revisions",
       viewDetailsAria: (name) => `View what ${name} includes`,
@@ -405,7 +405,7 @@ export const content = {
     nav: {
       solutions: "Productos",
       process: "Cómo trabajamos",
-      partners: "Software y colaboradores",
+      partners: "Software y Colaboradores",
       contact: "Contacto",
     },
     hero: {
@@ -413,8 +413,8 @@ export const content = {
       body: ["Mecanizado y chapa doblada.", "Un proveedor en el que puedes confiar."],
       ctaPrimary: "Cuéntanos qué necesitas",
       ctaSecondary: "Ver precios",
-      trust: ["Un único responsable", "Precio cerrado", "Diseño firmado por ingeniero"],
-      viewerInputs: { label: "Datos de entrada", note: "Envolvente, interferencias mecánicas y restricciones" },
+      trust: ["Único responsable", "Precio cerrado", "Diseño firmado por ingeniero"],
+      viewerInputs: { label: "Datos de entrada", note: "Envolvente, interfaces mecánicas y restricciones" },
       viewerResult: { label: "Resultado final", note: "Pieza mecanizada, validada y lista para fabricar" },
     },
     products: {
@@ -423,7 +423,7 @@ export const content = {
         "Piezas mecanizadas y de chapa doblada, en acero y aluminio, con uniones atornilladas y soldadura puntual.",
       includesLabel: "Qué incluye",
       excludesLabel: "Qué no incluye",
-      detailsLink: "Qué incluye y qué no",
+      detailsLink: "Qué incluye",
       leadTimeLabel: "Plazo",
       revisionsLabel: "Revisiones",
       viewDetailsAria: (name) => `Ver qué incluye ${name}`,
@@ -458,7 +458,7 @@ export const content = {
       ],
     },
     partners: {
-      heading: "Software y colaboradores",
+      heading: "Software y Colaboradores",
       subtitle: "Diseñamos y calculamos con herramientas de referencia en la industria.",
       softwareLabel: "Software",
       softwareItems: [

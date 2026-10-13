@@ -410,6 +410,12 @@ html {
   height: auto;
   object-fit: contain;
 }
+/* The Fusion lockup is stacked, so its lettering reads larger than Inventor Nastran's at the
+   same box size: scale it down a little so the two wordmarks match. */
+.partner-tile__logo--fusion {
+  max-width: 9.4rem;
+  max-height: 2.6rem;
+}
 
 /* ---------- Process ---------- */
 /* The track is tall; the pin inside it sticks to the viewport while the track scrolls past. */
