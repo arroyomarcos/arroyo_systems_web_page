@@ -109,7 +109,6 @@ const Hero = () => {
                 </div>
                 <figcaption className="viewer-frame__caption">
                   <strong>
-                    <span className="viewer-frame__index">01</span>
                     {t.viewerInputs.label}
                   </strong>
                   <span>{t.viewerInputs.note}</span>
@@ -139,7 +138,6 @@ const Hero = () => {
             </div>
             <figcaption className="viewer-frame__caption">
               <strong>
-                <span className="viewer-frame__index">02</span>
                 {t.viewerResult.label}
               </strong>
               <span>{t.viewerResult.note}</span>
@@ -150,7 +148,6 @@ const Hero = () => {
         {inputs !== "failed" && (
           <div ref={timelineRef} className={`viewer-timeline ${timelineSeen ? "is-seen" : ""}`} aria-hidden="true">
             <span className="viewer-timeline__line" />
-            <span className="viewer-timeline__head" />
             <span className="viewer-timeline__node viewer-timeline__node--start" />
             <span className="viewer-timeline__node viewer-timeline__node--end" />
           </div>

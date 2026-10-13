@@ -356,7 +356,7 @@ html {
   bottom: 0.2rem;
   left: 50%;
   width: 1px;
-  background: linear-gradient(to bottom, var(--arroyo-line), var(--arroyo-accent));
+  background: linear-gradient(to bottom, transparent, #8e8e93 40%, #1d1d1f);
 }
 .viewer-connector::after {
   content: "";
@@ -365,8 +365,8 @@ html {
   left: 50%;
   width: 0.5rem;
   height: 0.5rem;
-  border-right: 1.5px solid var(--arroyo-accent);
-  border-bottom: 1.5px solid var(--arroyo-accent);
+  border-right: 1.5px solid #1d1d1f;
+  border-bottom: 1.5px solid #1d1d1f;
   transform: translate(-50%, 0) rotate(45deg);
   transform-origin: center;
 }
@@ -395,23 +395,10 @@ html {
   left: 3%;
   right: 3%;
   height: 1.5px;
-  background: linear-gradient(to right, transparent, #aeaeb2 10%, #8e8e93 45%, var(--arroyo-accent));
+  background: linear-gradient(to right, transparent, #c7c7cc 12%, #8e8e93 45%, #1d1d1f 82%, transparent);
   transform-origin: left center;
   transform: scaleX(0);
   transition: transform 1.4s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-.viewer-timeline__head {
-  position: absolute;
-  top: 50%;
-  right: 3%;
-  width: 0.75rem;
-  height: 0.75rem;
-  border-top: 2px solid var(--arroyo-accent);
-  border-right: 2px solid var(--arroyo-accent);
-  transform: translate(0, -50%) rotate(45deg);
-  transform-origin: center;
-  opacity: 0;
-  transition: opacity 0.4s ease 1.1s;
 }
 .viewer-timeline__node {
   position: absolute;
@@ -428,16 +415,14 @@ html {
 .viewer-timeline__node--start { left: calc(25% - 0.25rem); transition-delay: 0.1s; }
 .viewer-timeline__node--end {
   left: calc(75% + 0.25rem);
-  background: var(--arroyo-accent);
-  border-color: var(--arroyo-accent);
+  background: #1d1d1f;
+  border-color: #1d1d1f;
   transition-delay: 0.9s;
 }
 .viewer-timeline.is-seen .viewer-timeline__line { transform: scaleX(1); }
-.viewer-timeline.is-seen .viewer-timeline__head,
 .viewer-timeline.is-seen .viewer-timeline__node { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
   .viewer-timeline__line,
-  .viewer-timeline__head,
   .viewer-timeline__node { transition-duration: 0.01s; transition-delay: 0s; }
 }
 .viewer-frame {
@@ -478,14 +463,6 @@ html {
   text-align: center;
   font-size: 0.8125rem;
   letter-spacing: 0;
-  color: var(--arroyo-muted);
-}
-.viewer-frame__index {
-  margin-right: 0.5rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
   color: var(--arroyo-muted);
 }
 .viewer-frame__caption strong {
