@@ -458,17 +458,20 @@ html {
   height: 100%;
   object-fit: contain;
 }
+/* Two levels: the label, then a single quiet line of keywords. */
 .viewer-frame__caption {
   margin-top: 0.5rem;
   text-align: center;
-  font-size: 0.8125rem;
-  letter-spacing: 0;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
   color: var(--arroyo-muted);
 }
 .viewer-frame__caption strong {
   display: block;
-  font-size: 1.0625rem;
+  margin-bottom: 0.2rem;
+  font-size: 1.1875rem;
   font-weight: 600;
+  letter-spacing: -0.015em;
   color: var(--arroyo-navy);
 }
 .part-viewer {

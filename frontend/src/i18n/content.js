@@ -266,8 +266,8 @@ export const content = {
       ctaSecondary: "See pricing",
       trust: ["One person accountable", "Closed price", "Design signed by an engineer"],
       flowTitle: "From concept to production.",
-      viewerInputs: { label: "Input data", note: "Envelope, mechanical interfaces and constraints" },
-      viewerResult: { label: "Final result", note: "Machined part, validated and ready to manufacture" },
+      viewerInputs: { label: "Requirements", note: "Envelope · Interfaces · Constraints" },
+      viewerResult: { label: "Results", note: "Design · Calculation · Manufacturing" },
     },
     products: {
       heading: "Products",
@@ -407,8 +407,8 @@ export const content = {
       ctaSecondary: "Ver precios",
       trust: ["Único responsable", "Precio cerrado", "Diseño firmado por ingeniero"],
       flowTitle: "Del planteamiento a producción.",
-      viewerInputs: { label: "Datos de entrada", note: "Envolvente, interfaces mecánicas y restricciones" },
-      viewerResult: { label: "Resultado final", note: "Pieza mecanizada, validada y lista para fabricar" },
+      viewerInputs: { label: "Requisitos", note: "Envolvente · Interfaces · Restricciones" },
+      viewerResult: { label: "Resultados", note: "Diseño · Cálculo · Fabricación" },
     },
     products: {
       heading: "Productos",
