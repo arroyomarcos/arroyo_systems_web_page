@@ -274,6 +274,7 @@ export const content = {
       subtitle:
         "Machined and bent sheet-metal parts, in steel and aluminium, with bolted joints and spot welding.",
       includesLabel: "What's included",
+      signedLine: "Project signed by an engineer and endorsed by the engineers' professional association.",
       excludesLabel: "What's not included",
       detailsLink: "What's included",
       leadTimeLabel: "Lead time",
@@ -415,6 +416,7 @@ export const content = {
       subtitle:
         "Piezas mecanizadas y de chapa doblada, en acero y aluminio, con uniones atornilladas y soldadura puntual.",
       includesLabel: "Qué incluye",
+      signedLine: "Proyecto firmado por ingeniero y visado por el colegio de ingenieros.",
       excludesLabel: "Qué no incluye",
       detailsLink: "Qué incluye",
       leadTimeLabel: "Plazo",

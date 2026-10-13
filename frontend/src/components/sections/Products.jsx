@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Check, Minus } from "lucide-react";
+import { BadgeCheck, Check, Minus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -88,6 +88,13 @@ const PackageDialog = ({ pkg, onOpenChange, t }) => (
               ))}
             </ul>
           </div>
+
+          {pkg.id !== "product-manufacturing" && (
+            <p className="mt-5 flex items-center gap-2.5 text-[0.875rem] font-medium leading-snug text-[color:var(--arroyo-navy)]">
+              <BadgeCheck size={18} className="shrink-0 text-[color:var(--arroyo-navy)]" />
+              <span>{t.signedLine}</span>
+            </p>
+          )}
 
           <div className="mt-6 pt-5 border-t border-[color:var(--arroyo-line)]">
             <p className="eyebrow mb-2.5">{t.excludesLabel}</p>
