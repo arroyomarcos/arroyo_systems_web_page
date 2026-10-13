@@ -267,7 +267,7 @@ export const content = {
       trust: ["Signed and certified project", "Closed price", "Competitive lead times"],
       flowTitle: "From concept to production.",
       viewerInputs: { label: "Requirements", note: "Envelope · Interfaces · Constraints" },
-      viewerResult: { label: "Results", note: "Design · Calculation · Manufacturing" },
+      viewerResult: { label: "Result", note: "Design · Calculation · Manufacturing" },
     },
     products: {
       heading: "Products",
@@ -288,7 +288,7 @@ export const content = {
       promises: [
         {
           title: "One supplier, one person accountable.",
-          body: "We design, calculate and manufacture. We deliver all the corresponding documentation.",
+          body: "We design, calculate and manufacture. We deliver the project signed by an engineer and endorsed by the engineers' professional association.",
         },
         {
           title: "Designed to be manufactured.",
@@ -408,7 +408,7 @@ export const content = {
       trust: ["Proyecto firmado y visado", "Precio cerrado", "Plazos competitivos"],
       flowTitle: "Del planteamiento a producción.",
       viewerInputs: { label: "Requisitos", note: "Envolvente · Interfaces · Restricciones" },
-      viewerResult: { label: "Resultados", note: "Diseño · Cálculo · Fabricación" },
+      viewerResult: { label: "Resultado", note: "Diseño · Cálculo · Fabricación" },
     },
     products: {
       heading: "Productos",
@@ -429,7 +429,7 @@ export const content = {
       promises: [
         {
           title: "Un solo proveedor, un solo responsable.",
-          body: "Diseñamos, calculamos y fabricamos. Entregamos toda la documentación correspondiente.",
+          body: "Diseñamos, calculamos y fabricamos. Entregamos el proyecto firmado por ingeniero y visado por el colegio de ingenieros.",
         },
         {
           title: "Diseñado para fabricarse.",
