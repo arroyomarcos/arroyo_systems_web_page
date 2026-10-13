@@ -32,10 +32,20 @@ const SURFACES = {
 };
 
 const IDLE_RESUME_MS = 2500;
+
+// Viewers that share a `syncGroup` turn together: whichever one the visitor last grabbed (or,
+// before any interaction, the first to load) drives, and the others copy its azimuth and
+// elevation every frame. Each keeps its own orbit limits, distance and auto-rotation speed, so
+// the motion is exactly what a lone viewer does, just in step.
+const syncGroups = new Map();
+const getSyncGroup = (name) => {
+  if (!syncGroups.has(name)) syncGroups.set(name, { driver: null, azimuth: null, polar: null, subs: new Set() });
+  return syncGroups.get(name);
+};
 // The part always stays inside this fraction of the stage, from every viewing angle.
 const FIT_MARGIN = 0.96;
 
-const PartViewer = ({ model = "result", onReady, onFail }) => {
+const PartViewer = ({ model = "result", syncGroup, onReady, onFail }) => {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -83,16 +93,22 @@ const PartViewer = ({ model = "result", onReady, onFail }) => {
     // OrbitControls claims every touch; give vertical swipes back to the page scroll.
     renderer.domElement.style.touchAction = "pan-y";
 
+    const sync = syncGroup ? getSyncGroup(syncGroup) : null;
+    const id = Symbol(model);
+    const isFollower = () => sync !== null && sync.driver !== null && sync.driver !== id && sync.azimuth !== null;
+
+    let wantsAutoRotate = !reducedMotion;
     let resumeTimer = null;
     controls.addEventListener("start", () => {
-      controls.autoRotate = false;
+      wantsAutoRotate = false;
+      if (sync) sync.driver = id;
       clearTimeout(resumeTimer);
     });
     controls.addEventListener("end", () => {
       if (reducedMotion) return;
       clearTimeout(resumeTimer);
       resumeTimer = setTimeout(() => {
-        controls.autoRotate = true;
+        wantsAutoRotate = true;
       }, IDLE_RESUME_MS);
     });
 
@@ -103,9 +119,22 @@ const PartViewer = ({ model = "result", onReady, onFail }) => {
     let fitCorners = null; // the part's bounding-box corners, in world space
 
     const render = () => {
+      if (isFollower()) {
+        controls.autoRotate = false;
+        camera.position.setFromSphericalCoords(camera.position.length(), sync.polar, sync.azimuth);
+      } else {
+        controls.autoRotate = wantsAutoRotate;
+      }
       controls.update();
+      if (sync && sync.driver === id) {
+        const { x, y, z } = camera.position;
+        sync.azimuth = Math.atan2(x, z);
+        sync.polar = Math.acos(Math.min(1, Math.max(-1, y / camera.position.length())));
+        if (reducedMotion) sync.subs.forEach((notify) => notify !== render && notify());
+      }
       renderer.render(scene, camera);
     };
+    if (sync && reducedMotion) sync.subs.add(render);
 
     const loop = () => {
       rafId = null;
@@ -243,17 +272,23 @@ const PartViewer = ({ model = "result", onReady, onFail }) => {
         );
 
         controls.target.set(0, 0, 0);
+        if (sync && sync.driver === null) sync.driver = id;
         resize();
         render();
         onReady?.();
         start();
       })
       .catch((e) => {
+        if (sync && sync.driver === id) sync.driver = null;
         if (!disposed) onFail?.(e);
       });
 
     return () => {
       disposed = true;
+      if (sync) {
+        sync.subs.delete(render);
+        if (sync.driver === id) sync.driver = null;
+      }
       clearTimeout(resumeTimer);
       if (rafId) cancelAnimationFrame(rafId);
       document.removeEventListener("visibilitychange", onVisibilityChange);

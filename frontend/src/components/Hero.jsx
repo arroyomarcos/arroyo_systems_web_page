@@ -64,21 +64,46 @@ const Hero = () => {
           </ul>
         </div>
 
-        <div className="viewer-pair mt-2 md:mt-0">
+        <p className="viewer-lead">{t.flowTitle}</p>
+
+        <div className="viewer-pair">
           {inputs !== "failed" && (
-            <figure className="viewer-frame">
-              <div className={`viewer-frame__stage ${inputs === "ready" && result !== "loading" ? "is-ready" : ""}`}>
-                {canMountViewer && (
-                  <Suspense fallback={null}>
-                    <PartViewer model="inputs" onReady={() => setInputs("ready")} onFail={() => setInputs("failed")} />
-                  </Suspense>
-                )}
+            <>
+              <figure className="viewer-frame">
+                <div className={`viewer-frame__stage ${inputs === "ready" && result !== "loading" ? "is-ready" : ""}`}>
+                  {canMountViewer && (
+                    <Suspense fallback={null}>
+                      <PartViewer
+                        model="inputs"
+                        syncGroup="hero"
+                        onReady={() => setInputs("ready")}
+                        onFail={() => setInputs("failed")}
+                      />
+                    </Suspense>
+                  )}
+                </div>
+                <figcaption className="viewer-frame__caption">
+                  <strong>
+                    <span className="viewer-frame__index">01</span>
+                    {t.viewerInputs.label}
+                  </strong>
+                  <span>{t.viewerInputs.note}</span>
+                </figcaption>
+              </figure>
+
+              <div className="viewer-flow" aria-hidden="true">
+                <svg viewBox="0 0 88 28" width="88" height="28" fill="none">
+                  <defs>
+                    <linearGradient id="viewer-flow-gradient" gradientUnits="userSpaceOnUse" x1="4" y1="0" x2="74" y2="0">
+                      <stop offset="0" style={{ stopColor: "var(--arroyo-muted)", stopOpacity: 0.35 }} />
+                      <stop offset="1" style={{ stopColor: "var(--arroyo-accent)" }} />
+                    </linearGradient>
+                  </defs>
+                  <path className="viewer-flow__line" d="M4 14 H74" stroke="url(#viewer-flow-gradient)" strokeWidth="2.25" strokeLinecap="round" />
+                  <path d="M66 5.5 L80 14 L66 22.5" stroke="var(--arroyo-accent)" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </div>
-              <figcaption className="viewer-frame__caption">
-                <strong>{t.viewerInputs.label}</strong>
-                <span>{t.viewerInputs.note}</span>
-              </figcaption>
-            </figure>
+            </>
           )}
           <figure className="viewer-frame">
             <div className={`viewer-frame__stage ${result !== "loading" ? "is-ready" : ""}`}>
@@ -87,13 +112,21 @@ const Hero = () => {
               ) : (
                 canMountViewer && (
                   <Suspense fallback={null}>
-                    <PartViewer model="result" onReady={() => setResult("ready")} onFail={() => setResult("failed")} />
+                    <PartViewer
+                      model="result"
+                      syncGroup="hero"
+                      onReady={() => setResult("ready")}
+                      onFail={() => setResult("failed")}
+                    />
                   </Suspense>
                 )
               )}
             </div>
             <figcaption className="viewer-frame__caption">
-              <strong>{t.viewerResult.label}</strong>
+              <strong>
+                <span className="viewer-frame__index">02</span>
+                {t.viewerResult.label}
+              </strong>
               <span>{t.viewerResult.note}</span>
             </figcaption>
           </figure>
