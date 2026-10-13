@@ -320,7 +320,7 @@ html {
 
 /* Stage for the interactive 3D part: wide, no frame, grounded by a soft shadow. */
 .viewer-lead {
-  margin: 3rem 0 0.5rem;
+  margin: 1.25rem 0 0;
   text-align: center;
   font-size: clamp(1.5rem, 2.4vw, 2rem);
   font-weight: 600;
@@ -340,36 +340,105 @@ html {
 }
 @media (min-width: 768px) {
   .viewer-pair {
-    grid-template-columns: 1fr 6rem 1fr;
-    gap: 0;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1rem;
   }
 }
-/* Arrow between the inputs and the result: reads left to right on desktop, top to bottom on
-   phones, with a slow flow along the line. */
-.viewer-flow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Phones: a hairline with a small arrowhead between the two stacked viewers. */
+.viewer-connector {
+  position: relative;
   height: 3rem;
-  transform: rotate(90deg);
+}
+.viewer-connector::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0.2rem;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--arroyo-line), var(--arroyo-accent));
+}
+.viewer-connector::after {
+  content: "";
+  position: absolute;
+  bottom: 0.2rem;
+  left: 50%;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 1.5px solid var(--arroyo-accent);
+  border-bottom: 1.5px solid var(--arroyo-accent);
+  transform: translate(-50%, 0) rotate(45deg);
+  transform-origin: center;
 }
 @media (min-width: 768px) {
-  .viewer-flow {
-    height: auto;
-    transform: none;
-    /* Centre on the stage, not on stage + caption. */
-    padding-bottom: 4.75rem;
-  }
+  .viewer-connector { display: none; }
 }
-.viewer-flow__line {
-  stroke-dasharray: 0.5 7;
-  animation: viewer-flow 1.4s linear infinite;
+
+/* Timeline under the viewers: a hairline that runs most of the page's width and ends in an
+   arrowhead, with a node under each viewer (01 inputs, 02 result). It draws itself, left to
+   right, the first time it scrolls into view. */
+.viewer-timeline {
+  position: relative;
+  display: none;
+  width: min(1380px, 100vw - 2rem);
+  height: 1.5rem;
+  margin: 0.9rem 0 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
-@keyframes viewer-flow {
-  to { stroke-dashoffset: -15; }
+@media (min-width: 768px) {
+  .viewer-timeline { display: block; }
 }
+.viewer-timeline__line {
+  position: absolute;
+  top: 50%;
+  left: 3%;
+  right: 3%;
+  height: 1.5px;
+  background: linear-gradient(to right, transparent, #aeaeb2 10%, #8e8e93 45%, var(--arroyo-accent));
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 1.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.viewer-timeline__head {
+  position: absolute;
+  top: 50%;
+  right: 3%;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-top: 2px solid var(--arroyo-accent);
+  border-right: 2px solid var(--arroyo-accent);
+  transform: translate(0, -50%) rotate(45deg);
+  transform-origin: center;
+  opacity: 0;
+  transition: opacity 0.4s ease 1.1s;
+}
+.viewer-timeline__node {
+  position: absolute;
+  top: 50%;
+  width: 0.5625rem;
+  height: 0.5625rem;
+  margin: -0.28125rem 0 0 -0.28125rem;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid var(--arroyo-muted);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.viewer-timeline__node--start { left: calc(25% - 0.25rem); transition-delay: 0.1s; }
+.viewer-timeline__node--end {
+  left: calc(75% + 0.25rem);
+  background: var(--arroyo-accent);
+  border-color: var(--arroyo-accent);
+  transition-delay: 0.9s;
+}
+.viewer-timeline.is-seen .viewer-timeline__line { transform: scaleX(1); }
+.viewer-timeline.is-seen .viewer-timeline__head,
+.viewer-timeline.is-seen .viewer-timeline__node { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
-  .viewer-flow__line { animation: none; stroke-dasharray: none; }
+  .viewer-timeline__line,
+  .viewer-timeline__head,
+  .viewer-timeline__node { transition-duration: 0.01s; transition-delay: 0s; }
 }
 .viewer-frame {
   position: relative;

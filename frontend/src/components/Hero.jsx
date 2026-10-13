@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { ASSETS } from "../mock";
 import { useContent } from "../i18n/useLang";
 
@@ -27,8 +27,35 @@ const useAfterFirstPaint = () => {
   return ready;
 };
 
+// True once the element has scrolled into view (and stays true), so a one-off entrance
+// animation plays when the visitor reaches it rather than before they can see it.
+const useSeen = () => {
+  const ref = useRef(null);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const node = ref.current;
+    if (!node || typeof IntersectionObserver === "undefined") {
+      setSeen(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setSeen(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.6 }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  return [ref, seen];
+};
+
 const Hero = () => {
   const t = useContent().hero;
+  const [timelineRef, timelineSeen] = useSeen();
   const canMountViewer = useAfterFirstPaint();
   const [inputs, setInputs] = useState("loading"); // loading | ready | failed
   const [result, setResult] = useState("loading");
@@ -64,8 +91,6 @@ const Hero = () => {
           </ul>
         </div>
 
-        <p className="viewer-lead">{t.flowTitle}</p>
-
         <div className="viewer-pair">
           {inputs !== "failed" && (
             <>
@@ -91,18 +116,8 @@ const Hero = () => {
                 </figcaption>
               </figure>
 
-              <div className="viewer-flow" aria-hidden="true">
-                <svg viewBox="0 0 88 28" width="88" height="28" fill="none">
-                  <defs>
-                    <linearGradient id="viewer-flow-gradient" gradientUnits="userSpaceOnUse" x1="4" y1="0" x2="74" y2="0">
-                      <stop offset="0" style={{ stopColor: "var(--arroyo-muted)", stopOpacity: 0.35 }} />
-                      <stop offset="1" style={{ stopColor: "var(--arroyo-accent)" }} />
-                    </linearGradient>
-                  </defs>
-                  <path className="viewer-flow__line" d="M4 14 H74" stroke="url(#viewer-flow-gradient)" strokeWidth="2.25" strokeLinecap="round" />
-                  <path d="M66 5.5 L80 14 L66 22.5" stroke="var(--arroyo-accent)" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
+              {/* Phones stack the two viewers, so a short connector carries the eye downwards. */}
+              <div className="viewer-connector" aria-hidden="true" />
             </>
           )}
           <figure className="viewer-frame">
@@ -131,6 +146,17 @@ const Hero = () => {
             </figcaption>
           </figure>
         </div>
+
+        {inputs !== "failed" && (
+          <div ref={timelineRef} className={`viewer-timeline ${timelineSeen ? "is-seen" : ""}`} aria-hidden="true">
+            <span className="viewer-timeline__line" />
+            <span className="viewer-timeline__head" />
+            <span className="viewer-timeline__node viewer-timeline__node--start" />
+            <span className="viewer-timeline__node viewer-timeline__node--end" />
+          </div>
+        )}
+
+        <p className="viewer-lead">{t.flowTitle}</p>
       </div>
     </section>
   );
