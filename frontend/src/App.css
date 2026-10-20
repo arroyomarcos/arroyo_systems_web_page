@@ -527,6 +527,14 @@ html {
   mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.03) 3%, rgba(0, 0, 0, 0.12) 6.5%, rgba(0, 0, 0, 0.3) 10.5%, rgba(0, 0, 0, 0.58) 14.5%, rgba(0, 0, 0, 0.84) 18.5%, rgba(0, 0, 0, 0.97) 22%, #000 25%,
     #000 75%, rgba(0, 0, 0, 0.97) 78%, rgba(0, 0, 0, 0.84) 81.5%, rgba(0, 0, 0, 0.58) 85.5%, rgba(0, 0, 0, 0.3) 89.5%, rgba(0, 0, 0, 0.12) 93.5%, rgba(0, 0, 0, 0.03) 97%, transparent 100%);
 }
+@media (max-width: 767px) {
+  /* Keep stage + steps inside one screen on short phones too. */
+  .process-stage {
+    max-height: calc(100vh - 27rem);
+    max-height: calc(100svh - 27rem);
+    min-height: 9rem;
+  }
+}
 @media (min-width: 768px) {
   .process-stage {
     --pad: 3rem;
@@ -653,6 +661,18 @@ html {
   .process-stage__img,
   .process-step button,
   .process-step__bar::after { transition-duration: 0.01s; }
+}
+
+/* Very short viewports (a phone held sideways): nothing fits one screen, so the section is not
+   pinned. The steps simply read as a list, all text visible, without the stage. */
+@media (max-height: 520px) {
+  .process-track { height: auto; margin-top: 2rem; }
+  .process-pin { position: static; display: block; height: auto; padding: 1rem 0 2.5rem; }
+  .process-stage { display: none; }
+  .process-steps { margin-top: 0; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+  .process-step button { opacity: 1; }
+  .process-step__body,
+  .process-step.is-active .process-step__body { display: block; }
 }
 
 /* ---------- Contact form ---------- */
