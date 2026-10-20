@@ -35,7 +35,7 @@ const packagesEn = [
     ],
     excludes: [
       "Structural calculation. That is the scope of Product Validation.",
-      "Manufacturing the part. The workshop does that; coordinating and technically supervising it is the scope of Product Manufacturing.",
+      "Manufacturing the part. The supplier does that; coordinating and technically supervising it is the scope of Product Manufacturing.",
     ],
   },
   {
@@ -90,7 +90,7 @@ const packagesEn = [
       { title: "Engineering Report", description: "Clear evidence that your design meets its intended requirements." },
     ],
     excludes: [
-      "Manufacturing the part. The workshop does that; coordinating and technically supervising it is the scope of Product Manufacturing.",
+      "Manufacturing the part. The supplier does that; coordinating and technically supervising it is the scope of Product Manufacturing.",
       "Physical testing. The simulation runs on the load and material assumptions agreed with you.",
     ],
   },
@@ -99,26 +99,26 @@ const packagesEn = [
     name: "Product Manufacturing",
     tagline: "Technical coordination and supervision.",
     price: "Price based on volume.",
-    priceNote: "The workshop bills you the manufacturing. We bill the technical supervision.",
+    priceNote: "The supplier bills you the manufacturing. We bill the technical supervision.",
     priceInclVat: null,
     leadTime: "Lead time depends on the supplier",
     leadTimeSentence: true,
     revisions: null,
     description:
-      "We select the right workshop, review its quote against your drawing and tolerances, and supervise the manufacturing through to receipt. You contract the workshop directly, with the manufacturer's price and warranty. We are your technical point of contact.",
+      "We select the right supplier, review its quote against your drawing and tolerances, and supervise the manufacturing through to receipt. You contract the supplier directly, with the manufacturer's price and warranty. We are your technical point of contact.",
     wideIncludes: true,
     includes: [
-      { title: "Technical selection of workshops and review of their quotes against the drawing and tolerances." },
-      { title: "Technical liaison with the workshop and technical follow-up of the manufacturing." },
+      { title: "Technical selection of suppliers and review of their quotes against the drawing and tolerances." },
+      { title: "Technical liaison with the supplier and technical follow-up of the manufacturing." },
       { title: "Technical report on any deviation, so you can decide with sound judgement." },
-      { title: "Review of the documentation the workshop provides on receipt." },
+      { title: "Review of the documentation the supplier provides on receipt." },
       { title: "One round of changes before launch and one incident." },
     ],
     excludes: [
-      "Manufacturing, purchasing and delivery of the part are carried out by the workshop, which bills you directly. Any additional work is quoted separately.",
+      "Manufacturing, purchasing and delivery of the part are carried out by the supplier, which bills you directly. Any additional work is quoted separately.",
     ],
     howItWorks:
-      "You contract and pay the manufacturing directly to the workshop. Arroyo Systems bills only the technical coordination and supervision: a percentage of the manufacturing amount that decreases with volume, stated in your quote before you commit.",
+      "You contract and pay the manufacturing directly to the supplier. Arroyo Systems bills only the technical coordination and supervision: a percentage of the manufacturing amount that decreases with volume, stated in your quote before you commit.",
   },
 ];
 
@@ -151,7 +151,7 @@ const packagesEs = [
     ],
     excludes: [
       "Cálculo estructural. Es el alcance de Product Validation.",
-      "Fabricación de la pieza. La realiza el taller; su coordinación y supervisión técnica es el alcance de Product Manufacturing.",
+      "Fabricación de la pieza. La realiza el proveedor; su coordinación y supervisión técnica es el alcance de Product Manufacturing.",
     ],
   },
   {
@@ -218,7 +218,7 @@ const packagesEs = [
       { title: "Informe de ingeniería", description: "Evidencia clara de que tu diseño cumple los requisitos previstos." },
     ],
     excludes: [
-      "Fabricación de la pieza. La realiza el taller; su coordinación y supervisión técnica es el alcance de Product Manufacturing.",
+      "Fabricación de la pieza. La realiza el proveedor; su coordinación y supervisión técnica es el alcance de Product Manufacturing.",
       "Ensayo físico. La simulación se hace sobre las hipótesis de carga y material acordadas contigo.",
     ],
   },
@@ -227,26 +227,26 @@ const packagesEs = [
     name: "Product Manufacturing",
     tagline: "Coordinación y supervisión técnica.",
     price: "Precio según volumen.",
-    priceNote: "El taller te factura la fabricación. Nosotros, la supervisión técnica.",
+    priceNote: "El proveedor te factura la fabricación. Nosotros, la supervisión técnica.",
     priceInclVat: null,
     leadTime: "Plazo según proveedor",
     leadTimeSentence: true,
     revisions: null,
     description:
-      "Seleccionamos el taller adecuado, revisamos su oferta contra tu plano y tolerancias y supervisamos la fabricación hasta la recepción. Contratas al taller directamente, con precio y garantía de fabricante. Nosotros somos tu interlocutor técnico.",
+      "Seleccionamos el proveedor adecuado, revisamos su oferta contra tu plano y tolerancias y supervisamos la fabricación hasta la recepción. Contratas al proveedor directamente, con precio y garantía de fabricante. Nosotros somos tu interlocutor técnico.",
     wideIncludes: true,
     includes: [
-      { title: "Selección técnica de talleres y revisión de sus ofertas frente al plano y las tolerancias." },
-      { title: "Interlocución técnica con el taller y seguimiento técnico de la fabricación." },
+      { title: "Selección técnica de proveedores y revisión de sus ofertas frente al plano y las tolerancias." },
+      { title: "Interlocución técnica con el proveedor y seguimiento técnico de la fabricación." },
       { title: "Informe técnico ante cualquier desviación, para que decidas con criterio." },
-      { title: "Revisión de la documentación que aporta el taller a la recepción." },
+      { title: "Revisión de la documentación que aporta el proveedor a la recepción." },
       { title: "Una ronda de cambios antes del lanzamiento y una incidencia." },
     ],
     excludes: [
-      "La fabricación, la compra y la entrega de la pieza las realiza el taller, que te factura directamente. Cualquier trabajo adicional se presupuesta aparte.",
+      "La fabricación, la compra y la entrega de la pieza las realiza el proveedor, que te factura directamente. Cualquier trabajo adicional se presupuesta aparte.",
     ],
     howItWorks:
-      "Contratas y pagas la fabricación directamente al taller. Arroyo Systems factura únicamente la coordinación y supervisión técnica: un porcentaje del importe de fabricación que baja según el volumen, indicado en tu presupuesto antes de contratar.",
+      "Contratas y pagas la fabricación directamente al proveedor. Arroyo Systems factura únicamente la coordinación y supervisión técnica: un porcentaje del importe de fabricación que baja según el volumen, indicado en tu presupuesto antes de contratar.",
   },
 ];
 
@@ -307,7 +307,7 @@ export const content = {
         { title: "We design and calculate", body: "The part, designed for manufacturing and structurally validated." },
         {
           title: "Technical supervision",
-          body: "We coordinate with the workshop until the part is received.",
+          body: "We coordinate with the supplier until the part is received.",
         },
       ],
     },
@@ -452,7 +452,7 @@ export const content = {
         { title: "Diseñamos y calculamos", body: "La pieza, pensada para fabricación y validada estructuralmente." },
         {
           title: "Supervisión técnica",
-          body: "Coordinamos con el taller hasta la recepción de la pieza.",
+          body: "Coordinamos con el proveedor hasta la recepción de la pieza.",
         },
       ],
     },
