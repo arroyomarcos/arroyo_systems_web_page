@@ -97,8 +97,8 @@ const packagesEn = [
   {
     id: "product-manufacturing",
     name: "Product Manufacturing",
-    tagline: "Technical coordination and supervision of manufacturing.",
-    price: "Pricing as a percentage.",
+    tagline: "Technical coordination and supervision.",
+    price: "Price based on volume.",
     priceNote: "The workshop bills you the manufacturing. We bill the technical supervision.",
     priceInclVat: null,
     leadTime: "Lead time depends on the supplier",
@@ -225,8 +225,8 @@ const packagesEs = [
   {
     id: "product-manufacturing",
     name: "Product Manufacturing",
-    tagline: "Coordinación y supervisión técnica de fabricación.",
-    price: "Precios según porcentaje.",
+    tagline: "Coordinación y supervisión técnica.",
+    price: "Precio según volumen.",
     priceNote: "El taller te factura la fabricación. Nosotros, la supervisión técnica.",
     priceInclVat: null,
     leadTime: "Plazo según proveedor",
