@@ -22,16 +22,12 @@ const PriceBlock = ({ pkg, className = "" }) => {
       >
         {pkg.price}
       </p>
-      {/* On the coordination product this line says who bills what, so it stays readable. */}
-      <p
-        className={
-          isQuoted
-            ? "text-[0.9375rem] leading-snug text-[color:var(--arroyo-navy)] opacity-80 mt-3 max-w-sm"
-            : "text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-2 max-w-xs"
-        }
-      >
-        {pkg.priceNote}
-      </p>
+      {/* Same small grey clarification as the other products; the coordination product adds the
+          fee mechanism as a second line in that style. */}
+      <p className="text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-2 max-w-xs">{pkg.priceNote}</p>
+      {pkg.feeLine && (
+        <p className="text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-1 max-w-xs">{pkg.feeLine}</p>
+      )}
     </div>
   );
 };
@@ -70,22 +66,14 @@ const PackageDialog = ({ pkg, onOpenChange, t }) => (
               >
                 {pkg.price}
               </p>
-              <p
-                className={
-                  pkg.priceInclVat === null
-                    ? "text-[0.9375rem] leading-snug text-[color:var(--arroyo-navy)] opacity-80 mt-2"
-                    : "text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-1.5"
-                }
-              >
+              <p className="text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-1.5">
                 {pkg.priceInclVat ?? pkg.priceNote}
               </p>
+              {pkg.feeLine && (
+                <p className="text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-1">{pkg.feeLine}</p>
+              )}
             </div>
             <dl className="text-[0.8125rem] leading-snug space-y-1.5">
-              {pkg.feeLine && (
-                <div className="flex gap-2">
-                  <dd className="font-medium text-[color:var(--arroyo-navy)]">{pkg.feeLine}</dd>
-                </div>
-              )}
               <div className="flex gap-2">
                 {!pkg.leadTimeSentence && <dt className="text-[color:var(--arroyo-muted)]">{t.leadTimeLabel}</dt>}
                 <dd className="font-medium text-[color:var(--arroyo-navy)]">{pkg.leadTime}</dd>
@@ -167,10 +155,7 @@ const Products = () => {
                     {p.name}
                   </h3>
                   <PriceBlock pkg={p} className="mt-6" />
-                  {p.feeLine && (
-                    <p className="mt-4 text-base font-medium leading-snug text-[color:var(--arroyo-navy)]">{p.feeLine}</p>
-                  )}
-                  <p className={`${p.feeLine ? "mt-2" : "mt-4"} text-base text-[color:var(--arroyo-muted)]`}>{p.leadTime}</p>
+                  <p className="mt-4 text-base text-[color:var(--arroyo-muted)]">{p.leadTime}</p>
                 </div>
 
                 <div className="md:col-span-7 flex flex-col">
