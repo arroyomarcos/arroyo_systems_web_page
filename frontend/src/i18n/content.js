@@ -361,6 +361,8 @@ export const content = {
       privacyPrefix: "I have read and accept the",
       privacyLinkText: "Privacy Policy",
       submit: "Tell us what you need",
+      sending: "Sending…",
+      sendError: "We could not send your message. Please try again or write to us at",
       successTitle: "Message received.",
       successBody:
         "Thanks for contacting Arroyo Systems. We'll review your enquiry and come back to you shortly.",
@@ -504,6 +506,8 @@ export const content = {
       privacyPrefix: "He leído y acepto la",
       privacyLinkText: "Política de Privacidad",
       submit: "Cuéntanos qué necesitas",
+      sending: "Enviando…",
+      sendError: "No hemos podido enviar tu mensaje. Inténtalo de nuevo o escríbenos a",
       successTitle: "Mensaje recibido.",
       successBody: "Gracias por contactar con Arroyo Systems. Revisaremos tu consulta y te responderemos en breve.",
       sendAnother: "Enviar otro mensaje",

@@ -20,9 +20,25 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Render's free tier puts the backend to sleep; the first request after a while can take up to
+// a minute while it wakes. Give the contact request that long before calling it a failure.
+const CONTACT_TIMEOUT_MS = 75000;
+
 export const submitContact = async (payload) => {
-  const { data } = await api.post("/contact", payload);
+  const { data } = await api.post("/contact", payload, { timeout: CONTACT_TIMEOUT_MS });
   return data;
+};
+
+// Wakes the backend ahead of time. Called when a visitor starts filling in the contact form,
+// so by the time they press send (typing takes longer than the wake-up) the server is ready.
+// Only people who engage with the form trigger it, not every page view.
+let backendWarmed = false;
+export const warmUpBackend = () => {
+  if (backendWarmed) return;
+  backendWarmed = true;
+  api.get("/", { timeout: CONTACT_TIMEOUT_MS }).catch(() => {
+    backendWarmed = false; // try again on the next focus if it did not get through
+  });
 };
 
 export const adminLogin = async (username, password) => {

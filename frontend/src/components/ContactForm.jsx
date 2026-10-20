@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { submitContact } from "../lib/api";
-import { useToast } from "../hooks/use-toast";
+import { submitContact, warmUpBackend } from "../lib/api";
+import { EMAIL } from "../mock";
 import { INITIAL_FORM, buildContactPayload, validateContactForm } from "../lib/contactFormValidation";
 import { useLang, useContent } from "../i18n/useLang";
 
@@ -34,7 +34,8 @@ const ContactForm = () => {
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
-  const { toast } = useToast();
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState(null);
 
   const onChange = useCallback(
     (field) => (ev) => {
@@ -49,40 +50,42 @@ const ContactForm = () => {
     setForm(INITIAL_FORM);
     setErrors({});
     setSubmitted(false);
+    setSendError(null);
   }, []);
 
+  // The confirmation only appears once the server has really accepted the message. If it
+  // fails, the form keeps what the visitor typed and says so, with the email as a fallback.
   const onSubmit = useCallback(
-    (ev) => {
+    async (ev) => {
       ev.preventDefault();
+      if (sending) return;
       const validationErrors = validateContactForm(form);
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
         return;
       }
 
-      // Show the confirmation immediately — the request keeps sending in the
-      // background so a slow/cold backend doesn't stall the user's feedback.
-      const payload = buildContactPayload(form);
-      setSubmitted(true);
-      setForm(INITIAL_FORM);
-      setErrors({});
-
-      submitContact(payload).catch((err) => {
+      setSending(true);
+      setSendError(null);
+      try {
+        await submitContact(buildContactPayload(form));
+        setSubmitted(true);
+        setForm(INITIAL_FORM);
+        setErrors({});
+      } catch (err) {
         const detail = err?.response?.data?.detail;
-        toast({
-          title: t.errorToastTitle,
-          description: typeof detail === "string" ? detail : t.errorToastBody,
-          variant: "destructive",
-        });
-      });
+        setSendError(typeof detail === "string" ? detail : t.sendError);
+      } finally {
+        setSending(false);
+      }
     },
-    [form, toast, t]
+    [form, sending, t]
   );
 
   if (submitted) return <SuccessCard onReset={resetForm} t={t} />;
 
   return (
-    <form onSubmit={onSubmit} className="contact-form" noValidate>
+    <form onSubmit={onSubmit} onFocus={warmUpBackend} className="contact-form" noValidate>
       <div className="cf-row">
         <TextField label={t.nameLabel} error={errors.name && t.validation[errors.name]}>
           <input
@@ -163,9 +166,23 @@ const ContactForm = () => {
       )}
 
       <div className="mt-2">
-        <button type="submit" className="contact-pill contact-pill--solid">
-          {t.submit} <ArrowRight size={16} />
+        <button
+          type="submit"
+          className="contact-pill contact-pill--solid"
+          disabled={sending}
+          aria-busy={sending}
+          style={sending ? { opacity: 0.65, cursor: "progress" } : undefined}
+        >
+          {sending ? t.sending : t.submit} {!sending && <ArrowRight size={16} />}
         </button>
+        {sendError && (
+          <p role="alert" className="cf-error-text mt-3">
+            {sendError}{" "}
+            <a className="link-underline" href={`mailto:${EMAIL}`}>
+              {EMAIL}
+            </a>
+          </p>
+        )}
       </div>
     </form>
   );
