@@ -28,8 +28,9 @@ const ItemRow = ({ item, currency }) => (
       </p>
       {item.type === "manufacturing" && (
         <p className="text-sm text-[color:var(--arroyo-muted)]">
-          Workshop cost {formatAmount(item.workshop_cost, currency)} + manufacturing management{" "}
-          {formatAmount(item.management_fee, currency)}
+          {item.supplier_amount
+            ? `Technical supervision: ${item.fee_rate}% of the supplier's manufacturing amount (${formatAmount(item.supplier_amount, currency)}, excl. VAT). The supplier invoices the manufacturing directly.`
+            : `Workshop cost ${formatAmount(item.workshop_cost, currency)} + manufacturing management ${formatAmount(item.management_fee, currency)}`}
         </p>
       )}
       {item.type === "engineering_hours" && (

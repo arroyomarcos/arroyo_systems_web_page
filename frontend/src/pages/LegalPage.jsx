@@ -38,7 +38,7 @@ const ContactEmailLink = () => (
 // ---------- Privacy Policy ----------
 
 const PrivacyPolicyEN = () => (
-  <LegalLayout title="Privacy Policy" updated="Last updated: October 20, 2026">
+  <LegalLayout title="Privacy Policy" updated="Last updated: October 21, 2026">
     <Section title="Data controller">
       <p>
         The controller for this website is Marcos Arroyo Navarro, operating under the commercial
@@ -61,8 +61,7 @@ const PrivacyPolicyEN = () => (
       <p>
         If you go on to request a quote or sign a contract, we also process identification and
         invoicing data (name or company name, tax ID, billing address, representative, email) and
-        the records of acceptance and electronic signature. Card payments are processed by Stripe:
-        Arroyo Systems does not receive or store card numbers.
+        the records of acceptance and electronic signature.
       </p>
     </Section>
 
@@ -108,6 +107,7 @@ const PrivacyPolicyEN = () => (
         suppliers it selects only the data and technical documentation strictly necessary to
         request quotes and to coordinate the manufacturing. You contract those suppliers
         directly, and they process that data to carry out the work you commission from them.
+        Each supplier receives that information under a confidentiality commitment.
       </p>
     </Section>
 
@@ -115,9 +115,9 @@ const PrivacyPolicyEN = () => (
       <p>
         Arroyo Systems uses technical providers necessary to operate the website and contact
         workflow. These may include GitHub Pages for frontend hosting, Render for backend/API
-        hosting, MongoDB Atlas for database storage, Resend for email notifications, Stripe for
-        payment processing, DocuSign for the electronic signature of contracts, and Cloudflare for
-        DNS, security, and domain infrastructure.
+        hosting, MongoDB Atlas for database storage, Resend for email notifications, DocuSign for
+        the electronic signature of contracts, and Cloudflare for DNS, security, and domain
+        infrastructure.
       </p>
       <p>
         These providers may process data outside the European Economic Area under their applicable
@@ -128,7 +128,7 @@ const PrivacyPolicyEN = () => (
 );
 
 const PrivacyPolicyES = () => (
-  <LegalLayout title="Política de Privacidad" updated="Última actualización: 20 de octubre de 2026">
+  <LegalLayout title="Política de Privacidad" updated="Última actualización: 21 de octubre de 2026">
     <Section title="Responsable del tratamiento">
       <p>
         El responsable de esta web es Marcos Arroyo Navarro, operando bajo el nombre comercial
@@ -152,8 +152,7 @@ const PrivacyPolicyES = () => (
       <p>
         Si después solicitas un presupuesto o firmas un contrato, tratamos además datos de
         identificación y facturación (nombre o razón social, NIF/CIF, domicilio fiscal,
-        representante, email) y los registros de aceptación y firma electrónica. Los pagos con
-        tarjeta los procesa Stripe: Arroyo Systems no recibe ni almacena números de tarjeta.
+        representante, email) y los registros de aceptación y firma electrónica.
       </p>
     </Section>
 
@@ -200,7 +199,8 @@ const PrivacyPolicyES = () => (
         Cuando contratas Product Manufacturing, Arroyo Systems comparte con los proveedores de
         fabricación que selecciona únicamente los datos y la documentación técnica estrictamente
         necesarios para solicitar ofertas y coordinar la fabricación. Contratas a esos proveedores
-        directamente, y ellos tratan esos datos para realizar el trabajo que les encargas.
+        directamente, y ellos tratan esos datos para realizar el trabajo que les encargas. Cada
+        proveedor recibe esa información con un compromiso de confidencialidad.
       </p>
     </Section>
 
@@ -209,9 +209,8 @@ const PrivacyPolicyES = () => (
         Arroyo Systems utiliza proveedores técnicos necesarios para operar la web y el proceso de
         contacto. Estos pueden incluir GitHub Pages para el alojamiento del frontend, Render para
         el alojamiento del backend/API, MongoDB Atlas para el almacenamiento de la base de datos,
-        Resend para las notificaciones por email, Stripe para el procesamiento de pagos, DocuSign
-        para la firma electrónica de contratos, y Cloudflare para DNS, seguridad e infraestructura
-        de dominio.
+        Resend para las notificaciones por email, DocuSign para la firma electrónica de
+        contratos, y Cloudflare para DNS, seguridad e infraestructura de dominio.
       </p>
       <p>
         Estos proveedores pueden tratar datos fuera del Espacio Económico Europeo conforme a sus
@@ -226,7 +225,7 @@ export const PrivacyPolicy = () => (useLang() === "es" ? <PrivacyPolicyES /> : <
 // ---------- Legal Notice ----------
 
 const LegalNoticeEN = () => (
-  <LegalLayout title="Legal Notice" updated="Last updated: October 20, 2026">
+  <LegalLayout title="Legal Notice" updated="Last updated: October 21, 2026">
     <Section title="Website owner">
       <p>Owner: Marcos Arroyo Navarro</p>
       <p>Commercial name: Arroyo Systems</p>
@@ -257,6 +256,16 @@ const LegalNoticeEN = () => (
         supplier is responsible for the manufacturing and for its own warranty. Arroyo Systems does
         not sell or deliver parts and invoices only its technical coordination and supervision
         services.
+      </p>
+    </Section>
+
+    <Section title="Confidentiality">
+      <p>
+        Arroyo Systems treats as confidential all the technical documentation and information that
+        clients provide (CAD models, drawings, specifications, reports). It uses them only to
+        provide the contracted services, and shares them with manufacturing suppliers only to the
+        extent strictly necessary to request quotes and coordinate the manufacturing, and only
+        after each supplier has committed to confidentiality.
       </p>
     </Section>
 
@@ -324,7 +333,7 @@ const LegalNoticeEN = () => (
 );
 
 const LegalNoticeES = () => (
-  <LegalLayout title="Aviso Legal" updated="Última actualización: 20 de octubre de 2026">
+  <LegalLayout title="Aviso Legal" updated="Última actualización: 21 de octubre de 2026">
     <Section title="Titular de la web">
       <p>Titular: Marcos Arroyo Navarro</p>
       <p>Nombre comercial: Arroyo Systems</p>
@@ -354,6 +363,16 @@ const LegalNoticeES = () => (
         los que el cliente contrata y a los que paga directamente. Cada proveedor responde de la
         fabricación y de su propia garantía. Arroyo Systems no vende ni entrega piezas y factura
         únicamente sus servicios de coordinación y supervisión técnica.
+      </p>
+    </Section>
+
+    <Section title="Confidencialidad">
+      <p>
+        Arroyo Systems trata como confidencial toda la documentación técnica y la información que
+        aportan los clientes (modelos CAD, planos, especificaciones, informes). Solo las utiliza
+        para prestar los servicios contratados, y solo las comparte con proveedores de fabricación
+        en la medida estrictamente necesaria para solicitar ofertas y coordinar la fabricación, y
+        únicamente tras el compromiso de confidencialidad de cada proveedor.
       </p>
     </Section>
 
@@ -427,7 +446,7 @@ export const LegalNotice = () => (useLang() === "es" ? <LegalNoticeES /> : <Lega
 // ---------- Cookies Policy ----------
 
 const CookiesPolicyEN = () => (
-  <LegalLayout title="Cookies Policy" updated="Last updated: October 20, 2026">
+  <LegalLayout title="Cookies Policy" updated="Last updated: October 21, 2026">
     <Section title="Use of cookies">
       <p>
         This website does not intentionally use non-essential cookies for advertising or
@@ -450,8 +469,8 @@ const CookiesPolicyEN = () => (
         infrastructure.
       </p>
       <p>
-        When you pay a quote you are redirected to Stripe's payment page, and when you sign a
-        contract, to DocuSign. Those services operate under their own privacy and cookie policies.
+        When you sign a contract you are redirected to DocuSign, which operates under its own
+        privacy and cookie policies.
       </p>
       <p>
         Arroyo Systems does not currently use Google Analytics, Meta Pixel, LinkedIn Insight Tag,
@@ -470,7 +489,7 @@ const CookiesPolicyEN = () => (
 );
 
 const CookiesPolicyES = () => (
-  <LegalLayout title="Política de Cookies" updated="Última actualización: 20 de octubre de 2026">
+  <LegalLayout title="Política de Cookies" updated="Última actualización: 21 de octubre de 2026">
     <Section title="Uso de cookies">
       <p>
         Esta web no utiliza intencionadamente cookies no esenciales con fines publicitarios o de
@@ -495,9 +514,8 @@ const CookiesPolicyES = () => (
         por email, DNS, seguridad e infraestructura.
       </p>
       <p>
-        Cuando pagas un presupuesto se te redirige a la página de pago de Stripe, y cuando firmas
-        un contrato, a DocuSign. Esos servicios se rigen por sus propias políticas de privacidad y
-        de cookies.
+        Cuando firmas un contrato se te redirige a DocuSign, que se rige por sus propias políticas
+        de privacidad y de cookies.
       </p>
       <p>
         Arroyo Systems no utiliza actualmente Google Analytics, Meta Pixel, LinkedIn Insight Tag,

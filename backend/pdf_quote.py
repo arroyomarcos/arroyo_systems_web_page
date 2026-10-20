@@ -7,6 +7,7 @@ from pathlib import Path
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_RIGHT
+from pricing import MIN_SUPERVISION_FEE
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
@@ -34,6 +35,12 @@ TERMS = [
     "Starting the work requires written acceptance (online or by email) of this quote.",
     "In case of cancellation during the project, work completed up to that point will be invoiced.",
     "Deliverables are provided in digital format (PDF, STEP, DWG, or others as agreed).",
+    "Each project is signed by the registered engineer and endorsed (visado) by the professional association; the cost of the visado is included in the price.",
+]
+
+MANUFACTURING_TERMS = [
+    "Product Manufacturing is technical coordination and supervision only: the client contracts and pays the manufacturing directly to the supplier, which invoices it separately.",
+    "Arroyo Systems invoices only its supervision fee, due with the final payment. It is a percentage of the supplier's manufacturing amount (excl. VAT), with a minimum of EUR 60 per project.",
 ]
 
 
@@ -113,10 +120,17 @@ def build_quote_pdf(quote: dict, customer: dict) -> bytes:
             qty = "-"
         elif item["type"] == "manufacturing":
             name = item.get("description") or "Product Manufacturing"
-            desc = (
-                f"Workshop cost {_fmt_money(item.get('workshop_cost', 0), currency)} + "
-                f"manufacturing management {_fmt_money(item.get('management_fee', 0), currency)}"
-            )
+            if item.get("supplier_amount"):
+                desc = (
+                    f"Technical supervision: {item.get('fee_rate', 0):g}% of the supplier's manufacturing amount "
+                    f"({_fmt_money(item['supplier_amount'], currency)}, excl. VAT), minimum "
+                    f"{_fmt_money(MIN_SUPERVISION_FEE, currency)}. Manufacturing is invoiced by the supplier."
+                )
+            else:  # quote issued before the coordination model
+                desc = (
+                    f"Workshop cost {_fmt_money(item.get('workshop_cost', 0), currency)} + "
+                    f"manufacturing management {_fmt_money(item.get('management_fee', 0), currency)}"
+                )
             qty = "-"
         else:
             name = "Engineering Hours"
@@ -163,17 +177,23 @@ def build_quote_pdf(quote: dict, customer: dict) -> bytes:
     elements.append(Spacer(1, 8 * mm))
 
     elements.append(Paragraph("<b>Payment terms</b>", body))
-    payment_rows = [
-        ["50% upfront - upon accepting the quote", _fmt_money(quote["deposit_amount"], currency)],
-        ["50% balance - upon delivery of the deliverables", _fmt_money(quote["remaining_amount"], currency)],
-    ]
+    has_manufacturing = any(item["type"] == "manufacturing" for item in quote.get("items", []))
+    payment_rows = []
+    if quote["deposit_amount"] > 0:
+        payment_rows.append(["50% upfront - upon accepting the quote", _fmt_money(quote["deposit_amount"], currency)])
+    payment_rows.append([
+        "Balance (with the supervision fee) - upon delivery of the deliverables"
+        if has_manufacturing
+        else "50% balance - upon delivery of the deliverables",
+        _fmt_money(quote["remaining_amount"], currency),
+    ])
     payment_table = Table(payment_rows, colWidths=[125 * mm, 35 * mm])
     payment_table.setStyle(TableStyle([("ALIGN", (1, 0), (1, -1), "RIGHT")]))
     elements.append(payment_table)
     elements.append(Spacer(1, 8 * mm))
 
     elements.append(Paragraph("<b>Terms and conditions</b>", body))
-    for term in TERMS:
+    for term in TERMS + (MANUFACTURING_TERMS if has_manufacturing else []):
         elements.append(Paragraph(f"• {term}", small))
     elements.append(Spacer(1, 8 * mm))
 

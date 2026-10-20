@@ -122,7 +122,8 @@ def build_contract_pdf(
     exponen_items = [
         "Que EL PRESTADOR se dedica profesionalmente a la prestación de servicios de ingeniería "
         "mecánica, incluyendo diseño conceptual, validación estructural mediante análisis por "
-        "elementos finitos (FEM) y optimización de producto.",
+        "elementos finitos (FEM), optimización de producto y coordinación y supervisión técnica "
+        "de la fabricación.",
         "Que EL CLIENTE está interesado en contratar dichos servicios conforme al presupuesto "
         "aceptado que se referencia en la Cláusula 1.",
         "Que ambas partes acuerdan formalizar dicha relación con arreglo a las siguientes",
@@ -169,33 +170,35 @@ def build_contract_pdf(
     )
 
     if has_manufacturing:
-        clause("2 bis", "Fabricación de piezas")
+        clause("2 bis", "Coordinación y supervisión técnica de la fabricación")
         bullets([
-            "EL PRESTADOR gestiona la fabricación de las piezas objeto del Presupuesto a través de "
-            "talleres de fabricación seleccionados por él, conforme a la Cláusula 14. EL PRESTADOR "
-            "responde frente a EL CLIENTE de que la pieza recibida cumple el plano aprobado, con "
-            "los límites de esta cláusula y de la Cláusula 9.",
-            "EL PRESTADOR no realizará el pedido de fabricación hasta que EL CLIENTE haya aprobado "
-            "por escrito (incluido correo electrónico) el diseño y los resultados de su validación "
-            "estructural. La fabricación parte siempre de un diseño aprobado y validado.",
-            "El precio de la fabricación es el coste del taller, tal como figura en el Presupuesto, "
-            "más la gestión de fabricación, que incluye: la petición de ofertas al taller, una ronda "
-            "de cambios antes del lanzamiento del pedido, el seguimiento hasta la entrega y la gestión "
-            "de una incidencia.",
-            "EL CLIENTE abonará el coste del taller, con su IVA, antes de que EL PRESTADOR realice el "
-            "pedido al taller. La gestión de fabricación se abona con el saldo final conforme a la "
-            "Cláusula 4.",
-            "EL PRESTADOR solicitará al taller, en cada pedido, el informe dimensional y el "
-            "certificado de material de las piezas, y los entregará a EL CLIENTE junto con la pieza. "
-            "No se emite certificado de conformidad salvo que el Presupuesto lo indique expresamente.",
-            "Si la pieza recibida no cumple el plano aprobado, EL CLIENTE lo comunicará por escrito, "
-            "con la evidencia correspondiente, en el plazo de 5 días hábiles desde su recepción. EL "
-            "PRESTADOR gestionará con el taller la solución que proceda (reposición o abono). La "
-            "responsabilidad de EL PRESTADOR por la fabricación queda limitada al importe del pedido "
-            "de fabricación afectado y no cubre el uso de la pieza fuera de los requisitos facilitados "
-            "por EL CLIENTE.",
-            "El plazo de fabricación se confirma una vez recibida la cotización del taller y se rige "
-            "por la Cláusula 5.",
+            "El servicio (Product Manufacturing) consiste en la coordinación y supervisión técnica de "
+            "la fabricación de las piezas objeto del Presupuesto: selección técnica de proveedores y "
+            "revisión de sus ofertas frente al plano y las tolerancias; interlocución técnica con el "
+            "proveedor y seguimiento técnico de la fabricación; informe técnico ante cualquier "
+            "desviación, para que EL CLIENTE decida con criterio; revisión de la documentación que "
+            "aporta el proveedor a la recepción; y una ronda de cambios antes del lanzamiento del "
+            "pedido y una incidencia.",
+            "EL CLIENTE contrata y paga directamente al proveedor la fabricación, la compra y la "
+            "entrega de las piezas. La relación de fabricación y compraventa se establece "
+            "exclusivamente entre EL CLIENTE y el proveedor, que le factura directamente y responde "
+            "de la fabricación y de su garantía de fabricante. EL PRESTADOR no vende, suministra ni "
+            "entrega las piezas, y no percibe del proveedor comisión ni contraprestación alguna: "
+            "factura únicamente a EL CLIENTE sus honorarios de coordinación y supervisión técnica.",
+            "La coordinación y supervisión parte siempre de un diseño aprobado y validado por EL "
+            "CLIENTE.",
+            "Los honorarios de coordinación y supervisión técnica son un porcentaje del importe de "
+            "fabricación ofertado por el proveedor (sin IVA), que se reduce a medida que aumenta el "
+            "volumen y que se indica en el Presupuesto, con un mínimo de 60 € por proyecto. Se "
+            "devengan al terminar el proyecto y se abonan íntegramente con el saldo final conforme a "
+            "la Cláusula 4.",
+            "Si la pieza recibida presenta desviaciones respecto del plano aprobado, EL PRESTADOR "
+            "emitirá un informe técnico para que EL CLIENTE decida. La reposición, el abono o la "
+            "garantía los gestiona EL CLIENTE con el proveedor. EL PRESTADOR no aprueba desviaciones "
+            "ni certifica la conformidad de las piezas, y su responsabilidad se limita a la correcta "
+            "ejecución de la coordinación y supervisión técnica contratada, conforme a la Cláusula 9.",
+            "El plazo de fabricación lo establece el proveedor y no es responsabilidad de EL "
+            "PRESTADOR; la supervisión sigue el calendario que el proveedor confirme.",
         ])
 
     clause(3, "Entregables y formato de entrega")
@@ -212,31 +215,51 @@ def build_contract_pdf(
         "sin objeción, el entregable se considerará aceptado.",
     ])
 
+    clause("3 bis", "Firma y visado de los proyectos")
+    bullets([
+        "Cada proyecto es firmado por EL PRESTADOR, ingeniero colegiado, y visado por el Colegio "
+        "Oficial al que pertenece (o, en su caso, sometido a su control profesional) antes de su "
+        "entrega a EL CLIENTE.",
+        "El coste del visado colegial lo soporta EL CLIENTE y está incluido en el precio del "
+        "Presupuesto, sin importe adicional.",
+        "El visado es condición de la cobertura del seguro de responsabilidad civil profesional "
+        "descrito en la Cláusula 10.",
+    ])
+
     clause(4, "Precio y forma de pago")
     p(
         f"El precio total del servicio contratado es de {total_str} (IVA {'incluido' if quote.get('vat_rate') else 'no incluido'}), "
         "conforme al Presupuesto aceptado (Anexo I), y se abonará según el siguiente calendario:"
     )
-    bullets([
-        "50% del importe de los servicios de ingeniería contratados"
-        + (
-            ", más el coste del taller (con su IVA) de los servicios de fabricación,"
-            if has_manufacturing else ","
+    payment_items = []
+    if package_keys:
+        payment_items.append(
+            "50% del importe de los servicios de ingeniería contratados, en concepto de anticipo, a "
+            "la firma del presente Contrato y antes del inicio de los trabajos. Este anticipo se "
+            "calcula exclusivamente sobre el precio del servicio contratado (Cláusula 2) y no se ve "
+            "alterado por las horas de ingeniería adicionales que, en su caso, se añadan conforme al "
+            "párrafo siguiente."
         )
-        + " en concepto de anticipo, a la firma del presente "
-        "Contrato y antes del inicio de los trabajos (o, en el caso de la fabricación, antes de "
-        "realizar el pedido al taller). Este anticipo se calcula exclusivamente sobre "
-        "el precio del servicio contratado (Cláusula 2) y no se ve alterado por las horas de "
-        "ingeniería adicionales que, en su caso, se añadan conforme al párrafo siguiente.",
-        "50% restante del importe de los servicios de ingeniería contratados"
-        + (", junto con la gestión de fabricación," if has_manufacturing else "")
-        + " y el importe correspondiente a las "
-        "horas de ingeniería adicionales (Engineering Hours) que, en su caso, se hayan generado "
-        "conforme al párrafo siguiente, a la entrega de los deliverables finales, en un plazo "
-        "máximo de 7 días naturales desde la recepción de la factura correspondiente.",
-    ])
+    payment_items.append(
+        ("50% restante del importe de los servicios de ingeniería contratados" if package_keys
+         else "Importe de los servicios contratados")
+        + (", junto con los honorarios de coordinación y supervisión técnica de la fabricación,"
+           if has_manufacturing else "")
+        + " y el importe correspondiente a las horas de ingeniería adicionales (Engineering Hours) "
+        "que, en su caso, se hayan generado conforme al párrafo siguiente, a la entrega de los "
+        "deliverables finales y, en su caso, al terminar la supervisión, en un plazo máximo de 7 "
+        "días naturales desde la recepción de la factura correspondiente."
+    )
+    bullets(payment_items)
+    if has_manufacturing:
+        p(
+            "El precio de la fabricación, su IVA y su forma de pago los acuerda EL CLIENTE "
+            "directamente con el proveedor y no forman parte del precio total de este Contrato ni de "
+            "su calendario de pagos: EL PRESTADOR no cobra ni anticipa cantidad alguna por cuenta "
+            "del proveedor."
+        )
     p(
-        "El impago del anticipo facultará a EL PRESTADOR a no iniciar los trabajos. El impago del "
+        "El impago del anticipo (cuando exista) facultará a EL PRESTADOR a no iniciar los trabajos. El impago del "
         "saldo final facultará a EL PRESTADOR a retener la entrega de los archivos editables y la "
         "cesión de derechos prevista en la Cláusula 7, sin perjuicio de otras acciones legales "
         "que le correspondan."
@@ -317,6 +340,15 @@ def build_contract_pdf(
         "Contrato y por un periodo de 2 años tras su finalización, cualquiera que sea la causa de "
         "dicha finalización."
     )
+    p(
+        "La documentación técnica de EL CLIENTE (modelos CAD, planos, especificaciones, informes y "
+        "cualquier otro documento) y la información que contenga tienen carácter confidencial. EL "
+        "PRESTADOR solo la utilizará para prestar los servicios contratados y solo la compartirá con "
+        "proveedores de fabricación en la medida estrictamente necesaria para solicitar ofertas y "
+        "coordinar la fabricación, previo compromiso de confidencialidad de cada proveedor "
+        "equivalente al de esta cláusula. EL PRESTADOR no cede, publica ni reutiliza esa "
+        "documentación para otros fines."
+    )
 
     clause(9, "Responsabilidad y garantías")
     p(
@@ -342,6 +374,12 @@ def build_contract_pdf(
         "supuestos de dolo o negligencia grave imputables a EL PRESTADOR, ni en aquello que no pueda "
         "limitarse conforme a la legislación española aplicable."
     )
+    if has_manufacturing:
+        p(
+            "EL PRESTADOR no responde de la fabricación de las piezas, ni de su plazo, calidad, "
+            "garantía o entrega, que corresponden al proveedor contratado directamente por EL "
+            "CLIENTE conforme a la Cláusula 2 bis."
+        )
     p(
         "EL PRESTADOR no será responsable de daños indirectos, lucro cesante, pérdida de "
         "negocio o de datos que pudieran derivarse del uso de los entregables por parte de EL CLIENTE "
@@ -359,11 +397,16 @@ def build_contract_pdf(
     p(
         "EL PRESTADOR se compromete a mantener en vigor durante toda la duración del presente "
         "Contrato y durante un periodo mínimo de 2 años tras su finalización, una póliza de "
-        "seguro de responsabilidad civil profesional que cubra los daños derivados del ejercicio de "
-        f"su actividad de ingeniería, con un límite de indemnización por siniestro "
-        f"({liability_text} €)."
+        "seguro de responsabilidad civil profesional (póliza colectiva del Colegio Oficial de "
+        "Ingenieros Técnicos Industriales de Madrid con Caja de Seguros Reunidos, CASER, de la que "
+        "EL PRESTADOR es asegurado) que cubra los daños derivados del ejercicio de su actividad de "
+        f"ingeniería, con un límite de indemnización de {liability_text} € por siniestro y año de "
+        "seguro."
     )
     bullets([
+        "La cobertura de la póliza alcanza a los trabajos visados (o sometidos a control "
+        "profesional) en el Colegio, por lo que EL PRESTADOR visará los trabajos conforme a la "
+        "Cláusula 3 bis.",
         "A requerimiento razonable de EL CLIENTE, EL PRESTADOR facilitará el certificado de la "
         "póliza en vigor como acreditación de dicha cobertura.",
         "Si la actividad concreta del proyecto (por ejemplo, sectores regulados como automoción, "
@@ -424,6 +467,8 @@ def build_contract_pdf(
         "confidencialidad equivalentes a las establecidas en la Cláusula 8.",
         "La subcontratación no exime a EL PRESTADOR de la obligación de mantener el seguro de "
         "responsabilidad civil profesional conforme a la Cláusula 10.",
+        "Los proveedores de fabricación no son subcontratados de EL PRESTADOR: los contrata y "
+        "paga EL CLIENTE directamente y se rigen por la Cláusula 2 bis.",
     ])
 
     clause(15, "Protección de datos")
@@ -432,6 +477,12 @@ def build_contract_pdf(
         "presente Contrato serán tratados conforme al Reglamento (UE) 2016/679 (RGPD) y la Ley "
         "Orgánica 3/2018 de Protección de Datos Personales y garantía de los derechos "
         "digitales, con la finalidad de gestionar la relación contractual."
+    )
+    p(
+        "EL PRESTADOR comunicará a los proveedores de fabricación únicamente los datos y "
+        "documentos imprescindibles para solicitar ofertas y coordinar la fabricación, conforme a "
+        "la Cláusula 8. El detalle del tratamiento figura en la Política de Privacidad de "
+        "https://arroyo-systems.com/es/privacy-policy/."
     )
 
     clause(16, "Ley aplicable y jurisdicción")

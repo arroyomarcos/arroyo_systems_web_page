@@ -178,23 +178,32 @@ def test_create_quote_allows_extra_hours_beyond_max_with_override(admin_client):
 
 def test_create_quote_with_manufacturing_line(admin_client):
     payload = quote_payload(items=[
-        {"type": "manufacturing", "workshop_cost": 800, "management_fee": 290, "description": "Bracket x5"},
+        {"type": "manufacturing", "supplier_amount": 10000, "fee_rate": 5, "description": "Bracket x5"},
     ])
     response = admin_client.post("/api/admin/quotes", json=payload)
     assert response.status_code == 201
     body = response.json()
-    assert body["items"][0]["type"] == "manufacturing"
-    assert body["items"][0]["total"] == 1090.0
-    assert body["total"] == 1318.9
-    # The workshop is paid up front (incl. VAT); the management fee goes with the final balance.
-    assert body["deposit_amount"] == 968.0
-    assert body["remaining_amount"] == 350.9
+    item = body["items"][0]
+    assert item["type"] == "manufacturing"
+    assert item["supplier_amount"] == 10000 and item["fee_rate"] == 5
+    assert item["total"] == 500.0  # 5% of the supplier's amount
+    assert body["total"] == 605.0
+    # The client pays the supplier directly; Arroyo Systems only invoices the supervision fee,
+    # all of it with the final balance.
+    assert body["deposit_amount"] == 0.0
+    assert body["remaining_amount"] == 605.0
 
 
-def test_create_quote_rejects_manufacturing_without_workshop_cost(admin_client):
-    payload = quote_payload(items=[{"type": "manufacturing", "management_fee": 290}])
-    response = admin_client.post("/api/admin/quotes", json=payload)
-    assert response.status_code == 422
+def test_manufacturing_fee_never_falls_below_the_minimum(admin_client):
+    payload = quote_payload(items=[{"type": "manufacturing", "supplier_amount": 300, "fee_rate": 15}])
+    body = admin_client.post("/api/admin/quotes", json=payload).json()
+    assert body["items"][0]["total"] == 60.0
+
+
+def test_create_quote_rejects_manufacturing_without_supplier_amount_or_rate(admin_client):
+    for item in ({"type": "manufacturing", "fee_rate": 5}, {"type": "manufacturing", "supplier_amount": 5000}):
+        response = admin_client.post("/api/admin/quotes", json=quote_payload(items=[item]))
+        assert response.status_code == 422
 
 
 def test_quote_requires_admin_auth(db):

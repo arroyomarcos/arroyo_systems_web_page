@@ -2,6 +2,7 @@ import pytest
 
 from pricing import (
     ENGINEERING_HOURS_RATE,
+    MIN_SUPERVISION_FEE,
     PACKAGES,
     PricingError,
     compute_quote_totals,
@@ -84,18 +85,21 @@ def test_engineering_hours_negative_rejected():
         price_engineering_hours_item(-1)
 
 
-def test_manufacturing_is_workshop_cost_plus_management_fee():
-    assert price_manufacturing_item(workshop_cost=800.0, management_fee=290.0) == 1090.0
+def test_manufacturing_fee_is_a_percentage_of_the_supplier_amount():
+    assert price_manufacturing_item(supplier_amount=10000.0, fee_rate=5) == 500.0
+    assert price_manufacturing_item(supplier_amount=45000.0, fee_rate=3) == 1350.0
 
 
-def test_manufacturing_requires_workshop_cost():
-    with pytest.raises(PricingError):
-        price_manufacturing_item(workshop_cost=0, management_fee=290.0)
+def test_manufacturing_fee_has_a_minimum_per_project():
+    assert MIN_SUPERVISION_FEE == 60.0
+    assert price_manufacturing_item(supplier_amount=300.0, fee_rate=15) == 60.0  # 45 -> raised to 60
+    assert price_manufacturing_item(supplier_amount=2000.0, fee_rate=3) == 60.0  # exactly 60
 
 
-def test_manufacturing_negative_fee_rejected():
-    with pytest.raises(PricingError):
-        price_manufacturing_item(workshop_cost=800.0, management_fee=-1)
+def test_manufacturing_requires_the_supplier_amount_and_a_valid_rate():
+    for amount, rate in [(0, 5), (-1, 5), (1000, 0), (1000, -3), (1000, 101)]:
+        with pytest.raises(PricingError):
+            price_manufacturing_item(supplier_amount=amount, fee_rate=rate)
 
 
 def test_compute_quote_totals_deposit_is_package_only():
@@ -122,24 +126,24 @@ def test_compute_quote_totals_package_only_splits_evenly():
     assert totals["remaining_amount"] == 750.0
 
 
-def test_compute_quote_totals_manufacturing_advances_the_workshop_cost_not_the_fee():
-    # Workshop cost 800 + management fee 290: the workshop is paid (with VAT) before the
-    # order is placed; the management fee is settled at delivery with the remaining balance.
-    items = [{"type": "manufacturing", "total": 1090.0, "workshop_cost": 800.0}]
+def test_compute_quote_totals_supervision_fee_is_only_due_with_the_final_payment():
+    # The client pays the supplier directly, so the only manufacturing amount Arroyo Systems
+    # invoices is the supervision fee, and it is due at the end, never in the advance.
+    items = [{"type": "manufacturing", "total": 500.0, "supplier_amount": 10000.0, "fee_rate": 5}]
     totals = compute_quote_totals(items, vat_rate=0.21)
-    assert totals["total"] == 1318.9
-    assert totals["deposit_amount"] == 968.0  # 800 * 1.21
-    assert totals["remaining_amount"] == 350.9  # 290 * 1.21
-    assert totals["deposit_amount"] + totals["remaining_amount"] == totals["total"]
+    assert totals["total"] == 605.0
+    assert totals["deposit_amount"] == 0.0
+    assert totals["remaining_amount"] == 605.0
 
 
 def test_compute_quote_totals_mixed_design_and_manufacturing():
     items = [
         {"type": "package", "total": 2050.0},
-        {"type": "manufacturing", "total": 1090.0, "workshop_cost": 800.0},
+        {"type": "manufacturing", "total": 500.0, "supplier_amount": 10000.0, "fee_rate": 5},
     ]
     totals = compute_quote_totals(items, vat_rate=0.21)
-    assert totals["deposit_amount"] == round(2050.0 * 1.21 / 2 + 800.0 * 1.21, 2)
+    assert totals["deposit_amount"] == round(2050.0 * 1.21 / 2, 2)  # engineering only
+    assert totals["remaining_amount"] == round(totals["total"] - totals["deposit_amount"], 2)
     assert totals["deposit_amount"] + totals["remaining_amount"] == pytest.approx(totals["total"])
 
 

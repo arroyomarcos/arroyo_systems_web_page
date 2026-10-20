@@ -66,7 +66,9 @@ STRIPE_CANCEL_URL = os.environ.get('STRIPE_CANCEL_URL', 'https://arroyo-systems.
 STRIPE_CURRENCY = os.environ.get('STRIPE_CURRENCY', 'eur').strip().lower()
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://arroyo-systems.com').strip().rstrip('/')
 CONTRACT_PROVIDER_NIF = os.environ.get('CONTRACT_PROVIDER_NIF', '').strip()
-CONTRACT_LIABILITY_TEXT = os.environ.get('CONTRACT_LIABILITY_TEXT', 'a determinar').strip()
+# Per-claim, per-year limit of the collective professional liability policy (CASER, policy of the
+# Colegio Oficial de Ingenieros Técnicos Industriales de Madrid, 2026): 5.000.000 EUR.
+CONTRACT_LIABILITY_TEXT = os.environ.get('CONTRACT_LIABILITY_TEXT', '5.000.000').strip()
 CONTRACT_JURISDICTION_CITY = os.environ.get('CONTRACT_JURISDICTION_CITY', 'Madrid').strip()
 BACKEND_PUBLIC_URL = os.environ.get('BACKEND_PUBLIC_URL', '').strip().rstrip('/')
 CORS_ORIGINS = [

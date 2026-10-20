@@ -8,13 +8,20 @@ formula's values rounded to the nearest 50 EUR (Development's minimum is Design 
 and those rounded figures are what the engine charges, so the website, quotes and Stripe agree.
 The quote fixes the final price inside that range, as a closed price for its written scope.
 Anything beyond the range is billed at the same hourly rate, only with prior notice and
-acceptance. Manufacturing has no catalog price: it is the workshop's cost plus Arroyo Systems'
-manufacturing-management fee, both entered per quote.
+acceptance.
+
+Manufacturing (coordination and technical supervision) works differently: the client contracts
+and pays the supplier directly, and Arroyo Systems invoices only its supervision fee. The fee is a
+percentage of the supplier's manufacturing amount (excl. VAT) that falls as the volume grows, set
+per quote, with a minimum per project. It is due with the final payment, never in the advance.
 """
 from typing import Literal, Optional, TypedDict
 
 
 ENGINEERING_HOURS_RATE = 78.0
+
+# Minimum supervision fee per project (EUR, excl. VAT).
+MIN_SUPERVISION_FEE = 60.0
 
 PackageKey = Literal["product_design", "product_validation", "product_development"]
 ItemType = Literal["package", "engineering_hours", "manufacturing"]
@@ -93,14 +100,16 @@ def price_engineering_hours_item(quantity: float) -> float:
     return round(quantity * ENGINEERING_HOURS_RATE, 2)
 
 
-def price_manufacturing_item(workshop_cost: float, management_fee: float) -> float:
-    """Manufacturing line: workshop cost (as quoted by the workshop, excl. VAT) plus the
-    manufacturing-management fee. Both are entered per quote - there is no catalog price."""
-    if workshop_cost <= 0:
-        raise PricingError("Manufacturing needs the workshop cost (greater than 0)")
-    if management_fee < 0:
-        raise PricingError("Manufacturing management fee cannot be negative")
-    return round(workshop_cost + management_fee, 2)
+def price_manufacturing_item(supplier_amount: float, fee_rate: float) -> float:
+    """Supervision fee for a Product Manufacturing line: `fee_rate` percent of the supplier's
+    manufacturing amount (excl. VAT), never below MIN_SUPERVISION_FEE. The supplier's amount is
+    only the base of the percentage: the supplier invoices it to the client directly, Arroyo
+    Systems does not."""
+    if supplier_amount <= 0:
+        raise PricingError("Manufacturing needs the supplier's manufacturing amount (greater than 0)")
+    if fee_rate <= 0 or fee_rate > 100:
+        raise PricingError("The supervision fee rate must be a percentage greater than 0 and at most 100")
+    return round(max(MIN_SUPERVISION_FEE, supplier_amount * fee_rate / 100), 2)
 
 
 class ComputedItem(TypedDict):
@@ -111,8 +120,8 @@ class ComputedItem(TypedDict):
     quantity: float
     unit_price: float
     extra_hours: float
-    workshop_cost: float
-    management_fee: float
+    supplier_amount: float
+    fee_rate: float
     total: float
 
 
@@ -129,12 +138,11 @@ def compute_quote_totals(items: list[dict], vat_rate: float) -> QuoteTotals:
     """Single source of truth for quote totals - used by the create/edit endpoint, the PDF,
     and the Stripe checkout amount, so the three can never disagree.
 
-    The advance paid up front is made of:
-      * 50% of every package item (incl. VAT) - secures the engineering work, and
-      * 100% of the workshop cost of every manufacturing item (incl. VAT) - the workshop
-        is paid before the order is placed. The management fee is NOT advanced.
-    Engineering Hours (and anything else added later, e.g. when requesting the final
-    payment) always fall entirely into the remaining/second payment.
+    The advance paid up front is 50% of every package item (incl. VAT): it secures the
+    engineering work. Engineering Hours and the manufacturing supervision fee (and anything
+    else added later, e.g. when requesting the final payment) always fall entirely into the
+    remaining/second payment. The supplier's manufacturing is not part of any payment to Arroyo
+    Systems: the client pays the supplier directly.
     """
     if vat_rate < 0 or vat_rate > 1:
         raise PricingError("vat_rate must be between 0 and 1 (e.g. 0.21 for 21%)")
@@ -144,10 +152,7 @@ def compute_quote_totals(items: list[dict], vat_rate: float) -> QuoteTotals:
     total = round(subtotal + vat_amount, 2)
 
     package_subtotal = round(sum(item["total"] for item in items if item.get("type") == "package"), 2)
-    workshop_subtotal = round(
-        sum(item.get("workshop_cost", 0) for item in items if item.get("type") == "manufacturing"), 2
-    )
-    deposit_amount = round(package_subtotal * (1 + vat_rate) / 2 + workshop_subtotal * (1 + vat_rate), 2)
+    deposit_amount = round(package_subtotal * (1 + vat_rate) / 2, 2)
     remaining_amount = round(total - deposit_amount, 2)
     return {
         "subtotal": subtotal,

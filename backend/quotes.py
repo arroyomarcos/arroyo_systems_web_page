@@ -60,10 +60,10 @@ class QuoteItemInput(BaseModel):
     # Out-of-scope hours on a package, billed at the hourly rate (needs override_confirmed).
     extra_hours: float = Field(default=0, ge=0)
     override_confirmed: bool = False
-    # Manufacturing only: the workshop's quoted cost and Arroyo Systems' management fee,
-    # both excl. VAT.
-    workshop_cost: float = Field(default=0, ge=0)
-    management_fee: float = Field(default=0, ge=0)
+    # Manufacturing only: the supplier's manufacturing amount (excl. VAT, the base of the
+    # percentage; the supplier invoices it directly) and the supervision fee rate in percent.
+    supplier_amount: float = Field(default=0, ge=0)
+    fee_rate: float = Field(default=0, ge=0, le=100)
 
     @model_validator(mode="after")
     def check_type_requirements(self):
@@ -71,8 +71,8 @@ class QuoteItemInput(BaseModel):
             raise ValueError("product_key is required for package items")
         if self.type == "engineering_hours" and self.quantity <= 0:
             raise ValueError("Engineering Hours quantity must be greater than 0")
-        if self.type == "manufacturing" and self.workshop_cost <= 0:
-            raise ValueError("Manufacturing needs the workshop cost (greater than 0)")
+        if self.type == "manufacturing" and (self.supplier_amount <= 0 or self.fee_rate <= 0):
+            raise ValueError("Manufacturing needs the supplier's amount and the supervision fee rate (both greater than 0)")
         return self
 
 
@@ -123,13 +123,13 @@ def _process_items(items: list[QuoteItemInput]) -> list[dict]:
                 "quantity": 1,
                 "unit_price": total,
                 "extra_hours": item.extra_hours,
-                "workshop_cost": 0,
-                "management_fee": 0,
+                "supplier_amount": 0,
+                "fee_rate": 0,
                 "total": total,
             })
         elif item.type == "manufacturing":
             try:
-                total = price_manufacturing_item(item.workshop_cost, item.management_fee)
+                total = price_manufacturing_item(item.supplier_amount, item.fee_rate)
             except PricingError as exc:
                 raise HTTPException(status_code=422, detail=str(exc)) from exc
             processed.append({
@@ -140,8 +140,8 @@ def _process_items(items: list[QuoteItemInput]) -> list[dict]:
                 "quantity": 1,
                 "unit_price": total,
                 "extra_hours": 0,
-                "workshop_cost": item.workshop_cost,
-                "management_fee": item.management_fee,
+                "supplier_amount": item.supplier_amount,
+                "fee_rate": item.fee_rate,
                 "total": total,
             })
         else:
@@ -157,8 +157,8 @@ def _process_items(items: list[QuoteItemInput]) -> list[dict]:
                 "quantity": item.quantity,
                 "unit_price": ENGINEERING_HOURS_RATE,
                 "extra_hours": 0,
-                "workshop_cost": 0,
-                "management_fee": 0,
+                "supplier_amount": 0,
+                "fee_rate": 0,
                 "total": total,
             })
     return processed
@@ -545,6 +545,8 @@ async def pay_deposit(token: str):
         raise HTTPException(status_code=409, detail="This quote cannot be accepted in its current state")
     if quote.get("contract_status", "NOT_GENERATED") != "SIGNED":
         raise HTTPException(status_code=409, detail="The service contract must be signed before paying the deposit")
+    if quote["deposit_amount"] <= 0:
+        raise HTTPException(status_code=409, detail="This quote has no advance: everything is invoiced with the final payment")
     customer = await _get_customer_or_404(quote["customer_id"])
 
     now = datetime.now(timezone.utc)

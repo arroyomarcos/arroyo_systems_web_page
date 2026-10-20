@@ -28,6 +28,9 @@ const PACKAGES_PREVIEW = {
 const ENGINEERING_RATE = 78;
 const EDITABLE_STATUSES = ["DRAFT", "SENT", "VIEWED"];
 
+// Minimum supervision fee per project (EUR, excl. VAT). Mirrors backend/pricing.py.
+const MIN_SUPERVISION_FEE = 60;
+
 const previewItemTotal = (item) => {
   if (item.type === "package") {
     const spec = PACKAGES_PREVIEW[item.product_key];
@@ -38,7 +41,10 @@ const previewItemTotal = (item) => {
     return price;
   }
   if (item.type === "manufacturing") {
-    return (Number(item.workshop_cost) || 0) + (Number(item.management_fee) || 0);
+    // Supervision fee: a percentage of the supplier's amount, never below the minimum per project.
+    const base = Number(item.supplier_amount) || 0;
+    const rate = Number(item.fee_rate) || 0;
+    return base > 0 && rate > 0 ? Math.max(MIN_SUPERVISION_FEE, Math.round(base * rate) / 100) : 0;
   }
   return (Number(item.quantity) || 0) * ENGINEERING_RATE;
 };
@@ -119,8 +125,8 @@ const AdminQuoteEditor = () => {
           description: it.description,
           quantity: it.quantity,
           extra_hours: it.extra_hours,
-          workshop_cost: it.workshop_cost || 0,
-          management_fee: it.management_fee || 0,
+          supplier_amount: it.supplier_amount || 0,
+          fee_rate: it.fee_rate || 0,
           override_confirmed: (it.extra_hours || 0) > (PACKAGES_PREVIEW[it.product_key]?.maxExtraHours || 0),
         }))
       );
@@ -150,7 +156,7 @@ const AdminQuoteEditor = () => {
   const addManufacturingItem = () => {
     setItems((prev) => [
       ...prev,
-      { type: "manufacturing", description: "", workshop_cost: "", management_fee: "" },
+      { type: "manufacturing", description: "", supplier_amount: "", fee_rate: "" },
     ]);
   };
 
@@ -169,17 +175,14 @@ const AdminQuoteEditor = () => {
   const subtotal = items.reduce((sum, it) => sum + previewItemTotal(it), 0);
   const vatAmount = subtotal * (vatPercent / 100);
   const total = subtotal + vatAmount;
-  // Advance = 50% of package items + 100% of the workshop cost of manufacturing items (all
-  // incl. VAT). Engineering Hours and the management fee fall entirely into the remaining
-  // payment. Mirrors backend/pricing.py.
+  // Advance = 50% of package items (incl. VAT). Engineering Hours and the manufacturing
+  // supervision fee fall entirely into the remaining payment; the supplier's manufacturing is
+  // paid by the client directly to the supplier. Mirrors backend/pricing.py.
   const packageSubtotal = items
     .filter((it) => it.type === "package")
     .reduce((sum, it) => sum + previewItemTotal(it), 0);
-  const workshopSubtotal = items
-    .filter((it) => it.type === "manufacturing")
-    .reduce((sum, it) => sum + (Number(it.workshop_cost) || 0), 0);
   const vatFactor = 1 + vatPercent / 100;
-  const deposit = (packageSubtotal * vatFactor) / 2 + workshopSubtotal * vatFactor;
+  const deposit = (packageSubtotal * vatFactor) / 2;
 
   const buildPayload = () => ({
     customer,
@@ -202,8 +205,8 @@ const AdminQuoteEditor = () => {
         return {
           type: "manufacturing",
           description: it.description || undefined,
-          workshop_cost: Number(it.workshop_cost) || 0,
-          management_fee: Number(it.management_fee) || 0,
+          supplier_amount: Number(it.supplier_amount) || 0,
+          fee_rate: Number(it.fee_rate) || 0,
         };
       }
       return {
@@ -492,25 +495,30 @@ const AdminQuoteEditor = () => {
                     ) : item.type === "manufacturing" ? (
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <p className="text-xs font-medium text-[color:var(--arroyo-muted)] mb-1">Workshop cost</p>
+                          <p className="text-xs font-medium text-[color:var(--arroyo-muted)] mb-1">
+                            Supplier's amount (excl. VAT, not invoiced by us)
+                          </p>
                           <Input
                             type="number"
                             min="0"
                             step="0.01"
-                            value={item.workshop_cost}
+                            value={item.supplier_amount}
                             disabled={!editable}
-                            onChange={(e) => updateItem(index, { workshop_cost: e.target.value })}
+                            onChange={(e) => updateItem(index, { supplier_amount: e.target.value })}
                           />
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-[color:var(--arroyo-muted)] mb-1">Management fee</p>
+                          <p className="text-xs font-medium text-[color:var(--arroyo-muted)] mb-1">
+                            Supervision fee % (min. {MIN_SUPERVISION_FEE} EUR, due with the final payment)
+                          </p>
                           <Input
                             type="number"
                             min="0"
-                            step="0.01"
-                            value={item.management_fee}
+                            max="100"
+                            step="0.1"
+                            value={item.fee_rate}
                             disabled={!editable}
-                            onChange={(e) => updateItem(index, { management_fee: e.target.value })}
+                            onChange={(e) => updateItem(index, { fee_rate: e.target.value })}
                           />
                         </div>
                       </div>
