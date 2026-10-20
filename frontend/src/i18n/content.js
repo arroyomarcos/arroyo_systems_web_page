@@ -101,6 +101,7 @@ const packagesEn = [
     price: "Technical coordination and supervision",
     priceNote: "The workshop bills you the manufacturing. We bill the technical supervision.",
     priceInclVat: null,
+    feeLine: "A percentage of the manufacturing amount, decreasing with volume.",
     leadTime: "Lead time depends on the supplier",
     leadTimeSentence: true,
     revisions: null,
@@ -118,7 +119,7 @@ const packagesEn = [
       "Manufacturing, purchasing and delivery of the part are carried out by the workshop, which bills you directly. Any additional work is quoted separately.",
     ],
     howItWorks:
-      "You contract and pay the manufacturing directly to the workshop. Arroyo Systems bills only the technical coordination and supervision.",
+      "You contract and pay the manufacturing directly to the workshop. Arroyo Systems bills only the technical coordination and supervision: a percentage of the manufacturing amount that decreases with volume, stated in your quote before you commit.",
   },
 ];
 
@@ -229,6 +230,7 @@ const packagesEs = [
     price: "Coordinación y supervisión técnica",
     priceNote: "El taller te factura la fabricación. Nosotros, la supervisión técnica.",
     priceInclVat: null,
+    feeLine: "Porcentaje sobre la fabricación, decreciente con el volumen.",
     leadTime: "Plazo según proveedor",
     leadTimeSentence: true,
     revisions: null,
@@ -246,7 +248,7 @@ const packagesEs = [
       "La fabricación, la compra y la entrega de la pieza las realiza el taller, que te factura directamente. Cualquier trabajo adicional se presupuesta aparte.",
     ],
     howItWorks:
-      "Contratas y pagas la fabricación directamente al taller. Arroyo Systems factura únicamente la coordinación y supervisión técnica.",
+      "Contratas y pagas la fabricación directamente al taller. Arroyo Systems factura únicamente la coordinación y supervisión técnica: un porcentaje del importe de fabricación que baja según el volumen, indicado en tu presupuesto antes de contratar.",
   },
 ];
 

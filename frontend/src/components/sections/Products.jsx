@@ -81,6 +81,11 @@ const PackageDialog = ({ pkg, onOpenChange, t }) => (
               </p>
             </div>
             <dl className="text-[0.8125rem] leading-snug space-y-1.5">
+              {pkg.feeLine && (
+                <div className="flex gap-2">
+                  <dd className="font-medium text-[color:var(--arroyo-navy)]">{pkg.feeLine}</dd>
+                </div>
+              )}
               <div className="flex gap-2">
                 {!pkg.leadTimeSentence && <dt className="text-[color:var(--arroyo-muted)]">{t.leadTimeLabel}</dt>}
                 <dd className="font-medium text-[color:var(--arroyo-navy)]">{pkg.leadTime}</dd>
@@ -162,7 +167,10 @@ const Products = () => {
                     {p.name}
                   </h3>
                   <PriceBlock pkg={p} className="mt-6" />
-                  <p className="mt-4 text-base text-[color:var(--arroyo-muted)]">{p.leadTime}</p>
+                  {p.feeLine && (
+                    <p className="mt-4 text-base font-medium leading-snug text-[color:var(--arroyo-navy)]">{p.feeLine}</p>
+                  )}
+                  <p className={`${p.feeLine ? "mt-2" : "mt-4"} text-base text-[color:var(--arroyo-muted)]`}>{p.leadTime}</p>
                 </div>
 
                 <div className="md:col-span-7 flex flex-col">
