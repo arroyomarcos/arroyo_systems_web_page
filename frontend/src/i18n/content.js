@@ -35,7 +35,7 @@ const packagesEn = [
     ],
     excludes: [
       "Structural calculation. That is the scope of Product Validation.",
-      "Manufacturing the part. That is the scope of Product Manufacturing.",
+      "Manufacturing the part. The workshop does that; coordinating and technically supervising it is the scope of Product Manufacturing.",
     ],
   },
   {
@@ -90,7 +90,7 @@ const packagesEn = [
       { title: "Engineering Report", description: "Clear evidence that your design meets its intended requirements." },
     ],
     excludes: [
-      "Manufacturing the part. That is the scope of Product Manufacturing.",
+      "Manufacturing the part. The workshop does that; coordinating and technically supervising it is the scope of Product Manufacturing.",
       "Physical testing. The simulation runs on the load and material assumptions agreed with you.",
     ],
   },
@@ -151,7 +151,7 @@ const packagesEs = [
     ],
     excludes: [
       "Cálculo estructural. Es el alcance de Product Validation.",
-      "Fabricación de la pieza. Es el alcance de Product Manufacturing.",
+      "Fabricación de la pieza. La realiza el taller; su coordinación y supervisión técnica es el alcance de Product Manufacturing.",
     ],
   },
   {
@@ -218,7 +218,7 @@ const packagesEs = [
       { title: "Informe de ingeniería", description: "Evidencia clara de que tu diseño cumple los requisitos previstos." },
     ],
     excludes: [
-      "Fabricación de la pieza. Es el alcance de Product Manufacturing.",
+      "Fabricación de la pieza. La realiza el taller; su coordinación y supervisión técnica es el alcance de Product Manufacturing.",
       "Ensayo físico. La simulación se hace sobre las hipótesis de carga y material acordadas contigo.",
     ],
   },
@@ -289,8 +289,8 @@ export const content = {
       figureCaption: "Result of a structural calculation (FEM)",
       promises: [
         {
-          title: "One supplier, one person accountable.",
-          body: "We design, calculate and manufacture. We deliver the project signed by an engineer and endorsed by the engineers' professional association.",
+          title: "One technical point of contact.",
+          body: "We design, calculate and supervise the manufacturing. We deliver the project signed by an engineer and endorsed by the engineers' professional association.",
         },
         {
           title: "Designed to be manufactured.",
@@ -306,8 +306,8 @@ export const content = {
         { title: "Closed quote", body: "With the scope in writing: deliverables, revisions and exclusions." },
         { title: "We design and calculate", body: "The part, designed for manufacturing and structurally validated." },
         {
-          title: "We manufacture and deliver",
-          body: "The part with its quality documentation: verified measurements and material certificate.",
+          title: "We supervise the manufacturing",
+          body: "We coordinate with the workshop, supervise the manufacturing through to receipt and review its documentation.",
         },
       ],
     },
@@ -378,7 +378,7 @@ export const content = {
       home: {
         title: "Arroyo Systems | We design, calculate and manufacture your part.",
         description:
-          "Machined and bent sheet-metal parts in steel and aluminium. Design, structural calculation and manufacturing with one person accountable and a closed price.",
+          "Machined and bent sheet-metal parts in steel and aluminium. Design, structural calculation and technical supervision of manufacturing, with a signed and endorsed project and a closed price.",
       },
       privacyPolicy: {
         title: "Privacy Policy | Arroyo Systems",
@@ -432,8 +432,8 @@ export const content = {
       figureCaption: "Resultado de un cálculo estructural (FEM)",
       promises: [
         {
-          title: "Un solo proveedor, un solo responsable.",
-          body: "Diseñamos, calculamos y fabricamos. Entregamos el proyecto firmado por ingeniero y visado por el colegio de ingenieros.",
+          title: "Un único interlocutor técnico.",
+          body: "Diseñamos, calculamos y supervisamos la fabricación. Entregamos el proyecto firmado por ingeniero y visado por el colegio de ingenieros.",
         },
         {
           title: "Diseñado para fabricarse.",
@@ -449,8 +449,8 @@ export const content = {
         { title: "Presupuesto cerrado", body: "Con el alcance por escrito: entregables, revisiones y exclusiones." },
         { title: "Diseñamos y calculamos", body: "La pieza, pensada para fabricación y validada estructuralmente." },
         {
-          title: "Fabricamos y entregamos",
-          body: "La pieza con su documentación de calidad: medidas verificadas y certificado de material.",
+          title: "Supervisamos la fabricación",
+          body: "Coordinamos con el taller, supervisamos la fabricación hasta la recepción y revisamos su documentación.",
         },
       ],
     },
@@ -520,7 +520,7 @@ export const content = {
       home: {
         title: "Arroyo Systems | Diseñamos, calculamos y fabricamos tu pieza.",
         description:
-          "Piezas mecanizadas y de chapa doblada, en acero y aluminio. Diseño, cálculo estructural y fabricación con un único responsable y precio cerrado.",
+          "Piezas mecanizadas y de chapa doblada, en acero y aluminio. Diseño, cálculo estructural y supervisión técnica de la fabricación, con proyecto firmado y visado y precio cerrado.",
       },
       privacyPolicy: {
         title: "Política de Privacidad | Arroyo Systems",
