@@ -22,12 +22,8 @@ const PriceBlock = ({ pkg, className = "" }) => {
       >
         {pkg.price}
       </p>
-      {/* Same small grey clarification as the other products; the coordination product adds the
-          fee mechanism as a second line in that style. */}
+      {/* Same small grey clarification as the other products. */}
       <p className="text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-2 max-w-xs">{pkg.priceNote}</p>
-      {pkg.feeLine && (
-        <p className="text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-1 max-w-xs">{pkg.feeLine}</p>
-      )}
     </div>
   );
 };
@@ -69,9 +65,6 @@ const PackageDialog = ({ pkg, onOpenChange, t }) => (
               <p className="text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-1.5">
                 {pkg.priceInclVat ?? pkg.priceNote}
               </p>
-              {pkg.feeLine && (
-                <p className="text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-1">{pkg.feeLine}</p>
-              )}
             </div>
             <dl className="text-[0.8125rem] leading-snug space-y-1.5">
               <div className="flex gap-2">
