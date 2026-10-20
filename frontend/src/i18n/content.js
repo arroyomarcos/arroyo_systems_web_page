@@ -101,7 +101,7 @@ const packagesEn = [
     price: "Technical coordination and supervision of your manufacturing",
     priceNote: "The workshop bills you the manufacturing. We bill the technical supervision.",
     priceInclVat: null,
-    leadTime: "Lead time depends on the workshop and process",
+    leadTime: "Lead time depends on the supplier",
     leadTimeSentence: true,
     revisions: null,
     description:
@@ -229,7 +229,7 @@ const packagesEs = [
     price: "Coordinación y supervisión técnica de tu fabricación",
     priceNote: "El taller te factura la fabricación. Nosotros, la supervisión técnica.",
     priceInclVat: null,
-    leadTime: "Plazo según taller y proceso",
+    leadTime: "Plazo según proveedor",
     leadTimeSentence: true,
     revisions: null,
     description:

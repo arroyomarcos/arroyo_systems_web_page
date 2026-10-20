@@ -153,7 +153,7 @@ const Products = () => {
           <p className="section-lead mt-5">{t.subtitle}</p>
         </div>
 
-        <div className="mt-12 md:mt-16 space-y-4 max-w-[1080px] mx-auto">
+        <div className="mt-12 md:mt-16 space-y-4 max-w-[1140px] mx-auto">
           {t.packages.map((p) => (
             <div key={p.id} className="product-tile">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-start">
