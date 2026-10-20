@@ -306,8 +306,8 @@ export const content = {
         { title: "Closed quote", body: "With the scope in writing: deliverables, revisions and exclusions." },
         { title: "We design and calculate", body: "The part, designed for manufacturing and structurally validated." },
         {
-          title: "We supervise the manufacturing",
-          body: "We coordinate with the workshop, supervise the manufacturing through to receipt and review its documentation.",
+          title: "Technical supervision",
+          body: "We coordinate with the workshop until the part is received.",
         },
       ],
     },
@@ -449,8 +449,8 @@ export const content = {
         { title: "Presupuesto cerrado", body: "Con el alcance por escrito: entregables, revisiones y exclusiones." },
         { title: "Diseñamos y calculamos", body: "La pieza, pensada para fabricación y validada estructuralmente." },
         {
-          title: "Supervisamos la fabricación",
-          body: "Coordinamos con el taller, supervisamos la fabricación hasta la recepción y revisamos su documentación.",
+          title: "Supervisión técnica",
+          body: "Coordinamos con el taller hasta la recepción de la pieza.",
         },
       ],
     },
