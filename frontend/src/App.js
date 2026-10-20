@@ -19,7 +19,7 @@ import { Toaster } from "./components/ui/toaster";
 import { getContent } from "./i18n/content";
 import { getLangFromPath, stripLangPrefix, withLang } from "./i18n/useLang";
 
-const SITE_URL = "https://www.arroyo-systems.com";
+const SITE_URL = "https://arroyo-systems.com";
 const LANG_PREF_KEY = "arroyo_lang";
 
 // Maps a language-stripped pathname to the content.seo key and canonical path.
@@ -114,15 +114,17 @@ const RouteEffects = () => {
       const pk = pageKey || "home";
       const t = getContent(lang);
       const enPath = pk === "home" ? "/" : basePath;
+      // Pages serves routes as directories: point canonical/hreflang at the final, slashed URL.
+      const slash = (p) => (p.endsWith("/") ? p : `${p}/`);
       seo = {
         title: t.seo[pk].title,
         description: t.seo[pk].description,
         robots: pk === "home" ? "index,follow" : "noindex,follow",
-        canonical: `${SITE_URL}${withLang(lang, enPath)}`,
+        canonical: `${SITE_URL}${slash(withLang(lang, enPath))}`,
       };
       alternates = {
-        en: `${SITE_URL}${enPath}`,
-        es: `${SITE_URL}${withLang("es", enPath)}`,
+        en: `${SITE_URL}${slash(enPath)}`,
+        es: `${SITE_URL}${slash(withLang("es", enPath))}`,
       };
     }
 

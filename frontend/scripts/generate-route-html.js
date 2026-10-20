@@ -16,7 +16,7 @@ const fs = require("fs");
 const path = require("path");
 
 const BUILD_DIR = process.argv[2] || "build";
-const SITE_URL = "https://www.arroyo-systems.com";
+const SITE_URL = "https://arroyo-systems.com";
 
 const loadContent = () => {
   const file = path.join(__dirname, "..", "src", "i18n", "content.js");
@@ -84,7 +84,10 @@ const generated = [];
 for (const { key, basePath } of PAGES) {
   const esPath = basePath === "/" ? "/es" : `/es${basePath}`;
   const robots = key === "home" ? "index,follow" : "noindex,follow";
-  const alternates = { en: `${SITE_URL}${basePath}`, es: `${SITE_URL}${esPath}` };
+  // GitHub Pages serves every route as a directory, so the slash-less URL only 301s to the
+  // slash one: canonical and hreflang must point at the final (trailing-slash) URL.
+  const slash = (p) => (p.endsWith("/") ? p : `${p}/`);
+  const alternates = { en: `${SITE_URL}${slash(basePath)}`, es: `${SITE_URL}${slash(esPath)}` };
 
   for (const lang of ["en", "es"]) {
     const seo = content[lang].seo[key];

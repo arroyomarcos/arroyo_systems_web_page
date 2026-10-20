@@ -64,7 +64,7 @@ const Hero = () => {
     <section id="top" className="relative pt-28 md:pt-36 pb-10 md:pb-16 overflow-hidden">
       <div className="arroyo-container relative">
         <div className="reveal text-center">
-          <h1 className="hero-title">
+          <h1 className="hero-title" aria-label={t.titleLines.join(" ")}>
             {t.titleLines.map((line) => (
               <span key={line}>
                 {line.replace(/\.$/, "")}
