@@ -22,7 +22,16 @@ const PriceBlock = ({ pkg, className = "" }) => {
       >
         {pkg.price}
       </p>
-      <p className="text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-2 max-w-xs">{pkg.priceNote}</p>
+      {/* On the coordination product this line says who bills what, so it stays readable. */}
+      <p
+        className={
+          isQuoted
+            ? "text-[0.9375rem] leading-snug text-[color:var(--arroyo-navy)] opacity-80 mt-3 max-w-sm"
+            : "text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-2 max-w-xs"
+        }
+      >
+        {pkg.priceNote}
+      </p>
     </div>
   );
 };
@@ -61,25 +70,33 @@ const PackageDialog = ({ pkg, onOpenChange, t }) => (
               >
                 {pkg.price}
               </p>
-              <p className="text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-1.5">
+              <p
+                className={
+                  pkg.priceInclVat === null
+                    ? "text-[0.9375rem] leading-snug text-[color:var(--arroyo-navy)] opacity-80 mt-2"
+                    : "text-[0.8125rem] leading-snug text-[color:var(--arroyo-muted)] mt-1.5"
+                }
+              >
                 {pkg.priceInclVat ?? pkg.priceNote}
               </p>
             </div>
             <dl className="text-[0.8125rem] leading-snug space-y-1.5">
               <div className="flex gap-2">
-                <dt className="text-[color:var(--arroyo-muted)]">{t.leadTimeLabel}</dt>
+                {!pkg.leadTimeSentence && <dt className="text-[color:var(--arroyo-muted)]">{t.leadTimeLabel}</dt>}
                 <dd className="font-medium text-[color:var(--arroyo-navy)]">{pkg.leadTime}</dd>
               </div>
-              <div className="flex gap-2">
-                <dt className="text-[color:var(--arroyo-muted)]">{t.revisionsLabel}</dt>
-                <dd className="font-medium text-[color:var(--arroyo-navy)]">{pkg.revisions}</dd>
-              </div>
+              {pkg.revisions && (
+                <div className="flex gap-2">
+                  <dt className="text-[color:var(--arroyo-muted)]">{t.revisionsLabel}</dt>
+                  <dd className="font-medium text-[color:var(--arroyo-navy)]">{pkg.revisions}</dd>
+                </div>
+              )}
             </dl>
           </div>
 
           <div className="mt-7">
             <p className="eyebrow mb-3">{t.includesLabel}</p>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5">
+            <ul className={`grid grid-cols-1 gap-x-8 gap-y-2.5 ${pkg.wideIncludes ? "" : "sm:grid-cols-2"}`}>
               {pkg.includes.map((d) => (
                 <li key={d.title} className="flex gap-2.5">
                   <Check size={16} className="mt-[3px] shrink-0 text-[color:var(--arroyo-accent)]" />
@@ -107,6 +124,13 @@ const PackageDialog = ({ pkg, onOpenChange, t }) => (
               ))}
             </ul>
           </div>
+
+          {pkg.howItWorks && (
+            <div className="mt-5 pt-5 border-t border-[color:var(--arroyo-line)]">
+              <p className="eyebrow mb-2.5">{t.howLabel}</p>
+              <p className="text-[0.9375rem] leading-snug text-[color:var(--arroyo-navy)]">{pkg.howItWorks}</p>
+            </div>
+          )}
 
           {pkg.note && (
             <p className="mt-5 text-xs text-[color:var(--arroyo-muted)] leading-relaxed">{pkg.note}</p>

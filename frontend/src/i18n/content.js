@@ -97,28 +97,28 @@ const packagesEn = [
   {
     id: "product-manufacturing",
     name: "Product Manufacturing",
-    tagline: "Receive the part manufactured and documented.",
-    price: "Workshop cost + Management",
-    priceNote: "Shown as separate lines in your quote, before anything is ordered.",
+    tagline: "Your validated design, manufactured as designed.",
+    price: "Technical coordination and supervision of your manufacturing",
+    priceNote: "The workshop bills you the manufacturing. We bill the technical supervision.",
     priceInclVat: null,
-    leadTime: "Time to be estimated by the workshop",
-    revisions: "One round of changes before launch",
+    leadTime: "Lead time depends on the workshop and process",
+    leadTimeSentence: true,
+    revisions: null,
     description:
-      "We take a validated design through manufacturing so you don't have to chase workshops or compare quotes. You get one quote, one point of contact and one invoice, and the part arrives with its quality documentation.",
+      "We select the right workshop, review its quote against your drawing and tolerances, and supervise the manufacturing through to receipt. You contract the workshop directly, with the manufacturer's price and warranty. We are your technical point of contact.",
+    wideIncludes: true,
     includes: [
-      { title: "Workshop quotes", description: "We request and manage the quotes from the workshop." },
-      { title: "One round of changes", description: "Before the order is launched." },
-      { title: "Follow-up until delivery", description: "We track the order until the part is in your hands." },
-      { title: "One incident handled", description: "If something goes wrong, we manage it with the workshop." },
-      {
-        title: "Quality documentation",
-        description: "Dimensional report and material certificate, requested from the workshop on every order.",
-      },
+      { title: "Technical selection of workshops and review of their quotes against the drawing and tolerances." },
+      { title: "Technical liaison with the workshop and technical follow-up of the manufacturing." },
+      { title: "Technical report on any deviation, so you can decide with sound judgement." },
+      { title: "Review of the documentation the workshop provides on receipt." },
+      { title: "One round of changes before launch and one incident." },
     ],
     excludes: [
-      "Conformity certificate (CoC), unless your quote states it expressly.",
+      "Manufacturing, purchasing and delivery of the part are carried out by the workshop, which bills you directly. Any additional work is quoted separately.",
     ],
-    note: "It starts from an approved, validated design: we don't manufacture what we haven't calculated. Lead time is confirmed once the workshop has quoted.",
+    howItWorks:
+      "You contract and pay the manufacturing directly to the workshop. Arroyo Systems bills only the technical coordination and supervision.",
   },
 ];
 
@@ -225,28 +225,28 @@ const packagesEs = [
   {
     id: "product-manufacturing",
     name: "Product Manufacturing",
-    tagline: "Recibe la pieza fabricada y documentada.",
-    price: "Coste del taller + Gestión",
-    priceNote: "En líneas separadas de tu presupuesto, antes de pedir nada.",
+    tagline: "Tu diseño validado, fabricado como se diseñó.",
+    price: "Coordinación y supervisión técnica de tu fabricación",
+    priceNote: "El taller te factura la fabricación. Nosotros, la supervisión técnica.",
     priceInclVat: null,
-    leadTime: "Tiempo a estimar por taller",
-    revisions: "Una ronda de cambios antes del lanzamiento",
+    leadTime: "Plazo según taller y proceso",
+    leadTimeSentence: true,
+    revisions: null,
     description:
-      "Llevamos un diseño validado hasta la fabricación para que no tengas que perseguir talleres ni comparar ofertas. Una oferta, un interlocutor y una factura, y la pieza llega con su documentación de calidad.",
+      "Seleccionamos el taller adecuado, revisamos su oferta contra tu plano y tolerancias y supervisamos la fabricación hasta la recepción. Contratas al taller directamente, con precio y garantía de fabricante. Nosotros somos tu interlocutor técnico.",
+    wideIncludes: true,
     includes: [
-      { title: "Ofertas del taller", description: "Pedimos y gestionamos las ofertas del taller." },
-      { title: "Una ronda de cambios", description: "Antes de lanzar el pedido." },
-      { title: "Seguimiento hasta la entrega", description: "Seguimos el pedido hasta que la pieza está en tus manos." },
-      { title: "Una incidencia gestionada", description: "Si algo falla, lo gestionamos con el taller." },
-      {
-        title: "Documentación de calidad",
-        description: "Informe dimensional y certificado de material, que pedimos al taller en cada pedido.",
-      },
+      { title: "Selección técnica de talleres y revisión de sus ofertas frente al plano y las tolerancias." },
+      { title: "Interlocución técnica con el taller y seguimiento técnico de la fabricación." },
+      { title: "Informe técnico ante cualquier desviación, para que decidas con criterio." },
+      { title: "Revisión de la documentación que aporta el taller a la recepción." },
+      { title: "Una ronda de cambios antes del lanzamiento y una incidencia." },
     ],
     excludes: [
-      "Certificado de conformidad (CoC), salvo que tu presupuesto lo indique expresamente.",
+      "La fabricación, la compra y la entrega de la pieza las realiza el taller, que te factura directamente. Cualquier trabajo adicional se presupuesta aparte.",
     ],
-    note: "Parte de un diseño aprobado y validado: no fabricamos lo que no hemos calculado. El plazo se confirma cuando el taller ha cotizado.",
+    howItWorks:
+      "Contratas y pagas la fabricación directamente al taller. Arroyo Systems factura únicamente la coordinación y supervisión técnica.",
   },
 ];
 
@@ -274,6 +274,7 @@ export const content = {
       subtitle:
         "Machined and bent sheet-metal parts, in steel and aluminium, with bolted joints and spot welding.",
       includesLabel: "What's included",
+      howLabel: "How it works",
       signedLine: "Project signed by an engineer and endorsed by the engineers' professional association.",
       excludesLabel: "What's not included",
       detailsLink: "What's included",
@@ -416,6 +417,7 @@ export const content = {
       subtitle:
         "Piezas mecanizadas y de chapa doblada, en acero y aluminio, con uniones atornilladas y soldadura puntual.",
       includesLabel: "Qué incluye",
+      howLabel: "Cómo funciona",
       signedLine: "Proyecto firmado por ingeniero y visado por el colegio de ingenieros.",
       excludesLabel: "Qué no incluye",
       detailsLink: "Qué incluye",
