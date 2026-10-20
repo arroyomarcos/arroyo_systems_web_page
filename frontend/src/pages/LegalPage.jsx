@@ -38,7 +38,7 @@ const ContactEmailLink = () => (
 // ---------- Privacy Policy ----------
 
 const PrivacyPolicyEN = () => (
-  <LegalLayout title="Privacy Policy" updated="Last updated: July 5, 2026">
+  <LegalLayout title="Privacy Policy" updated="Last updated: October 20, 2026">
     <Section title="Data controller">
       <p>
         The controller for this website is Marcos Arroyo Navarro, operating under the commercial
@@ -58,6 +58,12 @@ const PrivacyPolicyEN = () => (
         necessary for security, service operation, diagnostics, and abuse prevention may also be
         processed, such as IP address, user agent, request metadata, and server logs.
       </p>
+      <p>
+        If you go on to request a quote or sign a contract, we also process identification and
+        invoicing data (name or company name, tax ID, billing address, representative, email) and
+        the records of acceptance and electronic signature. Card payments are processed by Stripe:
+        Arroyo Systems does not receive or store card numbers.
+      </p>
     </Section>
 
     <Section title="Purpose and legal basis">
@@ -67,6 +73,11 @@ const PrivacyPolicyEN = () => (
         bases are the user's consent, the application of pre-contractual measures requested by the
         user, and Arroyo Systems' legitimate interest in securing the website and preventing abuse.
       </p>
+      <p>
+        For clients, data is also processed to prepare and perform the contract, issue invoices
+        and collect payments (performance of the contract), and to meet tax, accounting and
+        professional obligations (legal obligation).
+      </p>
     </Section>
 
     <Section title="Retention">
@@ -74,6 +85,11 @@ const PrivacyPolicyEN = () => (
         Contact requests will generally be retained for up to 12 months from the last
         communication, unless a contractual relationship is created or a longer period is required
         to comply with legal obligations, defend claims, or protect the service from misuse.
+      </p>
+      <p>
+        Client data is kept for the duration of the contractual relationship and, afterwards and
+        duly blocked, for the legal limitation periods that apply to tax, commercial and
+        professional liability matters.
       </p>
     </Section>
 
@@ -86,12 +102,22 @@ const PrivacyPolicyEN = () => (
       </p>
     </Section>
 
+    <Section title="Recipients">
+      <p>
+        When you contract Product Manufacturing, Arroyo Systems shares with the manufacturing
+        suppliers it selects only the data and technical documentation strictly necessary to
+        request quotes and to coordinate the manufacturing. You contract those suppliers
+        directly, and they process that data to carry out the work you commission from them.
+      </p>
+    </Section>
+
     <Section title="Processors">
       <p>
         Arroyo Systems uses technical providers necessary to operate the website and contact
         workflow. These may include GitHub Pages for frontend hosting, Render for backend/API
-        hosting, MongoDB Atlas for database storage, Resend for email notifications, and Cloudflare
-        for DNS, security, and domain infrastructure.
+        hosting, MongoDB Atlas for database storage, Resend for email notifications, Stripe for
+        payment processing, DocuSign for the electronic signature of contracts, and Cloudflare for
+        DNS, security, and domain infrastructure.
       </p>
       <p>
         These providers may process data outside the European Economic Area under their applicable
@@ -102,7 +128,7 @@ const PrivacyPolicyEN = () => (
 );
 
 const PrivacyPolicyES = () => (
-  <LegalLayout title="Política de Privacidad" updated="Última actualización: 5 de julio de 2026">
+  <LegalLayout title="Política de Privacidad" updated="Última actualización: 20 de octubre de 2026">
     <Section title="Responsable del tratamiento">
       <p>
         El responsable de esta web es Marcos Arroyo Navarro, operando bajo el nombre comercial
@@ -123,6 +149,12 @@ const PrivacyPolicyES = () => (
         para la seguridad, el funcionamiento del servicio, el diagnóstico y la prevención de
         abusos, como la dirección IP, el user agent, metadatos de la petición y logs del servidor.
       </p>
+      <p>
+        Si después solicitas un presupuesto o firmas un contrato, tratamos además datos de
+        identificación y facturación (nombre o razón social, NIF/CIF, domicilio fiscal,
+        representante, email) y los registros de aceptación y firma electrónica. Los pagos con
+        tarjeta los procesa Stripe: Arroyo Systems no recibe ni almacena números de tarjeta.
+      </p>
     </Section>
 
     <Section title="Finalidad y base legal">
@@ -133,6 +165,11 @@ const PrivacyPolicyES = () => (
         usuario, la aplicación de medidas precontractuales solicitadas por el usuario, y el interés
         legítimo de Arroyo Systems en proteger la web y prevenir abusos.
       </p>
+      <p>
+        En el caso de los clientes, los datos se tratan también para preparar y ejecutar el
+        contrato, emitir facturas y gestionar los cobros (ejecución del contrato), y para cumplir
+        las obligaciones fiscales, contables y profesionales (obligación legal).
+      </p>
     </Section>
 
     <Section title="Conservación">
@@ -141,6 +178,11 @@ const PrivacyPolicyES = () => (
         comunicación, salvo que se establezca una relación contractual o se requiera un plazo mayor
         para cumplir obligaciones legales, defender reclamaciones o proteger el servicio frente a un
         mal uso.
+      </p>
+      <p>
+        Los datos de clientes se conservan durante la relación contractual y, después, debidamente
+        bloqueados, durante los plazos legales de prescripción aplicables en materia fiscal,
+        mercantil y de responsabilidad profesional.
       </p>
     </Section>
 
@@ -153,12 +195,22 @@ const PrivacyPolicyES = () => (
       </p>
     </Section>
 
+    <Section title="Destinatarios">
+      <p>
+        Cuando contratas Product Manufacturing, Arroyo Systems comparte con los proveedores de
+        fabricación que selecciona únicamente los datos y la documentación técnica estrictamente
+        necesarios para solicitar ofertas y coordinar la fabricación. Contratas a esos proveedores
+        directamente, y ellos tratan esos datos para realizar el trabajo que les encargas.
+      </p>
+    </Section>
+
     <Section title="Encargados del tratamiento">
       <p>
         Arroyo Systems utiliza proveedores técnicos necesarios para operar la web y el proceso de
         contacto. Estos pueden incluir GitHub Pages para el alojamiento del frontend, Render para
         el alojamiento del backend/API, MongoDB Atlas para el almacenamiento de la base de datos,
-        Resend para las notificaciones por email, y Cloudflare para DNS, seguridad e infraestructura
+        Resend para las notificaciones por email, Stripe para el procesamiento de pagos, DocuSign
+        para la firma electrónica de contratos, y Cloudflare para DNS, seguridad e infraestructura
         de dominio.
       </p>
       <p>
@@ -174,7 +226,7 @@ export const PrivacyPolicy = () => (useLang() === "es" ? <PrivacyPolicyES /> : <
 // ---------- Legal Notice ----------
 
 const LegalNoticeEN = () => (
-  <LegalLayout title="Legal Notice" updated="Last updated: October 12, 2026">
+  <LegalLayout title="Legal Notice" updated="Last updated: October 20, 2026">
     <Section title="Website owner">
       <p>Owner: Marcos Arroyo Navarro</p>
       <p>Commercial name: Arroyo Systems</p>
@@ -188,13 +240,23 @@ const LegalNoticeEN = () => (
 
     <Section title="Activity">
       <p>
-        Arroyo Systems provides mechanical engineering services: design, structural validation and
-        manufacturing coordination of machined and bent sheet-metal components. Manufacturing is
-        carried out by third-party workshops, and Arroyo Systems manages it on the client's behalf.
+        Arroyo Systems provides mechanical engineering services: design, structural validation, and
+        technical coordination and supervision of the manufacturing of machined and bent
+        sheet-metal components.
       </p>
       <p>
         This website does not sell products or services directly. It is intended to provide
         information and receive contact or project assessment requests.
+      </p>
+    </Section>
+
+    <Section title="Manufacturing by suppliers">
+      <p>
+        Manufacturing, purchasing and delivery of the parts are carried out by third-party
+        suppliers, with whom the client contracts and to whom the client pays directly. Each
+        supplier is responsible for the manufacturing and for its own warranty. Arroyo Systems does
+        not sell or deliver parts and invoices only its technical coordination and supervision
+        services.
       </p>
     </Section>
 
@@ -214,10 +276,12 @@ const LegalNoticeEN = () => (
     <Section title="Scope of technical reports">
       <p>
         Technical reports issued by Arroyo Systems are design and validation reports of defined
-        scope. They are not subject to mandatory professional association review (visado
-        colegial), in accordance with Article 2 of Royal Decree 1000/2010, and do not constitute
-        certification of regulatory conformity for the final product. The scope and limitations
-        of each report are detailed in the document itself.
+        scope. Although professional association review (visado colegial) is not mandatory for
+        these reports under Article 2 of Royal Decree 1000/2010, every project is signed by the
+        registered engineer and endorsed (visado) by COGITI Madrid, as a condition of Arroyo
+        Systems' professional liability insurance. The reports do not constitute certification of
+        regulatory conformity for the final product. The scope and limitations of each report are
+        detailed in the document itself.
       </p>
     </Section>
 
@@ -260,7 +324,7 @@ const LegalNoticeEN = () => (
 );
 
 const LegalNoticeES = () => (
-  <LegalLayout title="Aviso Legal" updated="Última actualización: 12 de octubre de 2026">
+  <LegalLayout title="Aviso Legal" updated="Última actualización: 20 de octubre de 2026">
     <Section title="Titular de la web">
       <p>Titular: Marcos Arroyo Navarro</p>
       <p>Nombre comercial: Arroyo Systems</p>
@@ -275,13 +339,21 @@ const LegalNoticeES = () => (
     <Section title="Actividad">
       <p>
         Arroyo Systems presta servicios de ingeniería mecánica: diseño, validación estructural y
-        coordinación de fabricación de componentes mecanizados y de chapa metálica doblada. La
-        fabricación la realizan talleres de terceros y Arroyo Systems la gestiona por cuenta del
-        cliente.
+        coordinación y supervisión técnica de la fabricación de componentes mecanizados y de
+        chapa metálica doblada.
       </p>
       <p>
         Esta web no vende productos ni servicios de forma directa. Su finalidad es proporcionar
         información y recibir solicitudes de contacto o evaluación de proyectos.
+      </p>
+    </Section>
+
+    <Section title="Fabricación por proveedores">
+      <p>
+        La fabricación, la compra y la entrega de las piezas las realizan proveedores externos, con
+        los que el cliente contrata y a los que paga directamente. Cada proveedor responde de la
+        fabricación y de su propia garantía. Arroyo Systems no vende ni entrega piezas y factura
+        únicamente sus servicios de coordinación y supervisión técnica.
       </p>
     </Section>
 
@@ -301,10 +373,12 @@ const LegalNoticeES = () => (
     <Section title="Alcance de los informes técnicos">
       <p>
         Los informes técnicos emitidos por Arroyo Systems son informes de validación y diseño de
-        alcance definido. No están sujetos a visado colegial obligatorio, conforme al artículo 2
-        del Real Decreto 1000/2010, y no constituyen una certificación de conformidad normativa
-        del producto final. El alcance y las limitaciones de cada informe se detallan en el propio
-        documento.
+        alcance definido. Aunque el visado colegial no es obligatorio para estos informes conforme
+        al artículo 2 del Real Decreto 1000/2010, cada proyecto es firmado por el ingeniero
+        colegiado y visado por COGITI Madrid, como condición del seguro de responsabilidad civil
+        profesional de Arroyo Systems. Los informes no constituyen una certificación de
+        conformidad normativa del producto final. El alcance y las limitaciones de cada informe se
+        detallan en el propio documento.
       </p>
     </Section>
 
@@ -353,7 +427,7 @@ export const LegalNotice = () => (useLang() === "es" ? <LegalNoticeES /> : <Lega
 // ---------- Cookies Policy ----------
 
 const CookiesPolicyEN = () => (
-  <LegalLayout title="Cookies Policy" updated="Last updated: July 5, 2026">
+  <LegalLayout title="Cookies Policy" updated="Last updated: October 20, 2026">
     <Section title="Use of cookies">
       <p>
         This website does not intentionally use non-essential cookies for advertising or
@@ -376,6 +450,10 @@ const CookiesPolicyEN = () => (
         infrastructure.
       </p>
       <p>
+        When you pay a quote you are redirected to Stripe's payment page, and when you sign a
+        contract, to DocuSign. Those services operate under their own privacy and cookie policies.
+      </p>
+      <p>
         Arroyo Systems does not currently use Google Analytics, Meta Pixel, LinkedIn Insight Tag,
         Hotjar, or similar analytics or advertising tracking tools. If such tools are added later,
         this policy and the consent mechanism must be updated before activation.
@@ -392,7 +470,7 @@ const CookiesPolicyEN = () => (
 );
 
 const CookiesPolicyES = () => (
-  <LegalLayout title="Política de Cookies" updated="Última actualización: 5 de julio de 2026">
+  <LegalLayout title="Política de Cookies" updated="Última actualización: 20 de octubre de 2026">
     <Section title="Uso de cookies">
       <p>
         Esta web no utiliza intencionadamente cookies no esenciales con fines publicitarios o de
@@ -415,6 +493,11 @@ const CookiesPolicyES = () => (
         incluyendo GitHub Pages, Render, MongoDB Atlas, Resend y Cloudflare. Estos recursos se
         utilizan para alojamiento, funcionamiento de la API, almacenamiento de datos, notificaciones
         por email, DNS, seguridad e infraestructura.
+      </p>
+      <p>
+        Cuando pagas un presupuesto se te redirige a la página de pago de Stripe, y cuando firmas
+        un contrato, a DocuSign. Esos servicios se rigen por sus propias políticas de privacidad y
+        de cookies.
       </p>
       <p>
         Arroyo Systems no utiliza actualmente Google Analytics, Meta Pixel, LinkedIn Insight Tag,
