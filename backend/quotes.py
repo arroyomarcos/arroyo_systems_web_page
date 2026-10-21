@@ -88,6 +88,17 @@ class QuoteCreate(BaseModel):
     currency: str = Field(default="eur", min_length=3, max_length=3)
     items: list[QuoteItemInput] = Field(min_length=1)
 
+    @model_validator(mode="after")
+    def manufacturing_only_with_an_engineering_package(self):
+        # Product Manufacturing is never sold on its own: it supervises the manufacturing of a
+        # design that Design, Validation or Development produced or validated.
+        has_manufacturing = any(item.type == "manufacturing" for item in self.items)
+        if has_manufacturing and not any(item.type == "package" for item in self.items):
+            raise ValueError(
+                "Product Manufacturing is only offered together with Product Design, Validation or Development"
+            )
+        return self
+
 
 class FinalPaymentRequest(BaseModel):
     # Extra Engineering Hours for delays or small scope changes discovered during the

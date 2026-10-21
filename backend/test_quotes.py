@@ -176,29 +176,43 @@ def test_create_quote_allows_extra_hours_beyond_max_with_override(admin_client):
     assert response.json()["items"][0]["total"] == 1500.0 + 20 * 78.0
 
 
+PKG = {"type": "package", "product_key": "product_design"}
+
+
 def test_create_quote_with_manufacturing_line(admin_client):
     payload = quote_payload(items=[
+        PKG,
         {"type": "manufacturing", "supplier_amount": 10000, "fee_rate": 5, "description": "Bracket x5"},
     ])
     response = admin_client.post("/api/admin/quotes", json=payload)
     assert response.status_code == 201
     body = response.json()
-    item = body["items"][0]
+    item = body["items"][1]
     assert item["type"] == "manufacturing"
     assert item["supplier_amount"] == 10000 and item["fee_rate"] == 5
     assert item["total"] == 500.0  # 5% of the supplier's amount
-    assert body["total"] == 605.0
+    assert body["total"] == 2420.0  # (1,500 package + 500 supervision) + 21% VAT
     # The client pays the supplier directly; Arroyo Systems only invoices the supervision fee,
-    # all of it with the final balance.
-    assert body["deposit_amount"] == 0.0
-    assert body["remaining_amount"] == 605.0
+    # all of it with the final balance. The advance is 50% of the package only.
+    assert body["deposit_amount"] == 907.5
+    assert body["remaining_amount"] == 1512.5
+
+
+def test_manufacturing_is_never_offered_on_its_own(admin_client):
+    payload = quote_payload(items=[{"type": "manufacturing", "supplier_amount": 10000, "fee_rate": 5}])
+    assert admin_client.post("/api/admin/quotes", json=payload).status_code == 422
+    hours_only = quote_payload(items=[
+        {"type": "engineering_hours", "quantity": 2},
+        {"type": "manufacturing", "supplier_amount": 10000, "fee_rate": 5},
+    ])
+    assert admin_client.post("/api/admin/quotes", json=hours_only).status_code == 422
 
 
 def test_manufacturing_fee_follows_the_internal_schedule_by_default(admin_client, monkeypatch):
     monkeypatch.setenv("SUPERVISION_TRANCHES", "1000:10,5000:6,inf:2")  # made up for the test
-    payload = quote_payload(items=[{"type": "manufacturing", "supplier_amount": 10000}])
+    payload = quote_payload(items=[PKG, {"type": "manufacturing", "supplier_amount": 10000}])
     body = admin_client.post("/api/admin/quotes", json=payload).json()
-    item = body["items"][0]
+    item = body["items"][1]
     assert item["total"] == 440.0
     assert item["fee_rate"] == 4.4  # the effective percentage; the tranches are never exposed
     assert "tranche" not in str(body).lower()
@@ -218,13 +232,13 @@ def test_supervision_fee_preview_requires_admin(db):
 
 
 def test_manufacturing_fee_never_falls_below_the_minimum(admin_client):
-    payload = quote_payload(items=[{"type": "manufacturing", "supplier_amount": 300, "fee_rate": 15}])
+    payload = quote_payload(items=[PKG, {"type": "manufacturing", "supplier_amount": 300, "fee_rate": 15}])
     body = admin_client.post("/api/admin/quotes", json=payload).json()
-    assert body["items"][0]["total"] == 60.0
+    assert body["items"][1]["total"] == 60.0
 
 
 def test_create_quote_rejects_manufacturing_without_supplier_amount(admin_client):
-    response = admin_client.post("/api/admin/quotes", json=quote_payload(items=[{"type": "manufacturing", "fee_rate": 5}]))
+    response = admin_client.post("/api/admin/quotes", json=quote_payload(items=[PKG, {"type": "manufacturing", "fee_rate": 5}]))
     assert response.status_code == 422
 
 

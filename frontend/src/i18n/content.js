@@ -118,7 +118,7 @@ const packagesEn = [
       "Manufacturing, purchasing and delivery of the part are carried out by the supplier, which bills you directly. Any additional work is quoted separately.",
     ],
     howItWorks:
-      "You contract and pay the manufacturing directly to the supplier. Arroyo Systems bills only the technical coordination and supervision: a percentage of the manufacturing amount that decreases with volume, stated in your quote before you commit.",
+      "You contract and pay the manufacturing directly to the supplier. Arroyo Systems bills only the technical coordination and supervision: a percentage of the manufacturing amount that decreases with volume, stated in your quote before you commit. It is contracted together with Product Design, Validation or Development, the design is approved in writing before you place the order with the supplier, and the fee is billed on the second invoice, together with the delivery of the project.",
   },
 ];
 
@@ -246,7 +246,7 @@ const packagesEs = [
       "La fabricación, la compra y la entrega de la pieza las realiza el proveedor, que te factura directamente. Cualquier trabajo adicional se presupuesta aparte.",
     ],
     howItWorks:
-      "Contratas y pagas la fabricación directamente al proveedor. Arroyo Systems factura únicamente la coordinación y supervisión técnica: un porcentaje del importe de fabricación que baja según el volumen, indicado en tu presupuesto antes de contratar.",
+      "Contratas y pagas la fabricación directamente al proveedor. Arroyo Systems factura únicamente la coordinación y supervisión técnica: un porcentaje del importe de fabricación que baja según el volumen, indicado en tu presupuesto antes de contratar. Se contrata junto con Product Design, Validation o Development, el diseño se aprueba por escrito antes de que hagas el pedido al proveedor y los honorarios se facturan en la segunda factura, junto con la entrega del proyecto.",
   },
 ];
 
@@ -275,7 +275,7 @@ export const content = {
         "Machined and bent sheet-metal parts, in steel and aluminium, with bolted joints and spot welding.",
       includesLabel: "What's included",
       howLabel: "How it works",
-      signedLine: "Project signed by an engineer and endorsed by the engineers' professional association.",
+      signedLine: "Project signed by an engineer and endorsed by the engineers' professional association, endorsement cost included in the price.",
       excludesLabel: "What's not included",
       detailsLink: "What's included",
       leadTimeLabel: "Lead time",
@@ -378,7 +378,7 @@ export const content = {
     },
     seo: {
       home: {
-        title: "Arroyo Systems | We design, calculate and manufacture your part.",
+        title: "Arroyo Systems | We design, calculate and supervise the manufacturing of your part.",
         description:
           "Machined and bent sheet-metal parts in steel and aluminium. Design, structural calculation and technical supervision of manufacturing, with a signed and endorsed project and a closed price.",
       },
@@ -420,7 +420,7 @@ export const content = {
         "Piezas mecanizadas y de chapa doblada, en acero y aluminio, con uniones atornilladas y soldadura puntual.",
       includesLabel: "Qué incluye",
       howLabel: "Cómo funciona",
-      signedLine: "Proyecto firmado por ingeniero y visado por el colegio de ingenieros.",
+      signedLine: "Proyecto firmado por ingeniero y visado por el colegio de ingenieros, con el visado incluido en el precio.",
       excludesLabel: "Qué no incluye",
       detailsLink: "Qué incluye",
       leadTimeLabel: "Plazo",
@@ -522,7 +522,7 @@ export const content = {
     },
     seo: {
       home: {
-        title: "Arroyo Systems | Diseñamos, calculamos y fabricamos tu pieza.",
+        title: "Arroyo Systems | Diseñamos, calculamos y supervisamos la fabricación de tu pieza.",
         description:
           "Piezas mecanizadas y de chapa doblada, en acero y aluminio. Diseño, cálculo estructural y supervisión técnica de la fabricación, con proyecto firmado y visado y precio cerrado.",
       },

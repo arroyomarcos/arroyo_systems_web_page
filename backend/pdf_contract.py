@@ -185,8 +185,10 @@ def build_contract_pdf(
             "de la fabricación y de su garantía de fabricante. EL PRESTADOR no vende, suministra ni "
             "entrega las piezas, y no percibe del proveedor comisión ni contraprestación alguna: "
             "factura únicamente a EL CLIENTE sus honorarios de coordinación y supervisión técnica.",
-            "La coordinación y supervisión parte siempre de un diseño aprobado y validado por EL "
-            "CLIENTE.",
+            "Este servicio se presta únicamente junto con alguno de los servicios Product Design, "
+            "Product Validation o Product Development, nunca por separado.",
+            "La coordinación y supervisión parte siempre de un diseño aprobado por escrito por EL "
+            "CLIENTE (incluido correo electrónico) antes de que contrate el pedido al proveedor.",
             "Los honorarios de coordinación y supervisión técnica son un porcentaje del importe de "
             "fabricación ofertado por el proveedor (sin IVA), que se reduce a medida que aumenta el "
             "volumen y que se indica en el Presupuesto, con un mínimo de 60 € por proyecto. Se "
@@ -234,8 +236,9 @@ def build_contract_pdf(
     payment_items = []
     if package_keys:
         payment_items.append(
-            "50% del importe de los servicios de ingeniería contratados, en concepto de anticipo, a "
-            "la firma del presente Contrato y antes del inicio de los trabajos. Este anticipo se "
+            "50% del importe de los servicios de ingeniería contratados, en concepto de anticipo, al "
+            "aceptar el Presupuesto mediante la firma del presente Contrato, por transferencia "
+            "bancaria en un plazo máximo de 7 días naturales y antes del inicio de los trabajos. Este anticipo se "
             "calcula exclusivamente sobre el precio del servicio contratado (Cláusula 2) y no se ve "
             "alterado por las horas de ingeniería adicionales que, en su caso, se añadan conforme al "
             "párrafo siguiente."
@@ -247,8 +250,8 @@ def build_contract_pdf(
            if has_manufacturing else "")
         + " y el importe correspondiente a las horas de ingeniería adicionales (Engineering Hours) "
         "que, en su caso, se hayan generado conforme al párrafo siguiente, a la entrega del "
-        "proyecto (deliverables finales), en un plazo máximo de 7 días naturales desde la "
-        "recepción de la factura correspondiente."
+        "proyecto (deliverables finales), por transferencia bancaria en un plazo máximo de 7 días "
+        "naturales desde la recepción de la factura correspondiente."
     )
     bullets(payment_items)
     if has_manufacturing:

@@ -39,6 +39,7 @@ TERMS = [
 ]
 
 MANUFACTURING_TERMS = [
+    "Product Manufacturing is only provided together with Product Design, Validation or Development, and the design is approved in writing before the order is placed with the supplier.",
     "Product Manufacturing is technical coordination and supervision only: the client contracts and pays the manufacturing directly to the supplier, which invoices it separately.",
     "Arroyo Systems invoices only its supervision fee, due on delivery of the project, with the final payment. It is a percentage of the supplier's manufacturing amount (excl. VAT) that falls as the volume grows, with a minimum of EUR 60 per project.",
 ]
@@ -183,11 +184,14 @@ def build_quote_pdf(quote: dict, customer: dict) -> bytes:
     has_manufacturing = any(item["type"] == "manufacturing" for item in quote.get("items", []))
     payment_rows = []
     if quote["deposit_amount"] > 0:
-        payment_rows.append(["50% upfront - upon accepting the quote", _fmt_money(quote["deposit_amount"], currency)])
+        payment_rows.append([
+            "50% upfront - upon accepting the quote (bank transfer, within 7 days)",
+            _fmt_money(quote["deposit_amount"], currency),
+        ])
     payment_rows.append([
-        "Balance (with the supervision fee) - upon delivery of the deliverables"
+        "Balance (with the supervision fee) - upon delivery of the deliverables (bank transfer, within 7 days of the invoice)"
         if has_manufacturing
-        else "50% balance - upon delivery of the deliverables",
+        else "50% balance - upon delivery of the deliverables (bank transfer, within 7 days of the invoice)",
         _fmt_money(quote["remaining_amount"], currency),
     ])
     payment_table = Table(payment_rows, colWidths=[125 * mm, 35 * mm])
