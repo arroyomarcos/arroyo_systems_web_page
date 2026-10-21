@@ -40,7 +40,7 @@ TERMS = [
 
 MANUFACTURING_TERMS = [
     "Product Manufacturing is technical coordination and supervision only: the client contracts and pays the manufacturing directly to the supplier, which invoices it separately.",
-    "Arroyo Systems invoices only its supervision fee, due with the final payment. It is a percentage of the supplier's manufacturing amount (excl. VAT) that falls as the volume grows, with a minimum of EUR 60 per project.",
+    "Arroyo Systems invoices only its supervision fee, due on delivery of the project, with the final payment. It is a percentage of the supplier's manufacturing amount (excl. VAT) that falls as the volume grows, with a minimum of EUR 60 per project.",
 ]
 
 

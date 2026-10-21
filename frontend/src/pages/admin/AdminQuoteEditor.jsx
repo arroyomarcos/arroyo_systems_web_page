@@ -531,7 +531,7 @@ const AdminQuoteEditor = () => {
                         </div>
                         <div>
                           <p className="text-xs font-medium text-[color:var(--arroyo-muted)] mb-1">
-                            Fee % override (empty = volume schedule; min. {MIN_SUPERVISION_FEE} EUR; due with the final payment)
+                            Fee % override (empty = volume schedule; min. {MIN_SUPERVISION_FEE} EUR; due on delivery of the project, with the final payment)
                           </p>
                           <Input
                             type="number"

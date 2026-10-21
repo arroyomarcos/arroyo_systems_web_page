@@ -190,8 +190,8 @@ def build_contract_pdf(
             "Los honorarios de coordinación y supervisión técnica son un porcentaje del importe de "
             "fabricación ofertado por el proveedor (sin IVA), que se reduce a medida que aumenta el "
             "volumen y que se indica en el Presupuesto, con un mínimo de 60 € por proyecto. Se "
-            "devengan al terminar el proyecto y se abonan íntegramente con el saldo final conforme a "
-            "la Cláusula 4.",
+            "devengan en el momento de la entrega del proyecto y se abonan íntegramente con el saldo "
+            "final conforme a la Cláusula 4.",
             "Si la pieza recibida presenta desviaciones respecto del plano aprobado, EL PRESTADOR "
             "emitirá un informe técnico para que EL CLIENTE decida. La reposición, el abono o la "
             "garantía los gestiona EL CLIENTE con el proveedor. EL PRESTADOR no aprueba desviaciones "
@@ -246,9 +246,9 @@ def build_contract_pdf(
         + (", junto con los honorarios de coordinación y supervisión técnica de la fabricación,"
            if has_manufacturing else "")
         + " y el importe correspondiente a las horas de ingeniería adicionales (Engineering Hours) "
-        "que, en su caso, se hayan generado conforme al párrafo siguiente, a la entrega de los "
-        "deliverables finales y, en su caso, al terminar la supervisión, en un plazo máximo de 7 "
-        "días naturales desde la recepción de la factura correspondiente."
+        "que, en su caso, se hayan generado conforme al párrafo siguiente, a la entrega del "
+        "proyecto (deliverables finales), en un plazo máximo de 7 días naturales desde la "
+        "recepción de la factura correspondiente."
     )
     bullets(payment_items)
     if has_manufacturing:
