@@ -220,8 +220,8 @@ def build_contract_pdf(
         "Cada proyecto es firmado por EL PRESTADOR, ingeniero colegiado, y visado por el Colegio "
         "Oficial al que pertenece (o, en su caso, sometido a su control profesional) antes de su "
         "entrega a EL CLIENTE.",
-        "El coste del visado colegial lo soporta EL CLIENTE y está incluido en el precio del "
-        "Presupuesto, sin importe adicional.",
+        "El coste del visado colegial está incluido en el precio de cada servicio del "
+        "Presupuesto: EL CLIENTE no abona importe adicional por él.",
         "El visado es condición de la cobertura del seguro de responsabilidad civil profesional "
         "descrito en la Cláusula 10.",
     ])

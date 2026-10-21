@@ -35,7 +35,7 @@ TERMS = [
     "Starting the work requires written acceptance (online or by email) of this quote.",
     "In case of cancellation during the project, work completed up to that point will be invoiced.",
     "Deliverables are provided in digital format (PDF, STEP, DWG, or others as agreed).",
-    "Each project is signed by the registered engineer and endorsed (visado) by the professional association; the cost of the visado is included in the price.",
+    "Each project is signed by the registered engineer and endorsed (visado) by the professional association; the cost of the visado is included in the price of each service, at no additional charge.",
 ]
 
 MANUFACTURING_TERMS = [
