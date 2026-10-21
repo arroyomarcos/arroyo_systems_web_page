@@ -30,12 +30,11 @@ Backend:
 - JWT para autenticacion admin.
 - Passlib/bcrypt para hash de password.
 - CORS configurable por variable de entorno.
-- `stripe` (SDK oficial) para Checkout, Stripe Tax y verificacion de webhooks.
 
 Base de datos:
 
 - MongoDB.
-- Colecciones principales: `contact_messages`, `admin_users` y `orders` (pedidos/pagos de Stripe).
+- Colecciones principales: `contact_messages` y `admin_users`. Los presupuestos, contratos y facturas se preparan fuera de la web (plantillas de Excel y Word); no hay Stripe ni DocuSign.
 
 ## 3. Estructura del frontend
 
@@ -52,7 +51,6 @@ Rutas actuales:
 - `/cookies-policy`: politica de cookies.
 - `/admin`: login admin.
 - `/admin/messages`: dashboard admin protegido por token.
-- `/admin/payments`: generacion de payment links de Stripe y listado de pedidos, protegido por token.
 
 La home se compone en este orden:
 
@@ -113,8 +111,6 @@ Funciones existentes:
 - `updateMessageRead(id, read)`
 - `deleteMessage(id)`
 - `exportCsvUrl()`
-- `createCheckoutSession(payload)`
-- `listOrders()`
 
 ## 6. Formulario de contacto
 
@@ -210,13 +206,6 @@ Rutas admin:
 - `PATCH /api/admin/messages/{msg_id}`
 - `DELETE /api/admin/messages/{msg_id}`
 - `GET /api/admin/messages/export.csv`
-- `POST /api/admin/checkout/session`: crea una Stripe Checkout Session (Stripe Tax activado) y un pedido en `orders`.
-- `GET /api/admin/orders`: lista pedidos.
-
-Rutas publicas de Stripe:
-
-- `GET /api/checkout/session/{session_id}`: estado de un pedido, usado por la pagina de exito del checkout.
-- `POST /api/webhooks/stripe`: recibe eventos de Stripe (verificados por firma) y actualiza el estado del pedido en `orders`.
 
 Responsabilidades del backend:
 
@@ -257,11 +246,6 @@ Backend (`backend/.env`):
 - `RESEND_FROM`
 - `RESEND_FALLBACK_FROM`
 - `EMAIL_SEND_TIMEOUT_SECONDS`
-- `STRIPE_SECRET_KEY`
-- `STRIPE_WEBHOOK_SECRET`
-- `STRIPE_SUCCESS_URL`
-- `STRIPE_CANCEL_URL`
-- `STRIPE_CURRENCY`
 
 Frontend (`frontend/.env`):
 

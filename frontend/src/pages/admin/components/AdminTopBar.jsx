@@ -4,8 +4,6 @@ import { LogOut } from "lucide-react";
 
 const NAV_LINKS = [
   { to: "/admin/messages", label: "Messages" },
-  { to: "/admin/quotes", label: "Quotes" },
-  { to: "/admin/payments", label: "Payments" },
 ];
 
 const AdminTopBar = ({ me, onLogout }) => {

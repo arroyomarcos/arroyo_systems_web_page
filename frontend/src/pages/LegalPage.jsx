@@ -115,9 +115,8 @@ const PrivacyPolicyEN = () => (
       <p>
         Arroyo Systems uses technical providers necessary to operate the website and contact
         workflow. These may include GitHub Pages for frontend hosting, Render for backend/API
-        hosting, MongoDB Atlas for database storage, Resend for email notifications, DocuSign for
-        the electronic signature of contracts, and Cloudflare for DNS, security, and domain
-        infrastructure.
+        hosting, MongoDB Atlas for database storage, Resend for email notifications, and Cloudflare
+        for DNS, security, and domain infrastructure.
       </p>
       <p>
         These providers may process data outside the European Economic Area under their applicable
@@ -209,8 +208,8 @@ const PrivacyPolicyES = () => (
         Arroyo Systems utiliza proveedores técnicos necesarios para operar la web y el proceso de
         contacto. Estos pueden incluir GitHub Pages para el alojamiento del frontend, Render para
         el alojamiento del backend/API, MongoDB Atlas para el almacenamiento de la base de datos,
-        Resend para las notificaciones por email, DocuSign para la firma electrónica de
-        contratos, y Cloudflare para DNS, seguridad e infraestructura de dominio.
+        Resend para las notificaciones por email, y Cloudflare para DNS, seguridad e infraestructura
+        de dominio.
       </p>
       <p>
         Estos proveedores pueden tratar datos fuera del Espacio Económico Europeo conforme a sus
@@ -469,10 +468,6 @@ const CookiesPolicyEN = () => (
         infrastructure.
       </p>
       <p>
-        When you sign a contract you are redirected to DocuSign, which operates under its own
-        privacy and cookie policies.
-      </p>
-      <p>
         Arroyo Systems does not currently use Google Analytics, Meta Pixel, LinkedIn Insight Tag,
         Hotjar, or similar analytics or advertising tracking tools. If such tools are added later,
         this policy and the consent mechanism must be updated before activation.
@@ -512,10 +507,6 @@ const CookiesPolicyES = () => (
         incluyendo GitHub Pages, Render, MongoDB Atlas, Resend y Cloudflare. Estos recursos se
         utilizan para alojamiento, funcionamiento de la API, almacenamiento de datos, notificaciones
         por email, DNS, seguridad e infraestructura.
-      </p>
-      <p>
-        Cuando firmas un contrato se te redirige a DocuSign, que se rige por sus propias políticas
-        de privacidad y de cookies.
       </p>
       <p>
         Arroyo Systems no utiliza actualmente Google Analytics, Meta Pixel, LinkedIn Insight Tag,
