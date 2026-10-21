@@ -15,6 +15,7 @@ and pays the supplier directly, and Arroyo Systems invoices only its supervision
 percentage of the supplier's manufacturing amount (excl. VAT) that falls as the volume grows, set
 per quote, with a minimum per project. It is due with the final payment, never in the advance.
 """
+import os
 from typing import Literal, Optional, TypedDict
 
 
@@ -22,6 +23,27 @@ ENGINEERING_HOURS_RATE = 78.0
 
 # Minimum supervision fee per project (EUR, excl. VAT).
 MIN_SUPERVISION_FEE = 60.0
+
+
+def supervision_tranches() -> tuple:
+    """The volume schedule for the supervision fee, as ((upper bound, percent), ...).
+
+    It is INTERNAL and deliberately not in the code (this repository is public): it comes from the
+    SUPERVISION_TRANCHES environment variable, e.g. "1000:10,5000:6,inf:2" - marginal percentages,
+    each applied only to the slice of the supplier's amount (excl. VAT) inside its tranche. Empty
+    or missing means no schedule is configured, and the fee % must then be entered by hand."""
+    raw = os.environ.get("SUPERVISION_TRANCHES", "").strip()
+    if not raw:
+        return ()
+    tranches, previous = [], 0.0
+    for part in raw.split(","):
+        bound, percent = part.strip().split(":")
+        upper = float("inf") if bound.strip().lower() == "inf" else float(bound)
+        if upper <= previous or not 0 < float(percent) <= 100:
+            raise PricingError("SUPERVISION_TRANCHES is malformed")
+        tranches.append((upper, float(percent)))
+        previous = upper
+    return tuple(tranches)
 
 PackageKey = Literal["product_design", "product_validation", "product_development"]
 ItemType = Literal["package", "engineering_hours", "manufacturing"]
@@ -100,16 +122,31 @@ def price_engineering_hours_item(quantity: float) -> float:
     return round(quantity * ENGINEERING_HOURS_RATE, 2)
 
 
-def price_manufacturing_item(supplier_amount: float, fee_rate: float) -> float:
-    """Supervision fee for a Product Manufacturing line: `fee_rate` percent of the supplier's
-    manufacturing amount (excl. VAT), never below MIN_SUPERVISION_FEE. The supplier's amount is
-    only the base of the percentage: the supplier invoices it to the client directly, Arroyo
-    Systems does not."""
+def supervision_fee_by_volume(supplier_amount: float) -> float:
+    """Fee from the internal marginal schedule (see supervision_tranches), before the minimum."""
+    tranches = supervision_tranches()
+    if not tranches:
+        raise PricingError("No volume schedule is configured: enter the supervision fee % by hand")
+    fee, lower = 0.0, 0.0
+    for upper, percent in tranches:
+        if supplier_amount > lower:
+            fee += (min(supplier_amount, upper) - lower) * percent / 100
+        lower = upper
+    return fee
+
+
+def price_manufacturing_item(supplier_amount: float, fee_rate: float = 0.0) -> float:
+    """Supervision fee for a Product Manufacturing line, never below MIN_SUPERVISION_FEE.
+
+    By default it follows the internal volume schedule. A `fee_rate` greater than 0 overrides it
+    with a flat percentage for a special case. The supplier's amount is only the base of the
+    calculation: the supplier invoices it to the client directly, Arroyo Systems does not."""
     if supplier_amount <= 0:
         raise PricingError("Manufacturing needs the supplier's manufacturing amount (greater than 0)")
-    if fee_rate <= 0 or fee_rate > 100:
-        raise PricingError("The supervision fee rate must be a percentage greater than 0 and at most 100")
-    return round(max(MIN_SUPERVISION_FEE, supplier_amount * fee_rate / 100), 2)
+    if fee_rate < 0 or fee_rate > 100:
+        raise PricingError("The supervision fee rate must be a percentage between 0 and 100")
+    raw = supplier_amount * fee_rate / 100 if fee_rate > 0 else supervision_fee_by_volume(supplier_amount)
+    return round(max(MIN_SUPERVISION_FEE, raw), 2)
 
 
 class ComputedItem(TypedDict):

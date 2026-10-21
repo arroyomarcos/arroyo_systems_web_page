@@ -194,16 +194,38 @@ def test_create_quote_with_manufacturing_line(admin_client):
     assert body["remaining_amount"] == 605.0
 
 
+def test_manufacturing_fee_follows_the_internal_schedule_by_default(admin_client, monkeypatch):
+    monkeypatch.setenv("SUPERVISION_TRANCHES", "1000:10,5000:6,inf:2")  # made up for the test
+    payload = quote_payload(items=[{"type": "manufacturing", "supplier_amount": 10000}])
+    body = admin_client.post("/api/admin/quotes", json=payload).json()
+    item = body["items"][0]
+    assert item["total"] == 440.0
+    assert item["fee_rate"] == 4.4  # the effective percentage; the tranches are never exposed
+    assert "tranche" not in str(body).lower()
+
+
+def test_supervision_fee_preview_endpoint(admin_client, monkeypatch):
+    monkeypatch.setenv("SUPERVISION_TRANCHES", "1000:10,5000:6,inf:2")
+    response = admin_client.get("/api/admin/quotes/preview/supervision-fee", params={"supplier_amount": 3000})
+    assert response.status_code == 200 and response.json() == {"fee": 220.0}
+    flat = admin_client.get("/api/admin/quotes/preview/supervision-fee", params={"supplier_amount": 3000, "fee_rate": 5})
+    assert flat.json() == {"fee": 150.0}
+
+
+def test_supervision_fee_preview_requires_admin(db):
+    client = TestClient(server.app)
+    assert client.get("/api/admin/quotes/preview/supervision-fee", params={"supplier_amount": 3000}).status_code == 401
+
+
 def test_manufacturing_fee_never_falls_below_the_minimum(admin_client):
     payload = quote_payload(items=[{"type": "manufacturing", "supplier_amount": 300, "fee_rate": 15}])
     body = admin_client.post("/api/admin/quotes", json=payload).json()
     assert body["items"][0]["total"] == 60.0
 
 
-def test_create_quote_rejects_manufacturing_without_supplier_amount_or_rate(admin_client):
-    for item in ({"type": "manufacturing", "fee_rate": 5}, {"type": "manufacturing", "supplier_amount": 5000}):
-        response = admin_client.post("/api/admin/quotes", json=quote_payload(items=[item]))
-        assert response.status_code == 422
+def test_create_quote_rejects_manufacturing_without_supplier_amount(admin_client):
+    response = admin_client.post("/api/admin/quotes", json=quote_payload(items=[{"type": "manufacturing", "fee_rate": 5}]))
+    assert response.status_code == 422
 
 
 def test_quote_requires_admin_auth(db):

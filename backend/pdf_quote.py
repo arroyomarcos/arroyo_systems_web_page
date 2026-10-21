@@ -40,7 +40,7 @@ TERMS = [
 
 MANUFACTURING_TERMS = [
     "Product Manufacturing is technical coordination and supervision only: the client contracts and pays the manufacturing directly to the supplier, which invoices it separately.",
-    "Arroyo Systems invoices only its supervision fee, due with the final payment. It is a percentage of the supplier's manufacturing amount (excl. VAT), with a minimum of EUR 60 per project.",
+    "Arroyo Systems invoices only its supervision fee, due with the final payment. It is a percentage of the supplier's manufacturing amount (excl. VAT) that falls as the volume grows, with a minimum of EUR 60 per project.",
 ]
 
 
@@ -121,10 +121,13 @@ def build_quote_pdf(quote: dict, customer: dict) -> bytes:
         elif item["type"] == "manufacturing":
             name = item.get("description") or "Product Manufacturing"
             if item.get("supplier_amount"):
+                if abs(item["total"] - MIN_SUPERVISION_FEE) < 0.005:
+                    basis = "minimum fee per project"
+                else:
+                    basis = f"{item.get('fee_rate', 0):g}% of the supplier's manufacturing amount"
                 desc = (
-                    f"Technical supervision: {item.get('fee_rate', 0):g}% of the supplier's manufacturing amount "
-                    f"({_fmt_money(item['supplier_amount'], currency)}, excl. VAT), minimum "
-                    f"{_fmt_money(MIN_SUPERVISION_FEE, currency)}. Manufacturing is invoiced by the supplier."
+                    f"Technical supervision: {basis} ({_fmt_money(item['supplier_amount'], currency)}, excl. VAT). "
+                    "Manufacturing is invoiced by the supplier."
                 )
             else:  # quote issued before the coordination model
                 desc = (

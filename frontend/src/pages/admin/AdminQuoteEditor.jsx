@@ -8,6 +8,7 @@ import {
   createQuoteVersion,
   getQuote,
   previewContractPdfUrl,
+  previewSupervisionFee,
   requestFinalPayment,
   sendContract,
   sendQuote,
@@ -41,10 +42,9 @@ const previewItemTotal = (item) => {
     return price;
   }
   if (item.type === "manufacturing") {
-    // Supervision fee: a percentage of the supplier's amount, never below the minimum per project.
-    const base = Number(item.supplier_amount) || 0;
-    const rate = Number(item.fee_rate) || 0;
-    return base > 0 && rate > 0 ? Math.max(MIN_SUPERVISION_FEE, Math.round(base * rate) / 100) : 0;
+    // Supervision fee: calculated by the server (it holds the internal volume schedule) and
+    // fetched into `fee_preview` while the admin types.
+    return Number(item.fee_preview) || 0;
   }
   return (Number(item.quantity) || 0) * ENGINEERING_RATE;
 };
@@ -171,6 +171,28 @@ const AdminQuoteEditor = () => {
   const removeItem = (index) => {
     setItems((prev) => prev.filter((_, i) => i !== index));
   };
+
+  // Refresh each manufacturing line's fee preview from the server when its inputs change.
+  const feeInputs = items
+    .map((it) => (it.type === "manufacturing" ? `${it.supplier_amount}|${it.fee_rate}` : ""))
+    .join(";");
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      items.forEach((it, index) => {
+        if (it.type !== "manufacturing") return;
+        const amount = Number(it.supplier_amount) || 0;
+        if (amount <= 0) {
+          setItems((prev) => prev.map((x, i) => (i === index ? { ...x, fee_preview: 0 } : x)));
+          return;
+        }
+        previewSupervisionFee(amount, Number(it.fee_rate) || 0)
+          .then((fee) => setItems((prev) => prev.map((x, i) => (i === index ? { ...x, fee_preview: fee } : x))))
+          .catch(() => setItems((prev) => prev.map((x, i) => (i === index ? { ...x, fee_preview: 0 } : x))));
+      });
+    }, 400);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [feeInputs]);
 
   const subtotal = items.reduce((sum, it) => sum + previewItemTotal(it), 0);
   const vatAmount = subtotal * (vatPercent / 100);
@@ -509,7 +531,7 @@ const AdminQuoteEditor = () => {
                         </div>
                         <div>
                           <p className="text-xs font-medium text-[color:var(--arroyo-muted)] mb-1">
-                            Supervision fee % (min. {MIN_SUPERVISION_FEE} EUR, due with the final payment)
+                            Fee % override (empty = volume schedule; min. {MIN_SUPERVISION_FEE} EUR; due with the final payment)
                           </p>
                           <Input
                             type="number"

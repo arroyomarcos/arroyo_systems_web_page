@@ -93,6 +93,14 @@ export const listQuotes = async () => {
   return data;
 };
 
+// Supervision fee preview for the quote editor. The volume schedule lives on the server only.
+export const previewSupervisionFee = async (supplierAmount, feeRate) => {
+  const { data } = await api.get("/admin/quotes/preview/supervision-fee", {
+    params: { supplier_amount: supplierAmount, fee_rate: feeRate || 0 },
+  });
+  return data.fee;
+};
+
 export const getQuote = async (id) => {
   const { data } = await api.get(`/admin/quotes/${id}`);
   return data;

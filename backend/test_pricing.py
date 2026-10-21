@@ -85,6 +85,12 @@ def test_engineering_hours_negative_rejected():
         price_engineering_hours_item(-1)
 
 
+@pytest.fixture
+def made_up_schedule(monkeypatch):
+    # A schedule invented for the tests: the real one is internal and lives in the environment.
+    monkeypatch.setenv("SUPERVISION_TRANCHES", "1000:10,5000:6,inf:2")
+
+
 def test_manufacturing_fee_is_a_percentage_of_the_supplier_amount():
     assert price_manufacturing_item(supplier_amount=10000.0, fee_rate=5) == 500.0
     assert price_manufacturing_item(supplier_amount=45000.0, fee_rate=3) == 1350.0
@@ -97,9 +103,38 @@ def test_manufacturing_fee_has_a_minimum_per_project():
 
 
 def test_manufacturing_requires_the_supplier_amount_and_a_valid_rate():
-    for amount, rate in [(0, 5), (-1, 5), (1000, 0), (1000, -3), (1000, 101)]:
+    for amount, rate in [(0, 5), (-1, 5), (1000, -3), (1000, 101)]:
         with pytest.raises(PricingError):
             price_manufacturing_item(supplier_amount=amount, fee_rate=rate)
+
+
+def test_volume_schedule_is_marginal_by_tranche(made_up_schedule):
+    assert price_manufacturing_item(1000) == 100.0  # 10% of the first 1,000
+    assert price_manufacturing_item(3000) == 220.0  # 100 + 2,000 * 6%
+    assert price_manufacturing_item(5000) == 340.0  # 100 + 4,000 * 6%
+    assert price_manufacturing_item(10000) == 440.0  # 340 + 5,000 * 2%
+
+
+def test_volume_schedule_is_continuous_across_tranche_boundaries(made_up_schedule):
+    for boundary in (1000, 5000):
+        assert price_manufacturing_item(boundary + 1) - price_manufacturing_item(boundary) < 1.0
+
+
+def test_volume_schedule_respects_the_minimum(made_up_schedule):
+    assert price_manufacturing_item(300) == 60.0  # 10% of 300 = 30 -> raised to the minimum
+
+
+def test_without_a_configured_schedule_the_rate_must_be_entered_by_hand(monkeypatch):
+    monkeypatch.delenv("SUPERVISION_TRANCHES", raising=False)
+    with pytest.raises(PricingError):
+        price_manufacturing_item(supplier_amount=10000.0)
+    assert price_manufacturing_item(supplier_amount=10000.0, fee_rate=5) == 500.0
+
+
+def test_a_malformed_schedule_is_rejected(monkeypatch):
+    monkeypatch.setenv("SUPERVISION_TRANCHES", "5000:10,1000:5")
+    with pytest.raises(PricingError):
+        price_manufacturing_item(supplier_amount=3000.0)
 
 
 def test_compute_quote_totals_deposit_is_package_only():

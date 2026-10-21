@@ -61,7 +61,8 @@ class QuoteItemInput(BaseModel):
     extra_hours: float = Field(default=0, ge=0)
     override_confirmed: bool = False
     # Manufacturing only: the supplier's manufacturing amount (excl. VAT, the base of the
-    # percentage; the supplier invoices it directly) and the supervision fee rate in percent.
+    # fee; the supplier invoices it directly). `fee_rate` (percent) is optional: 0 applies the
+    # internal volume schedule, anything above overrides it with a flat percentage.
     supplier_amount: float = Field(default=0, ge=0)
     fee_rate: float = Field(default=0, ge=0, le=100)
 
@@ -71,8 +72,8 @@ class QuoteItemInput(BaseModel):
             raise ValueError("product_key is required for package items")
         if self.type == "engineering_hours" and self.quantity <= 0:
             raise ValueError("Engineering Hours quantity must be greater than 0")
-        if self.type == "manufacturing" and (self.supplier_amount <= 0 or self.fee_rate <= 0):
-            raise ValueError("Manufacturing needs the supplier's amount and the supervision fee rate (both greater than 0)")
+        if self.type == "manufacturing" and self.supplier_amount <= 0:
+            raise ValueError("Manufacturing needs the supplier's manufacturing amount (greater than 0)")
         return self
 
 
@@ -141,7 +142,9 @@ def _process_items(items: list[QuoteItemInput]) -> list[dict]:
                 "unit_price": total,
                 "extra_hours": 0,
                 "supplier_amount": item.supplier_amount,
-                "fee_rate": item.fee_rate,
+                # The effective percentage actually charged (what the client sees), whichever way
+                # the fee was set; the internal schedule itself is never exposed.
+                "fee_rate": round(total / item.supplier_amount * 100, 2),
                 "total": total,
             })
         else:
@@ -304,6 +307,19 @@ async def _send_quote_email(quote: dict, customer: dict, subject: str, intro_lin
 
 # ---------- Admin router ----------
 admin_quotes_router = APIRouter(prefix="/admin/quotes", tags=["quotes"])
+
+
+@admin_quotes_router.get("/preview/supervision-fee")
+async def preview_supervision_fee(
+    supplier_amount: float, fee_rate: float = 0, current: str = Depends(server.get_current_admin)
+):
+    """Live preview of the supervision fee for the quote editor. The volume schedule stays on the
+    server, so it never reaches the browser bundle."""
+    try:
+        fee = price_manufacturing_item(supplier_amount, fee_rate)
+    except PricingError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"fee": fee}
 
 
 @admin_quotes_router.post("", status_code=201)
